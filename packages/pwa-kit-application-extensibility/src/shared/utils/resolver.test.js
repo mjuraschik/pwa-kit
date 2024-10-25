@@ -74,49 +74,24 @@ describe('resolverUtils', () => {
     describe('"expand" util returns correct return value when', () => {
         ;[
             {
-                name: 'extensions are all short names',
-                input: ['module-extension-a', 'module-extension-b', 'module-extension-c'],
+                name: 'extensions are all valid package names',
+                input: ['extension-a', 'extension-b', 'extension-c', '@salesforce/extension-d'],
                 expected: [
-                    ['@salesforce/extension-module-extension-a', {enabled: true}],
-                    ['@salesforce/extension-module-extension-b', {enabled: true}],
-                    ['@salesforce/extension-module-extension-c', {enabled: true}]
-                ]
-            },
-            {
-                name: 'extensions are a mix of module extensions and local extension',
-                input: ['module-extension-a', 'module-extension-b', './local-extension-c'],
-                expected: [
-                    ['@salesforce/extension-module-extension-a', {enabled: true}],
-                    ['@salesforce/extension-module-extension-b', {enabled: true}],
-                    [path.join(process.cwd(), 'local-extension-c'), {enabled: true}]
+                    ['extension-a', {enabled: true}],
+                    ['extension-b', {enabled: true}],
+                    ['extension-c', {enabled: true}],
+                    ['@salesforce/extension-d', {enabled: true}]
                 ]
             },
             {
                 name: 'extensions include falsey values',
-                input: ['module-extension-a', '', `.${path.sep}local-extension-c`, false],
-                expected: [
-                    ['@salesforce/extension-module-extension-a', {enabled: true}],
-                    [path.join(process.cwd(), 'local-extension-c'), {enabled: true}]
-                ]
+                input: ['extension-a', '', false],
+                expected: [['extension-a', {enabled: true}]]
             },
             {
-                name: 'extensions includes absolute path and module path values',
-                input: [
-                    path.join(process.cwd(), 'local-extension-a'),
-                    path.join('@salesforce', 'module-extension-a')
-                ],
-                expected: [
-                    [path.join(process.cwd(), 'local-extension-a'), {enabled: true}],
-                    [path.join('@salesforce', 'module-extension-a'), {enabled: true}]
-                ]
-            },
-            {
-                name: 'extensions includes windows file paths',
-                input: ['.\\local-extension-a', '\\home\\local-extension-a'],
-                expected: [
-                    [path.join(process.cwd(), 'local-extension-a'), {enabled: true}],
-                    [path.join(path.sep, 'home', 'local-extension-a'), {enabled: true}]
-                ]
+                name: 'extensions defined do not follow naming convension',
+                input: ['not-the-correct-prefix-a'],
+                expected: []
             }
         ].forEach((testCase) => {
             test(`${testCase.name}`, () => {
@@ -135,21 +110,19 @@ describe('resolverUtils', () => {
                 sourcePath: path.join(
                     process.cwd(),
                     'node_modules',
-                    '@salesforce',
-                    'extension-module-extension-a',
+                    'extension-a',
                     'src',
                     'setup-app.ts'
                 ),
 
-                extensions: ['module-extension-a', 'module-extension-b', 'module-extension-c'],
+                extensions: ['extension-a', 'extension-b', 'extension-c'],
                 expected: [
                     path.join(process.cwd(), 'app', 'overrides', 'pages', 'sample'),
                     path.join(process.cwd(), 'app', 'pages', 'sample'),
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-c',
+                        'extension-c',
                         'src',
                         'overrides',
                         'pages',
@@ -158,8 +131,7 @@ describe('resolverUtils', () => {
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-c',
+                        'extension-c',
                         'src',
                         'pages',
                         'sample'
@@ -167,8 +139,7 @@ describe('resolverUtils', () => {
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-b',
+                        'extension-b',
                         'src',
                         'overrides',
                         'pages',
@@ -177,8 +148,7 @@ describe('resolverUtils', () => {
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-b',
+                        'extension-b',
                         'src',
                         'pages',
                         'sample'
@@ -186,8 +156,7 @@ describe('resolverUtils', () => {
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-a',
+                        'extension-a',
                         'src',
                         'overrides',
                         'pages',
@@ -196,8 +165,7 @@ describe('resolverUtils', () => {
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-a',
+                        'extension-a',
                         'src',
                         'pages',
                         'sample'
@@ -210,25 +178,19 @@ describe('resolverUtils', () => {
                 sourcePath: path.join(
                     process.cwd(),
                     'node_modules',
-                    '@salesforce',
-                    'extension-module-extension-a',
+                    'extension-a',
                     'src',
                     'setup-app.ts'
                 ),
 
-                extensions: [
-                    'module-extension-a',
-                    'module-extension-b',
-                    ['module-extension-c', {enabled: false}]
-                ],
+                extensions: ['extension-a', 'extension-b', ['extension-c', {enabled: false}]],
                 expected: [
                     path.join(process.cwd(), 'app', 'overrides', 'pages', 'sample'),
                     path.join(process.cwd(), 'app', 'pages', 'sample'),
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-b',
+                        'extension-b',
                         'src',
                         'overrides',
                         'pages',
@@ -237,8 +199,7 @@ describe('resolverUtils', () => {
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-b',
+                        'extension-b',
                         'src',
                         'pages',
                         'sample'
@@ -246,8 +207,7 @@ describe('resolverUtils', () => {
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-a',
+                        'extension-a',
                         'src',
                         'overrides',
                         'pages',
@@ -256,8 +216,7 @@ describe('resolverUtils', () => {
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-a',
+                        'extension-a',
                         'src',
                         'pages',
                         'sample'
@@ -270,16 +229,15 @@ describe('resolverUtils', () => {
                 sourcePath: path.join(
                     process.cwd(),
                     'node_modules',
-                    '@salesforce',
-                    'extension-module-extension-a',
+                    'extension-a',
                     'src',
                     'setup-app.ts'
                 ),
 
                 extensions: [
-                    ['module-extension-a', {enabled: false}],
-                    ['module-extension-b', {enabled: false}],
-                    ['module-extension-c', {enabled: false}]
+                    ['extension-a', {enabled: false}],
+                    ['extension-b', {enabled: false}],
+                    ['extension-c', {enabled: false}]
                 ],
                 expected: [
                     path.join(process.cwd(), 'app', 'overrides', 'pages', 'sample'),
@@ -292,34 +250,24 @@ describe('resolverUtils', () => {
                 sourcePath: path.join(
                     process.cwd(),
                     'node_modules',
-                    '@salesforce',
-                    'extension-module-extension-b',
+                    'extension-b',
                     'src',
                     'overrides',
                     'app',
                     'routes.jsx'
                 ),
-                extensions: ['module-extension-a', 'module-extension-b'],
+                extensions: ['extension-a', 'extension-b'],
                 expected: [
                     path.join(
                         process.cwd(),
                         'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-a',
+                        'extension-a',
                         'src',
                         'overrides',
                         'app',
                         'routes'
                     ),
-                    path.join(
-                        process.cwd(),
-                        'node_modules',
-                        '@salesforce',
-                        'extension-module-extension-a',
-                        'src',
-                        'app',
-                        'routes'
-                    )
+                    path.join(process.cwd(), 'node_modules', 'extension-a', 'src', 'app', 'routes')
                 ]
             }
         ].forEach((testCase) => {

@@ -18,7 +18,6 @@ import {
 
 // TODO: Should this be in a constants folder?
 const EXTENSION_NAMESPACE = '@salesforce'
-const EXTENSION_PREFIX = 'extension'
 const NODE_MODULES = 'node_modules'
 const OVERRIDES = 'overrides'
 const APP = 'app'
@@ -52,6 +51,19 @@ export const isSelfReference = (importPath: string, sourcePath: string) => {
     return sourcePath.endsWith(importPath)
 }
 
+// Returns true if the entry passes is a ApplicationExtensionEntryArray type.
+// TODO: This looks like it could be done in a more generic way.
+export const isApplicationExtensionEntryArray = (
+    entry: ApplicationExtensionEntryArray
+): boolean => {
+    const [nameRef, config] = entry || []
+    return (
+        typeof nameRef === 'string' &&
+        typeof config === 'object' &&
+        !!nameRef.match(/^(?:@([^/]+)\/)?extension-(.+)$/)
+    )
+}
+
 /**
  * Normalize and expand the extension configuration array so that it is easier to process.
  * @param {{String, Object}[]} extensions - The extensions configuration value as defined in the PWA-Kit config.
@@ -68,32 +80,13 @@ export const expand = (
     extensions
         .filter((extension) => Boolean(extension))
         .map((extension) => {
-            let [nameRef, config]: [string, any] = Array.isArray(extension)
+            const thing: [string, any] = Array.isArray(extension)
                 ? extension
                 : [extension, DEFAULT_CONFIG]
 
-            switch (true) {
-                case /^\./.test(nameRef):
-                    // Relative Path
-                    nameRef = nameRef.split(/\/|\\/).join(path.sep)
-                    nameRef = path.join(process.cwd(), nameRef.replace('.', ''))
-                    break
-                case /^(\/|\\|\w:)/.test(nameRef):
-                    // Absolute Path (UNIX|Windows)
-                    nameRef = nameRef.split(/\/|\\/).join(path.sep)
-                    break
-                case /^@/.test(nameRef):
-                    // Do nothing
-                    break
-                default:
-                    // TODO: revise this to be more aligned with `nameRegex` in extensibility-utils.js (e.g. namespace is now optional)
-                    // Default is to treat the reference as a extension "short" name.
-                    nameRef = `${EXTENSION_NAMESPACE}/${EXTENSION_PREFIX}-${nameRef}`
-                    break
-            }
-
-            return [nameRef, config]
+            return thing
         })
+        .filter(isApplicationExtensionEntryArray)
 
 /**
  * Based on the current extensibility configuration, return an array of candiate file paths to be used
