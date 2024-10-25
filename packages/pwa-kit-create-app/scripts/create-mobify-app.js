@@ -512,7 +512,7 @@ const PRESETS = [
         description: '',
         templateSource: {
             type: TEMPLATE_SOURCE_BUNDLE,
-            id: 'base-app-extension'
+            id: 'extension-base'
         },
         private: true
     },
@@ -894,40 +894,33 @@ const runGenerator = async (
     const appExtensionsDir = p.join(outputDir, 'app', 'application-extensions')
     const {id, type} = templateSource
     let tarPath
-    console.log('templateSource: ', templateSource)
-    try {
-        switch (type) {
-            case TEMPLATE_SOURCE_NPM: {
-                const tarFile = sh
-                    .exec(`npm pack ${id}@${templateVersion} --pack-destination="${tmp}"`, {
-                        silent: true
-                    })
-                    .stdout.trim()
-                tarPath = p.join(tmp, tarFile)
-                break
-            }
-            case TEMPLATE_SOURCE_BUNDLE:
-                tarPath = p.join(__dirname, '..', 'templates', `${id}.tar.gz`)
-                console.log('tarPath: ', tarPath)
-                break
-            default: {
-                const msg = `Error: Cannot handle template source type ${type}.`
-                console.error(msg)
-                process.exit(1)
-            }
+
+    switch (type) {
+        case TEMPLATE_SOURCE_NPM: {
+            const tarFile = sh
+                .exec(`npm pack ${id}@${templateVersion} --pack-destination="${tmp}"`, {
+                    silent: true
+                })
+                .stdout.trim()
+            tarPath = p.join(tmp, tarFile)
+            break
         }
-
-        console.log('Extracting tarball', tmp, file)
-        tar.x({
-            file: tarPath,
-            cwd: tmp,
-            sync: true
-        })
-    } catch(e) {
-        console.log('Error extracting tarball: ', e)
-
+        case TEMPLATE_SOURCE_BUNDLE:
+            tarPath = p.join(__dirname, '..', 'templates', `${id}.tar.gz`)
+            break
+        default: {
+            const msg = `Error: Cannot handle template source type ${type}.`
+            console.error(msg)
+            process.exit(1)
+        }
     }
-    
+
+    // Extract the main template
+    tar.x({
+        file: tarPath,
+        cwd: tmp,
+        sync: true
+    })
 
     if (extend) {
         // Bootstrap the projects.
