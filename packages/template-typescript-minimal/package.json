@@ -32,7 +32,6 @@
     "react-helmet": "^6.1.0",
     "react-router-dom": "^5.3.4",
     "typescript": "4.9.5",
-
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
