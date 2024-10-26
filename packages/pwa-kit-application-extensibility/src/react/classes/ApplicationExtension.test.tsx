@@ -10,8 +10,8 @@ import {ApplicationExtensionConfig} from '../../types'
 import React from 'react'
 
 class TestConfig implements ApplicationExtensionConfig {
-    [key: string]: any,
-    enabled: boolean = true
+    [key: string]: any
+    enabled = true
 }
 
 describe('ApplicationExtension', () => {

@@ -12,15 +12,15 @@ type WithRedBorderProps = React.ComponentPropsWithoutRef<any>
 
 // Define the HOC function
 const withRedBorder = <P extends {}>(WrappedComponent: React.ComponentType<P>) => {
-  const WithRedBorder: React.FC<P> = (props: WithRedBorderProps) => {
-    return (
-      <div style={{ border: '2px solid blue', padding: '10px' }}>
-        <WrappedComponent {...(props as P)} />
-      </div>
-    )
-  }
+    const WithRedBorder: React.FC<P> = (props: WithRedBorderProps) => {
+        return (
+            <div style={{border: '2px solid blue', padding: '10px'}}>
+                <WrappedComponent {...(props as P)} />
+            </div>
+        )
+    }
 
-  return WithRedBorder
+    return WithRedBorder
 }
 
 export default withRedBorder

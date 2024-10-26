@@ -48,9 +48,7 @@ export const ruleForApplicationExtensibility = (options: any = {}) => {
 
     return {
         test: new RegExp(
-            `${
-                target === 'node' ? 'express' : 'react'
-            }/placeholders/application-extensions.js`,
+            `${target === 'node' ? 'express' : 'react'}/placeholders/application-extensions.js`,
             'i'
         ),
         use: {

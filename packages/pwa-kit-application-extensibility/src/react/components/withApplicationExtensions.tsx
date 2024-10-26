@@ -21,6 +21,8 @@ type withApplicationExtensionsOptions = {
     locals?: any
 }
 
+type GenericHocType<C> = (component: React.ComponentType<C>) => React.ComponentType<C>
+
 /**
  * Higher-order component (HOC) that applies application extensions to a wrapped component.
  *
@@ -37,8 +39,6 @@ type withApplicationExtensionsOptions = {
  * @returns A new React component with all extensions applied, rendering the `WrappedComponent`
  *          with the extended behavior.
  */
-type GenericHocType<C> = (component: React.ComponentType<C>) => React.ComponentType<C>
-
 const withApplicationExtensions = async <
     C,
     P extends ApplicationExtension<ApplicationExtensionConfigBase>
