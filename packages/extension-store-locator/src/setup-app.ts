@@ -11,11 +11,11 @@ import {
   ApplicationExtension,
   IRouteConfig,
 } from "@salesforce/pwa-kit-react-sdk/ssr/universal/extensibility";
-import {withOptionalChakra} from "./components/store-locator/with-optional-chakra-provider";
-import { withStoreLocator } from "./components/store-locator/with-store-locator";
+import {withOptionalChakra} from "*/components/store-locator/with-optional-chakra-provider";
+import { withStoreLocator } from "*/components/store-locator/with-store-locator";
 import { ReactExtensionConfig as Config } from "./types";
 
-const StoreLocator = loadable(() => import("./pages/store-locator"));
+const StoreLocator = loadable(() => import("*/pages/store-locator"));
 
 class StoreLocatorExtension extends ApplicationExtension<Config> {
   DEFAULT_PATH = "/store-locator";

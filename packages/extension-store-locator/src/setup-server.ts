@@ -11,10 +11,10 @@ import {
 } from '@salesforce/pwa-kit-runtime/ssr/server/extensibility'
 import {ServerExtensionConfig as Config} from './types'
 
-class SampleExtension extends ExpressApplicationExtension<Config> {
+class StoreLocatorExtension extends ExpressApplicationExtension<Config> {
     extendApp(app: ExpressApplication): ExpressApplication {
         return app
     }
 }
 
-export default SampleExtension
+export default StoreLocatorExtension
