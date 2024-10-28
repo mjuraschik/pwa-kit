@@ -1,7 +1,7 @@
 import React from 'react'
 import {screen, fireEvent} from '@testing-library/react'
 import {renderWithProviders} from './test-utils'
-import {StoreLocatorInput} from './store-locator-input'
+import {StoreLocatorForm} from './store-locator-form'
 import {useStoreLocator} from './use-store-locator'
 
 jest.mock('./use-store-locator', () => ({
@@ -25,13 +25,13 @@ const mockStoreLocatorContext = {
     }
 }
 
-describe('StoreLocatorInput', () => {
+describe('StoreLocatorForm', () => {
     beforeEach(() => {
         useStoreLocator.mockImplementation(() => mockStoreLocatorContext)
     })
 
     it('renders the component with all inputs', () => {
-        renderWithProviders(<StoreLocatorInput refetch={jest.fn()} />)
+        renderWithProviders(<StoreLocatorForm refetch={jest.fn()} />)
 
         expect(screen.getByText('Select a country')).toBeTruthy()
         expect(screen.getByPlaceholderText('Enter postal code')).toBeTruthy()
@@ -46,7 +46,7 @@ describe('StoreLocatorInput', () => {
             userWantsToShareLocation: true
         }))
 
-        renderWithProviders(<StoreLocatorInput refetch={jest.fn()} />)
+        renderWithProviders(<StoreLocatorForm refetch={jest.fn()} />)
         expect(screen.getByText('Please agree to share your location')).toBeTruthy()
     })
 
@@ -57,7 +57,7 @@ describe('StoreLocatorInput', () => {
             setUserWantsToShareLocation
         }))
 
-        renderWithProviders(<StoreLocatorInput refetch={jest.fn()} />)
+        renderWithProviders(<StoreLocatorForm refetch={jest.fn()} />)
         
         fireEvent.click(screen.getByText('Use My Location'))
         expect(setUserWantsToShareLocation).toHaveBeenCalledWith(true)

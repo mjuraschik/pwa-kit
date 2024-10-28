@@ -57,7 +57,7 @@ const useGeolocation = () => {
     return getUserGeolocation
 }
 
-export const StoreLocatorInput = ({refetch}) => {
+export const StoreLocatorForm = ({refetch}) => {
     const {
         searchStoresParams,
         userHasSetManualGeolocation,
@@ -224,6 +224,6 @@ export const StoreLocatorInput = ({refetch}) => {
     )
 }
 
-StoreLocatorInput.propTypes = {
+StoreLocatorForm.propTypes = {
     refetch: PropTypes.func
 }

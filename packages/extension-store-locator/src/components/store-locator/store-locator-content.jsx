@@ -12,7 +12,7 @@ import {Box} from '@chakra-ui/react/dist/cjs/box/box.cjs'
 import {Button} from '@chakra-ui/react/dist/cjs/button/button.cjs'
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
 import {StoreLocatorList} from '*/components/store-locator/store-locator-list'
-import {StoreLocatorInput} from '*/components/store-locator/store-locator-input'
+import {StoreLocatorForm} from '*/components/store-locator/store-locator-form'
 import {useStoreLocator} from '*/components/store-locator/use-store-locator'
 
 //This is an API limit and is therefore not configurable
@@ -57,7 +57,7 @@ export const StoreLocatorContent = () => {
             <Heading fontSize="2xl" style={{marginBottom: '25px'}}>
                 Find a Store
             </Heading>
-            <StoreLocatorInput refetch={refetch} />
+            <StoreLocatorForm refetch={refetch} />
             <StoreLocatorList storesInfo={storesInfo} />
             {!isFetching &&
             numStoresToShow < numStores &&
