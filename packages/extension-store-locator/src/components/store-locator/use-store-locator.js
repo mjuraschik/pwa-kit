@@ -14,7 +14,6 @@ import {
 
 const StoreLocatorContext = createContext()
 
-// This is our main hook that components will use
 export const useStoreLocator = () => {
     const context = useContext(StoreLocatorContext)
     if (!context) {
@@ -22,32 +21,6 @@ export const useStoreLocator = () => {
     }
     return context
 }
-
-// This is internal to the store locator module
-export const createStoreLocatorState = () => {
-    const [userHasSetManualGeolocation, setUserHasSetManualGeolocation] = useState(false)
-    const [automaticGeolocationHasFailed, setAutomaticGeolocationHasFailed] = useState(false)
-    const [userWantsToShareLocation, setUserWantsToShareLocation] = useState(false)
-
-    const [searchStoresParams, setSearchStoresParams] = useState({
-        countryCode: DEFAULT_STORE_LOCATOR_COUNTRY.countryCode,
-        postalCode: DEFAULT_STORE_LOCATOR_POSTAL_CODE,
-        limit: STORE_LOCATOR_NUM_STORES_PER_LOAD
-    })
-
-    return {
-        userHasSetManualGeolocation,
-        setUserHasSetManualGeolocation,
-        automaticGeolocationHasFailed,
-        setAutomaticGeolocationHasFailed,
-        userWantsToShareLocation,
-        setUserWantsToShareLocation,
-        searchStoresParams,
-        setSearchStoresParams
-    }
-}
-
-export {StoreLocatorContext}
 
 export const StoreLocatorProvider = ({children}) => {
     const [userHasSetManualGeolocation, setUserHasSetManualGeolocation] = useState(false)
