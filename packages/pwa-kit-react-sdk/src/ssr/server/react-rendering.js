@@ -21,7 +21,7 @@ import sprite from 'svg-sprite-loader/runtime/sprite.build'
 import {isRemote} from '@salesforce/pwa-kit-runtime/utils/ssr-server'
 import {proxyConfigs} from '@salesforce/pwa-kit-runtime/utils/ssr-shared'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
-import {withApplicationExtensions} from '@salesforce/pwa-kit-application-extensibility/react'
+import {getApplicationExtensions, withApplicationExtensions} from '@salesforce/pwa-kit-application-extensibility/react'
 
 import {getAssetUrl} from '../universal/utils'
 import {ServerContext, CorrelationIdProvider} from '../universal/contexts'
@@ -129,9 +129,10 @@ export const render = async (req, res, next) => {
     AppConfig.restore(res.locals)
 
     // Use locals to thread the application extensions through the rendering pipeline.
-    const applicationExtensions = await withApplicationExtensions.loadApplicationExtensions()
+    // const applicationExtensions = await withApplicationExtensions.loadApplicationExtensions()
+    const applicationExtensions = await getApplicationExtensions()
 
-    const WrappedApp = withApplicationExtensions(routeComponent(App, false, res.locals), {locals: res.locals, applicationExtensions})
+    const WrappedApp = withApplicationExtensions(routeComponent(App, false, res.locals), {applicationExtensions, locals: res.locals})
 
     const routes = getRoutes(res.locals)
 

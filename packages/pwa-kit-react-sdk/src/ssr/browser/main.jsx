@@ -10,7 +10,7 @@ import {hydrateRoot} from 'react-dom/client'
 import PropTypes from 'prop-types'
 import {BrowserRouter as Router} from 'react-router-dom'
 import {loadableReady} from '@loadable/component'
-import {withApplicationExtensions} from '@salesforce/pwa-kit-application-extensibility/react'
+import {getApplicationExtensions, withApplicationExtensions} from '@salesforce/pwa-kit-application-extensibility/react'
 
 import {ServerContext, CorrelationIdProvider} from '../universal/contexts'
 import App from '../universal/components/_app'
@@ -115,11 +115,8 @@ export const start = async () => {
     // been warned.
     window.__HYDRATING__ = true
 
-    // TODO: This `async` pattern isn't ideal. Look to come up with something better. Maybe a static function
-    // on the HOC that you have to await on before executing/using it.
-    // E.g.
-    // NOTE: Instead of this static.. I could get import the getApplicationExtensions.. might be cleaner and less code.
-    const applicationExtensions = await withApplicationExtensions.loadApplicationExtensions()
+    // Load all the configured Application Extensions and provide them to the 
+    const applicationExtensions = await getApplicationExtensions()
     const WrappedApp = withApplicationExtensions(routeComponent(App, false, locals), {applicationExtensions, locals})
     
     const props = {

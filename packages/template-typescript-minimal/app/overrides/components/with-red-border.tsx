@@ -11,8 +11,8 @@ import React from 'react'
 type WithRedBorderProps = React.ComponentPropsWithoutRef<any>
 
 // Define the HOC function
-const withRedBorder = <P extends {}>(WrappedComponent: React.ComponentType<P>) => {
-    const WithRedBorder: React.FC<P> = (props: WithRedBorderProps) => {
+const withRedBorder = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
+    const WithRedBorder: React.FC<P & WithRedBorderProps> = (props: WithRedBorderProps) => {
         return (
             <div style={{border: '2px solid blue', padding: '10px'}}>
                 <WrappedComponent {...(props as P)} />

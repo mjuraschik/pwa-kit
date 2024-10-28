@@ -10,21 +10,19 @@ import React from 'react'
 
 // Local
 import {applyHOCs} from '../utils'
-import {getApplicationExtensions} from '../placeholders/application-extensions'
 
 // Types
 import {ApplicationExtension} from '../classes/ApplicationExtension'
 import {ApplicationExtensionConfig as ApplicationExtensionConfigBase} from '../../types'
 import {ApplicationExtensionsProvider} from '../contexts'
 
-// TODO: Move me!
+// Local Types
 type withApplicationExtensionsOptions = {
     applicationExtensions: ApplicationExtension<ApplicationExtensionConfigBase>[],
     locals?: any
 }
 
 type GenericHocType<C> = (component: React.ComponentType<C>) => React.ComponentType<C>
-
 
 /**
  * Higher-order component (HOC) that applies application extensions to a wrapped component.
@@ -53,27 +51,22 @@ const withApplicationExtensions = <
         .filter((applicationExtension: any) => applicationExtension.isEnabled())
         .map((extension: any) => extension.extendApp.bind(extension) as GenericHocType<C>)
         .filter(Boolean)
+    const withApplicationExtensionsProvider: GenericHocType<any> = (WrappedComponent) => (
+        (props) => (
+            <ApplicationExtensionsProvider extensions={options.applicationExtensions}>
+                <WrappedComponent {...props} />
+            </ApplicationExtensionsProvider>
+        )
+    )
 
     if (options?.locals) {
         options.locals.applicationExtensions = options.applicationExtensions
     }
 
-    // NOTE: I can probably put this somewhere else.
-    const withApplicationExtensionsProvider: GenericHocType<any> = (WrappedComponent) => {
-        return (props) => (
-            <ApplicationExtensionsProvider extensions={options.applicationExtensions}>
-                <WrappedComponent {...props} />
-            </ApplicationExtensionsProvider>
-        )
-    }
-
+    // Finally add the Application Extensions Provider wrapping all of the extensions.
     hocs.push(withApplicationExtensionsProvider)
     
     return applyHOCs(WrappedComponent, hocs)
-}
-
-withApplicationExtensions.loadApplicationExtensions = async() => {
-    return await getApplicationExtensions()
 }
 
 export default withApplicationExtensions
