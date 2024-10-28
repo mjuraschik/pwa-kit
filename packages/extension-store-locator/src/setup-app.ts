@@ -17,7 +17,7 @@ import { ReactExtensionConfig as Config } from "./types";
 
 const StoreLocator = loadable(() => import("./pages/store-locator"));
 
-class Sample extends ApplicationExtension<Config> {
+class StoreLocatorExtension extends ApplicationExtension<Config> {
   DEFAULT_PATH = "/store-locator";
   REQUIRED_CONFIG_FIELDS = ['defaultCountry', 'defaultCountryCode', 'defaultDistance', 'defaultDistanceUnit', 'defaultPageSize', 'defaultPostalCode', 'supportedCountries']
 
@@ -51,4 +51,4 @@ class Sample extends ApplicationExtension<Config> {
   }
 }
 
-export default Sample;
+export default StoreLocatorExtension;

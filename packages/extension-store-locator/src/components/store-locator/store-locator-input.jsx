@@ -7,15 +7,14 @@
 
 import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
-import {
-    Button,
-    InputGroup,
-    Select,
-    Box,
-    Input,
-    FormControl,
-    FormErrorMessage
-} from '@chakra-ui/react'
+import {Box} from '@chakra-ui/react/dist/cjs/box/box.cjs'
+import {Button} from '@chakra-ui/react/dist/cjs/button/button.cjs'
+import {InputGroup} from '@chakra-ui/react/dist/cjs/input/input-group.cjs'
+import {Select} from '@chakra-ui/react/dist/cjs/select/select.cjs'
+import {FormControl} from '@chakra-ui/react/dist/cjs/form-control/form-control.cjs'
+import {FormErrorMessage} from '@chakra-ui/react/dist/cjs/form-control/form-error.cjs'
+import {Input} from '@chakra-ui/react/dist/cjs/input/input.cjs'
+
 // import {AlertIcon} from '@salesforce/retail-react-app/app/components/icons'
 import {Controller} from 'react-hook-form'
 import {useStoreLocator} from '*/components/store-locator/use-store-locator'

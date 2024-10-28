@@ -6,13 +6,15 @@
  */
 
 import React, {useState} from 'react'
-import {Heading, Accordion, AccordionItem, Box, Button} from '@chakra-ui/react'
+import {useForm} from 'react-hook-form'
+// import {Heading, Box, Button} from '@chakra-ui/react'
+import {Heading} from '@chakra-ui/react/dist/cjs/typography/heading.cjs'
+import {Box} from '@chakra-ui/react/dist/cjs/box/box.cjs'
+import {Button} from '@chakra-ui/react/dist/cjs/button/button.cjs'
+import {useSearchStores} from '@salesforce/commerce-sdk-react'
 import {StoreLocatorList} from '*/components/store-locator/store-locator-list'
 import {StoreLocatorInput} from '*/components/store-locator/store-locator-input'
-import {useSearchStores} from '@salesforce/commerce-sdk-react'
-import {useForm} from 'react-hook-form'
-
-import {useStoreLocator} from './use-store-locator'
+import {useStoreLocator} from '*/components/store-locator/use-store-locator'
 
 //This is an API limit and is therefore not configurable
 const NUM_STORES_PER_REQUEST_API_MAX = 200
@@ -86,23 +88,7 @@ export const StoreLocatorContent = () => {
         refetch()
     }
 
-    const displayStoreLocatorStatusMessage = () => {
-        if (storesInfo === undefined)
-            return 'Loading locations...'
-        if (storesInfo.length === 0)
-            return 'Sorry, there are no locations in this area'
-        if (searchStoresParams.postalCode !== undefined)
-            return `Viewing stores within ${config.defaultDistance}${config.defaultDistanceUnit} of ${searchStoresParams.postalCode} in 
-                ${
-                    config.supportedCountries.length !== 0
-                        ? config.supportedCountries.find(
-                              (o) => o.countryCode === searchStoresParams.countryCode
-                          ).countryName
-                        : config.defaultCountry
-                }`
-        else
-            return 'Viewing stores near your location'
-    }
+    
 
     return (
         <>
@@ -110,25 +96,7 @@ export const StoreLocatorContent = () => {
                 Find a Store
             </Heading>
             <StoreLocatorInput form={form} submitForm={submitForm}></StoreLocatorInput>
-            <Accordion allowMultiple flex={[1, 1, 1, 5]}>
-                {/* Details */}
-                <AccordionItem>
-                    <Box
-                        flex="1"
-                        fontWeight="semibold"
-                        fontSize="md"
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            margin: '20px'
-                        }}
-                    >
-                        {displayStoreLocatorStatusMessage()}
-                    </Box>
-                </AccordionItem>
-                <StoreLocatorList storesInfo={storesInfo} />
-            </Accordion>
+            <StoreLocatorList storesInfo={storesInfo} />
             {!isFetching &&
             numStoresToShow < numStores &&
             numStoresToShow < NUM_STORES_PER_REQUEST_API_MAX ? (

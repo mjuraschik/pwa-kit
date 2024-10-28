@@ -58,6 +58,7 @@
             "defaultDistance": 100,
             "defaultDistanceUnit": "km",
             "defaultPageSize": 10,
+            "defaultPostalCode": "10178",
             "defaultCountry": "Germany",
             "defaultCountryCode": "DE",
             "supportedCountries": [
