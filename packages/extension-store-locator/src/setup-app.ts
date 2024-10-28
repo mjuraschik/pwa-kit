@@ -11,7 +11,7 @@ import {
   ApplicationExtension,
   IRouteConfig,
 } from "@salesforce/pwa-kit-react-sdk/ssr/universal/extensibility";
-import withOptionalChakra from "./components/withOptionalChakraProvider";
+import withOptionalChakra from "./components/with-optional-chakra-provider";
 import { withStoreLocatorConfig } from "./components/with-store-locator-config";
 import { ReactExtensionConfig as Config } from "./types";
 

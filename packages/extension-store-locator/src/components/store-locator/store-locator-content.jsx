@@ -25,7 +25,7 @@ const NUM_STORES_PER_REQUEST_API_MAX = 200
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
 import {useForm} from 'react-hook-form'
 
-import {StoreLocatorContext} from './index'
+import {useStoreLocator} from './use-store-locator'
 
 const StoreLocatorContent = () => {
     const {
@@ -33,7 +33,7 @@ const StoreLocatorContent = () => {
         setSearchStoresParams,
         userHasSetManualGeolocation,
         setUserHasSetManualGeolocation
-    } = useContext(StoreLocatorContext)
+    } = useStoreLocator()
     const {countryCode, postalCode, latitude, longitude, limit} = searchStoresParams
     const form = useForm({
         mode: 'onChange',

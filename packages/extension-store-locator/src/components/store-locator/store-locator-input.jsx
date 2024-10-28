@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React, {useEffect, useContext} from 'react'
+import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {
     Button,
@@ -18,7 +18,6 @@ import {
 } from '@chakra-ui/react'
 // import {AlertIcon} from '@salesforce/retail-react-app/app/components/icons'
 import {Controller} from 'react-hook-form'
-// todo make these configs
 import {
     DEFAULT_STORE_LOCATOR_COUNTRY,
     DEFAULT_STORE_LOCATOR_POSTAL_CODE,
@@ -27,7 +26,7 @@ import {
     STORE_LOCATOR_DISTANCE_UNIT,
     SUPPORTED_STORE_LOCATOR_COUNTRIES
 } from './constants'
-import {StoreLocatorContext} from './index'
+import {useStoreLocator} from './use-store-locator'
 
 const useGeolocation = () => {
     const {
@@ -35,7 +34,7 @@ const useGeolocation = () => {
         setAutomaticGeolocationHasFailed,
         setUserHasSetManualGeolocation,
         userHasSetManualGeolocation
-    } = useContext(StoreLocatorContext)
+    } = useStoreLocator()
 
     const getGeolocationError = () => {
         setAutomaticGeolocationHasFailed(true)
@@ -72,7 +71,7 @@ const StoreLocatorInput = ({form, submitForm}) => {
         automaticGeolocationHasFailed,
         setUserWantsToShareLocation,
         userWantsToShareLocation
-    } = useContext(StoreLocatorContext)
+    } = useStoreLocator()
 
     const getUserGeolocation = useGeolocation()
     const {control} = form
