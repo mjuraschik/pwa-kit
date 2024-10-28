@@ -1,6 +1,6 @@
 # Store Locator Extension
 
-A PWA Kit extension that adds store locator functionality to your Retail React App. This extension provides a complete store locator solution with features like:
+A PWA Kit extension that adds store locator functionality to your application. This extension provides a store locator solution with features like:
 
 - Search stores by postal code / country code via SCAPI Shopper Stores API
 - Device geolocation support
