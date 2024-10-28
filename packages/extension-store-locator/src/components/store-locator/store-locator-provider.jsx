@@ -6,11 +6,6 @@
  */
 
 import React, {useState, createContext} from 'react'
-import {
-    DEFAULT_STORE_LOCATOR_COUNTRY,
-    DEFAULT_STORE_LOCATOR_POSTAL_CODE,
-    STORE_LOCATOR_NUM_STORES_PER_LOAD
-} from './constants'
 
 export const StoreLocatorContext = createContext()
 export const StoreLocatorProvider = ({config, children}) => {
@@ -19,9 +14,9 @@ export const StoreLocatorProvider = ({config, children}) => {
     const [userWantsToShareLocation, setUserWantsToShareLocation] = useState(false)
 
     const [searchStoresParams, setSearchStoresParams] = useState({
-        countryCode: DEFAULT_STORE_LOCATOR_COUNTRY.countryCode,
-        postalCode: DEFAULT_STORE_LOCATOR_POSTAL_CODE,
-        limit: STORE_LOCATOR_NUM_STORES_PER_LOAD
+        countryCode: config.defaultCountryCode,
+        postalCode: config.defaultPostalCode, // Note: This needs to be added to the config type
+        limit: config.defaultPageSize
     })
 
     const value = {

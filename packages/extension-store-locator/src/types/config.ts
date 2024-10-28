@@ -23,6 +23,7 @@ export interface StoreLocatorConfig {
     defaultPageSize: number
     defaultCountry: string
     defaultCountryCode: string
+    defaultPostalCode: string // Add this line
     supportedCountries: Array<{
         countryCode: string
         countryName: string

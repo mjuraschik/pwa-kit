@@ -9,30 +9,21 @@ import React, {useState} from 'react'
 import {Heading, Accordion, AccordionItem, Box, Button} from '@chakra-ui/react'
 import {StoreLocatorList} from '*/components/store-locator/store-locator-list'
 import {StoreLocatorInput} from '*/components/store-locator/store-locator-input'
-
-import {
-    DEFAULT_STORE_LOCATOR_COUNTRY,
-    DEFAULT_STORE_LOCATOR_POSTAL_CODE,
-    STORE_LOCATOR_NUM_STORES_PER_LOAD,
-    STORE_LOCATOR_DISTANCE,
-    STORE_LOCATOR_DISTANCE_UNIT,
-    SUPPORTED_STORE_LOCATOR_COUNTRIES
-} from './constants'
-
-//This is an API limit and is therefore not configurable
-const NUM_STORES_PER_REQUEST_API_MAX = 200
-
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
 import {useForm} from 'react-hook-form'
 
 import {useStoreLocator} from './use-store-locator'
+
+//This is an API limit and is therefore not configurable
+const NUM_STORES_PER_REQUEST_API_MAX = 200
 
 export const StoreLocatorContent = () => {
     const {
         searchStoresParams,
         setSearchStoresParams,
         userHasSetManualGeolocation,
-        setUserHasSetManualGeolocation
+        setUserHasSetManualGeolocation,
+        config
     } = useStoreLocator()
     const {countryCode, postalCode, latitude, longitude, limit} = searchStoresParams
     const form = useForm({
@@ -57,11 +48,10 @@ export const StoreLocatorContent = () => {
             postalCode: postalCode,
             latitude: latitude,
             longitude: longitude,
-            // @TODO translations
             locale: 'en-GB',
-            maxDistance: STORE_LOCATOR_DISTANCE,
+            maxDistance: config.defaultDistance,
             limit: NUM_STORES_PER_REQUEST_API_MAX,
-            distanceUnit: STORE_LOCATOR_DISTANCE_UNIT
+            distanceUnit: config.defaultDistanceUnit
         }
     })
 
@@ -78,43 +68,37 @@ export const StoreLocatorContent = () => {
                 setSearchStoresParams({
                     postalCode: postalCode,
                     countryCode: countryCode,
-                    limit: STORE_LOCATOR_NUM_STORES_PER_LOAD
+                    limit: config.defaultPageSize
                 })
                 setUserHasSetManualGeolocation(true)
             } else {
-                if (SUPPORTED_STORE_LOCATOR_COUNTRIES.length === 0) {
+                if (config.supportedCountries.length === 0) {
                     setSearchStoresParams({
                         postalCode: postalCode,
-                        countryCode: DEFAULT_STORE_LOCATOR_COUNTRY.countryCode,
-                        limit: STORE_LOCATOR_NUM_STORES_PER_LOAD
+                        countryCode: config.defaultCountryCode,
+                        limit: config.defaultPageSize
                     })
                     setUserHasSetManualGeolocation(true)
                 }
             }
         }
-        // Reset the number of stores in the UI
-        setNumStoresToShow(STORE_LOCATOR_NUM_STORES_PER_LOAD)
-
-        // Ensures API call is made regardless of caching to provide UX feedback on click
+        setNumStoresToShow(config.defaultPageSize)
         refetch()
     }
 
     const displayStoreLocatorStatusMessage = () => {
         if (storesInfo === undefined)
-            // @TODO: add translations
             return 'Loading locations...'
         if (storesInfo.length === 0)
             return 'Sorry, there are no locations in this area'
         if (searchStoresParams.postalCode !== undefined)
-            return `Viewing stores within ${STORE_LOCATOR_DISTANCE}${STORE_LOCATOR_DISTANCE_UNIT} of ${searchStoresParams.postalCode} in 
+            return `Viewing stores within ${config.defaultDistance}${config.defaultDistanceUnit} of ${searchStoresParams.postalCode} in 
                 ${
-                    SUPPORTED_STORE_LOCATOR_COUNTRIES.length !== 0
-                        ? 
-                              SUPPORTED_STORE_LOCATOR_COUNTRIES.find(
-                                  (o) => o.countryCode === searchStoresParams.countryCode
-                              ).countryName
-                          
-                        : DEFAULT_STORE_LOCATOR_COUNTRY.countryName
+                    config.supportedCountries.length !== 0
+                        ? config.supportedCountries.find(
+                              (o) => o.countryCode === searchStoresParams.countryCode
+                          ).countryName
+                        : config.defaultCountry
                 }`
         else
             return 'Viewing stores near your location'
@@ -153,9 +137,9 @@ export const StoreLocatorContent = () => {
                         key="load-more-button"
                         onClick={() => {
                             setNumStoresToShow(
-                                numStoresToShow + STORE_LOCATOR_NUM_STORES_PER_LOAD <=
+                                numStoresToShow + config.defaultPageSize <=
                                     NUM_STORES_PER_REQUEST_API_MAX
-                                    ? numStoresToShow + STORE_LOCATOR_NUM_STORES_PER_LOAD
+                                    ? numStoresToShow + config.defaultPageSize
                                     : numStoresToShow
                             )
                         }}
@@ -164,10 +148,6 @@ export const StoreLocatorContent = () => {
                         marginBottom={4}
                     >
                         Load More
-                        {/* intl.formatMessage({
-                id: 'store_locator.description.load_more',
-                defaultMessage: 'Load more'
-            }) */}
                     </Button>
                 </Box>
             ) : (

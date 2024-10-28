@@ -18,14 +18,6 @@ import {
 } from '@chakra-ui/react'
 // import {AlertIcon} from '@salesforce/retail-react-app/app/components/icons'
 import {Controller} from 'react-hook-form'
-import {
-    DEFAULT_STORE_LOCATOR_COUNTRY,
-    DEFAULT_STORE_LOCATOR_POSTAL_CODE,
-    STORE_LOCATOR_NUM_STORES_PER_LOAD,
-    STORE_LOCATOR_DISTANCE,
-    STORE_LOCATOR_DISTANCE_UNIT,
-    SUPPORTED_STORE_LOCATOR_COUNTRIES
-} from './constants'
 import {useStoreLocator} from '*/components/store-locator/use-store-locator'
 
 const useGeolocation = () => {
@@ -33,7 +25,8 @@ const useGeolocation = () => {
         setSearchStoresParams,
         setAutomaticGeolocationHasFailed,
         setUserHasSetManualGeolocation,
-        userHasSetManualGeolocation
+        userHasSetManualGeolocation,
+        config
     } = useStoreLocator()
 
     const getGeolocationError = () => {
@@ -44,7 +37,7 @@ const useGeolocation = () => {
         setSearchStoresParams({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            limit: STORE_LOCATOR_NUM_STORES_PER_LOAD
+            limit: config.defaultPageSize
         })
     }
 
@@ -70,7 +63,8 @@ export const StoreLocatorInput = ({form, submitForm}) => {
         userHasSetManualGeolocation,
         automaticGeolocationHasFailed,
         setUserWantsToShareLocation,
-        userWantsToShareLocation
+        userWantsToShareLocation,
+        config
     } = useStoreLocator()
 
     const getUserGeolocation = useGeolocation()
@@ -78,7 +72,7 @@ export const StoreLocatorInput = ({form, submitForm}) => {
     return (
         <form id="store-locator-form" onSubmit={form.handleSubmit(submitForm)}>
             <InputGroup>
-                {SUPPORTED_STORE_LOCATOR_COUNTRIES.length > 0 && (
+                {config.supportedCountries.length > 0 && (
                     <Controller
                         name="countryCode"
                         control={control}
@@ -89,7 +83,7 @@ export const StoreLocatorInput = ({form, submitForm}) => {
                             required: 'Please select a country.'
                         }}
                         render={({field}) => {
-                            return SUPPORTED_STORE_LOCATOR_COUNTRIES.length !== 0 ? (
+                            return config.supportedCountries.length !== 0 ? (
                                 <FormControl isInvalid={form.formState.errors.countryCode}>
                                     <Select
                                         {...field}
@@ -97,7 +91,7 @@ export const StoreLocatorInput = ({form, submitForm}) => {
                                         placeholder={'Select a country'}
                                         borderColor="gray.500"
                                     >
-                                        {SUPPORTED_STORE_LOCATOR_COUNTRIES.map(
+                                        {config.supportedCountries.map(
                                             ({countryCode, countryName}) => {
                                                 return (
                                                     <option value={countryCode} key={countryCode}>
