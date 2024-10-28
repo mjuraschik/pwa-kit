@@ -12,7 +12,6 @@ import {
   IRouteConfig,
 } from "@salesforce/pwa-kit-react-sdk/ssr/universal/extensibility";
 import withOptionalChakra from "./components/withOptionalChakraProvider";
-
 import { ReactExtensionConfig as Config } from "./types";
 
 const StoreLocator = loadable(() => import("./pages/store-locator"));
