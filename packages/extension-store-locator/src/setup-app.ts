@@ -19,16 +19,24 @@ const StoreLocator = loadable(() => import("./pages/store-locator"));
 
 class Sample extends ApplicationExtension<Config> {
   DEFAULT_PATH = "/store-locator";
+  REQUIRED_CONFIG_FIELDS = ['defaultCountry', 'defaultCountryCode', 'defaultDistance', 'defaultDistanceUnit', 'defaultPageSize', 'defaultPostalCode', 'supportedCountries']
 
   extendApp(App: React.ComponentType): React.ComponentType {
     const config = this.getConfig();
+
+    const missingFields = this.REQUIRED_CONFIG_FIELDS.filter(field => !config[field]);
+    if (missingFields.length) {
+      throw new Error(`Missing required config fields: ${missingFields.join(', ')}`);
+    }
+
     return withStoreLocator({
       path: config.path ?? this.DEFAULT_PATH,
+      defaultCountry: config.defaultCountry,
+      defaultCountryCode: config.defaultCountryCode,
       defaultDistance: config.defaultDistance,
       defaultDistanceUnit: config.defaultDistanceUnit,
       defaultPageSize: config.defaultPageSize,
-      defaultCountry: config.defaultCountry,
-      defaultCountryCode: config.defaultCountryCode,
+      defaultPostalCode: config.defaultPostalCode,
       supportedCountries: config.supportedCountries
     })(withOptionalChakra(App));
   }

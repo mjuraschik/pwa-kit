@@ -5,7 +5,9 @@
   "peerDependencies": {
     "@chakra-ui/react": "^2",
     "@loadable/component": "^5",
-    "@salesforce/commerce-sdk-react": "^3.1.0-dev",
+    "@salesforce/commerce-sdk-react": ">=1.0.0",
+    "@salesforce/pwa-kit-react-sdk": ">=3.0.0",
+    "@salesforce/pwa-kit-runtime": ">=3.0.0",
     "prop-types": "^15",
     "react": "^18",
     "react-dom": "^18",

@@ -15,7 +15,7 @@ export const StoreLocatorProvider = ({config, children}) => {
 
     const [searchStoresParams, setSearchStoresParams] = useState({
         countryCode: config.defaultCountryCode,
-        postalCode: config.defaultPostalCode, // Note: This needs to be added to the config type
+        postalCode: config.defaultPostalCode,
         limit: config.defaultPageSize
     })
 
