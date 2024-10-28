@@ -6,7 +6,8 @@
  */
 
 import React from "react";
-import { Box, Container } from "@chakra-ui/react";
+import {Box} from '@chakra-ui/react/dist/cjs/box/box.cjs'
+import {Container} from "@chakra-ui/react/dist/cjs/container/container.cjs"
 import {StoreLocatorContent} from "*/components/store-locator/store-locator-content";
 
 const StoreLocatorPage = () => {
