@@ -6,24 +6,15 @@
  */
 
 import React from 'react'
-import {useStoreLocator} from '*/components/store-locator/use-store-locator'
-import {Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel} from '@chakra-ui/react/dist/cjs/accordion/index.cjs'
-import {Box} from '@chakra-ui/react/dist/cjs/box/box.cjs'
+import {useStoreLocator} from './use-store-locator'
+import {Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel} from '@chakra-ui/react'
+import {Box} from '@chakra-ui/react'
+import {useSearchStores} from '@salesforce/commerce-sdk-react'
 
-interface StoreInfo {
-    name?: string
-    address1: string
-    city: string
-    stateCode?: string
-    postalCode: string
-    phone?: string
-    distance?: number
-    distanceUnit?: string
-    storeHours?: string
-}
+type Stores = NonNullable<ReturnType<typeof useSearchStores>['data']>['data']
 
 interface StoreLocatorListProps {
-    storesInfo?: StoreInfo[]
+    storesInfo?: Stores
 }
 
 export const StoreLocatorList: React.FC<StoreLocatorListProps> = ({storesInfo}) => {
