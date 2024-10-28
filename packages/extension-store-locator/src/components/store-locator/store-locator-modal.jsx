@@ -12,14 +12,14 @@ import {
     ModalBody,
     ModalCloseButton,
     ModalContent,
-    useBreakpointValue
-} from '@chakra-ui/react'
+} from '@chakra-ui/react/dist/cjs/modal/index.cjs'
+import {useBreakpointValue} from '@chakra-ui/react/dist/cjs/media-query/use-breakpoint-value.cjs'
 import {StoreLocatorContent} from '*/components/store-locator/store-locator-content'
 
 export const StoreLocatorModal = ({isOpen, onClose}) => {
     const isDesktopView = useBreakpointValue({base: false, lg: true})
 
-    return {isDesktopView ? (
+    return isDesktopView ? (
                 <Modal size="4xl" isOpen={isOpen} onClose={onClose}>
                     <ModalContent
                         position="absolute"
@@ -53,7 +53,7 @@ export const StoreLocatorModal = ({isOpen, onClose}) => {
                         </ModalBody>
                     </ModalContent>
                 </Modal>
-            )}
+            )
     
 }
 

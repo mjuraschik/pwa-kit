@@ -5,7 +5,6 @@ import {StoreLocatorContent} from './store-locator-content'
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
 import {useStoreLocator} from './use-store-locator'
 
-// Mock the external dependencies
 jest.mock('@salesforce/commerce-sdk-react', () => ({
     useSearchStores: jest.fn()
 }))
