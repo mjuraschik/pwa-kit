@@ -26,7 +26,7 @@ import {
     STORE_LOCATOR_DISTANCE_UNIT,
     SUPPORTED_STORE_LOCATOR_COUNTRIES
 } from './constants'
-import {useStoreLocator} from './use-store-locator'
+import {useStoreLocator} from '*/components/store-locator/use-store-locator'
 
 const useGeolocation = () => {
     const {
@@ -64,7 +64,7 @@ const useGeolocation = () => {
     return getUserGeolocation
 }
 
-const StoreLocatorInput = ({form, submitForm}) => {
+export const StoreLocatorInput = ({form, submitForm}) => {
     const {
         searchStoresParams,
         userHasSetManualGeolocation,
@@ -200,5 +200,3 @@ StoreLocatorInput.propTypes = {
     form: PropTypes.object,
     submitForm: PropTypes.func
 }
-
-export default StoreLocatorInput

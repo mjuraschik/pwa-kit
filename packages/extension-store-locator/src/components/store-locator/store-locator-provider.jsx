@@ -13,8 +13,7 @@ import {
 } from './constants'
 
 export const StoreLocatorContext = createContext()
-
-export const StoreLocatorProvider = ({children}) => {
+export const StoreLocatorProvider = ({config, children}) => {
     const [userHasSetManualGeolocation, setUserHasSetManualGeolocation] = useState(false)
     const [automaticGeolocationHasFailed, setAutomaticGeolocationHasFailed] = useState(false)
     const [userWantsToShareLocation, setUserWantsToShareLocation] = useState(false)
@@ -33,7 +32,8 @@ export const StoreLocatorProvider = ({children}) => {
         userWantsToShareLocation,
         setUserWantsToShareLocation,
         searchStoresParams,
-        setSearchStoresParams
+        setSearchStoresParams,
+        config
     }
 
     return (

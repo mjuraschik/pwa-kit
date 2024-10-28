@@ -11,8 +11,8 @@ import {
   ApplicationExtension,
   IRouteConfig,
 } from "@salesforce/pwa-kit-react-sdk/ssr/universal/extensibility";
-import withOptionalChakra from "./components/with-optional-chakra-provider";
-import { withStoreLocatorConfig } from "./components/with-store-locator-config";
+import {withOptionalChakra} from "./components/store-locator/with-optional-chakra-provider";
+import { withStoreLocator } from "./components/store-locator/with-store-locator";
 import { ReactExtensionConfig as Config } from "./types";
 
 const StoreLocator = loadable(() => import("./pages/store-locator"));
@@ -22,7 +22,7 @@ class Sample extends ApplicationExtension<Config> {
 
   extendApp(App: React.ComponentType): React.ComponentType {
     const config = this.getConfig();
-    return withStoreLocatorConfig({
+    return withStoreLocator({
       path: config.path ?? this.DEFAULT_PATH,
       defaultDistance: config.defaultDistance,
       defaultDistanceUnit: config.defaultDistanceUnit,

@@ -10,7 +10,6 @@ import { useTheme, Theme, ChakraProvider } from '@chakra-ui/react';
 
 type WithOptionalChakra = React.ComponentPropsWithoutRef<any>
 
-
 /**
  * Higher-order component that conditionally wraps a given component with ChakraProvider.
  * 
@@ -18,7 +17,7 @@ type WithOptionalChakra = React.ComponentPropsWithoutRef<any>
  * @param theme - Optional Chakra UI theme to be used
  * @returns A component that wraps the given component with ChakraProvider if it is not already present in the component tree.
  */
-const withOptionalChakra = <P extends {}>(
+export const withOptionalChakra = <P extends {}>(
   WrappedComponent: React.ComponentType<P>,
   theme?: Theme
 ) => {
@@ -37,5 +36,3 @@ const withOptionalChakra = <P extends {}>(
 
   return WithOptionalChakra
 }
-
-export default withOptionalChakra

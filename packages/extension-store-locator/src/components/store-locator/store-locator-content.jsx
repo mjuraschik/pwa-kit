@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React, {useState, useContext} from 'react'
+import React, {useState} from 'react'
 import {Heading, Accordion, AccordionItem, Box, Button} from '@chakra-ui/react'
-import StoresList from './stores-locator-list'
-import StoreLocatorInput from '*/components/store-locator/store-locator-input'
+import {StoreLocatorList} from '*/components/store-locator/store-locator-list'
+import {StoreLocatorInput} from '*/components/store-locator/store-locator-input'
 
 import {
     DEFAULT_STORE_LOCATOR_COUNTRY,
@@ -27,7 +27,7 @@ import {useForm} from 'react-hook-form'
 
 import {useStoreLocator} from './use-store-locator'
 
-const StoreLocatorContent = () => {
+export const StoreLocatorContent = () => {
     const {
         searchStoresParams,
         setSearchStoresParams,
@@ -143,7 +143,7 @@ const StoreLocatorContent = () => {
                         {displayStoreLocatorStatusMessage()}
                     </Box>
                 </AccordionItem>
-                <StoresList storesInfo={storesInfo} />
+                <StoreLocatorList storesInfo={storesInfo} />
             </Accordion>
             {!isFetching &&
             numStoresToShow < numStores &&
@@ -178,5 +178,3 @@ const StoreLocatorContent = () => {
 }
 
 StoreLocatorContent.propTypes = {}
-
-export default StoreLocatorContent

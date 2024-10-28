@@ -6,7 +6,7 @@
  */
 
 import {useContext} from 'react'
-import {StoreLocatorContext} from './store-locator-provider'
+import {StoreLocatorContext} from '*/components/store-locator/store-locator-provider'
 
 export const useStoreLocator = () => {
     const context = useContext(StoreLocatorContext)

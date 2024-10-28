@@ -9,7 +9,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Box} from '@chakra-ui/react'
 
-const StoreLocatorList = ({storesInfo}) => {
+export const StoreLocatorList = ({storesInfo}) => {
     return storesInfo?.map((store, index) => {
         return (
             <AccordionItem key={index}>
@@ -67,8 +67,6 @@ const StoreLocatorList = ({storesInfo}) => {
     })
 }
 
-StoresList.propTypes = {
+StoreLocatorList.propTypes = {
     storesInfo: PropTypes.array
 }
-
-export default StoresList
