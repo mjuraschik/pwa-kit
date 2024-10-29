@@ -7,7 +7,7 @@
 import React, {useEffect, useState} from 'react'
 import {useQuery} from '@tanstack/react-query'
 
-import {useApplicationExtensions} from '@salesforce/pwa-kit-application-extensibility/react'
+import {useApplicationExtensions} from '@salesforce/pwa-kit-extension-sdk/react'
 
 import HelloTS from '../components/hello-typescript'
 import HelloJS from '../components/hello-javascript'

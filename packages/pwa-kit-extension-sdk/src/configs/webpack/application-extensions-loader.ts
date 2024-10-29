@@ -52,7 +52,7 @@ export const ruleForApplicationExtensibility = (options: any = {}) => {
             'i'
         ),
         use: {
-            loader: '@salesforce/pwa-kit-application-extensibility/configs/webpack/application-extensions-loader',
+            loader: '@salesforce/pwa-kit-extension-sdk/configs/webpack/application-extensions-loader',
             options: {
                 ...getApplicationExtensionInfo(appConfig),
                 target

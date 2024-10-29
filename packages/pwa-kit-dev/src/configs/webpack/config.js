@@ -21,7 +21,7 @@ import SpeedMeasurePlugin from 'speed-measure-webpack-plugin'
 import WebpackNotifierPlugin from 'webpack-notifier'
 
 // PWA-Kit Plugins
-import {OverridesResolverPlugin} from '@salesforce/pwa-kit-application-extensibility/configs/webpack'
+import {OverridesResolverPlugin} from '@salesforce/pwa-kit-extension-sdk/configs/webpack'
 
 // Local Plugins
 import {sdkReplacementPlugin} from './plugins'
@@ -30,9 +30,9 @@ import {sdkReplacementPlugin} from './plugins'
 import {CLIENT, SERVER, CLIENT_OPTIONAL, SSR, REQUEST_PROCESSOR} from './config-names'
 
 // Utilities
-import {ruleForApplicationExtensibility} from '@salesforce/pwa-kit-application-extensibility/configs/webpack'
+import {ruleForApplicationExtensibility} from '@salesforce/pwa-kit-extension-sdk/configs/webpack'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
-import {buildAliases, nameRegex} from '@salesforce/pwa-kit-application-extensibility/shared/utils'
+import {buildAliases, nameRegex} from '@salesforce/pwa-kit-extension-sdk/shared/utils'
 
 const projectDir = process.cwd()
 const pkg = fse.readJsonSync(resolve(projectDir, 'package.json'))

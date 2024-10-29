@@ -9,7 +9,7 @@
 import {Application} from 'express'
 
 // Platform Imports
-import {ApplicationExtension} from '@salesforce/pwa-kit-application-extensibility/express'
+import {ApplicationExtension} from '@salesforce/pwa-kit-extension-sdk/express'
 
 // Local Imports
 import {Config} from './types'

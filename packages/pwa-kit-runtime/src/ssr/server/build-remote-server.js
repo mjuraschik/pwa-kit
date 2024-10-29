@@ -50,7 +50,7 @@ import awsServerlessExpress from 'aws-serverless-express'
 import expressLogging from 'morgan'
 import logger from '../../utils/logger-instance'
 import {createProxyMiddleware} from 'http-proxy-middleware'
-import {applyApplicationExtensions} from '@salesforce/pwa-kit-application-extensibility/express'
+import {applyApplicationExtensions} from '@salesforce/pwa-kit-extension-sdk/express'
 
 /**
  * An Array of mime-types (Content-Type values) that are considered
