@@ -17,8 +17,6 @@ import {
     FormErrorMessage,
     Input
 } from '@chakra-ui/react'
-
-// import {AlertIcon} from '@salesforce/retail-react-app/app/components/icons'
 import {Controller} from 'react-hook-form'
 import {useStoreLocator} from './use-store-locator'
 
@@ -147,7 +145,6 @@ export const StoreLocatorForm = ({refetch}) => {
                                             sx={{marginBottom: '10px'}}
                                             color="red.600"
                                         >
-                                            {/* <AlertIcon aria-hidden="true" mr={2} /> */}
                                             {form.formState.errors.countryCode.message}
                                         </FormErrorMessage>
                                     )}
@@ -173,7 +170,6 @@ export const StoreLocatorForm = ({refetch}) => {
                                 <Input {...field} placeholder={'Enter postal code'} />
                                 {form.formState.errors.postalCode && (
                                     <FormErrorMessage sx={{top: '-20px'}} color="red.600">
-                                        {/* <AlertIcon aria-hidden="true" mr={2} /> */}
                                         {form.formState.errors.postalCode.message}
                                     </FormErrorMessage>
                                 )}
@@ -220,7 +216,6 @@ export const StoreLocatorForm = ({refetch}) => {
                     justifyContent="center"
                     marginBottom={4}
                 >
-                    {/* <AlertIcon aria-hidden="true" mr={2} /> */}
                     Please agree to share your location
                 </FormErrorMessage>
             </FormControl>
