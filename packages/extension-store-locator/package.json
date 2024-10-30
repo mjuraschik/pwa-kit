@@ -2,6 +2,7 @@
   "name": "@salesforce/extension-store-locator",
   "version": "0.1.0-dev",
   "scripts": {
+    "lint": "pwa-kit-dev lint \"**/*.{js,jsx,ts,tsx}\"",
     "test": "pwa-kit-dev test"
   },
   "peerDependencies": {
