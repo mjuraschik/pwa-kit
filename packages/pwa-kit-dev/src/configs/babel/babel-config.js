@@ -31,13 +31,17 @@ export default (api) => {
             require('@babel/preset-react')
         ],
         plugins: [
-            ...(!isJest ? [
-                require('@salesforce/pwa-kit-extension-sdk/configs/babel/plugin-application-extensions'),
-                {
-                    target: 'node',
-                    ...getApplicationExtensionInfo(getConfig())
-                }
-            ] : []),
+            ...(!isJest
+                ? [
+                      [
+                          require('@salesforce/pwa-kit-extension-sdk/configs/babel/plugin-application-extensions'),
+                          {
+                              target: 'node',
+                              ...getApplicationExtensionInfo(getConfig())
+                          }
+                      ]
+                  ]
+                : []),
             require('@babel/plugin-transform-async-to-generator'),
             require('@babel/plugin-proposal-object-rest-spread'),
             require('@babel/plugin-transform-object-assign'),
