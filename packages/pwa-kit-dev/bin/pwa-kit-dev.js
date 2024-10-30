@@ -244,7 +244,7 @@ const main = async () => {
             execSync(
                 `${babelNode} ${
                     inspect ? '--inspect' : ''
-                } --ignore '/node_modules\\/(?!extension-[^\\/]+\\/)/i' --ignore '/node_modules\\/(?!pwa-kit-extension-sdk\\/dist)/i' ${babelArgs} ${getAppEntrypoint()}`,
+                } --ignore '/node_modules\\/(?!extension-[^\\/]+\\/)/i' ${babelArgs} ${getAppEntrypoint()}`,
                 {
                     env: {
                         ...process.env,
