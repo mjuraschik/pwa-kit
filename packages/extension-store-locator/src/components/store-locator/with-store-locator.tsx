@@ -6,7 +6,7 @@
  */
 import React from 'react'
 import {StoreLocatorConfig} from '../../types/config'
-import {StoreLocatorProvider} from '*/components/store-locator/store-locator-provider'
+import {StoreLocatorProvider} from './store-locator-provider'
 
 /**
  * Higher-order component that wraps a component with the StoreLocatorProvider

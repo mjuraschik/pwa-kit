@@ -13,7 +13,7 @@ import {
     ModalContent,
     useBreakpointValue
 } from '@chakra-ui/react'
-import {StoreLocatorContent} from '*/components/store-locator/store-locator-content'
+import {StoreLocatorContent} from './store-locator-content'
 
 interface StoreLocatorModalProps {
     isOpen: boolean

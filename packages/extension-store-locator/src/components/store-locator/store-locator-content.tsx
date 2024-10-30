@@ -8,9 +8,9 @@
 import React, {useState} from 'react'
 import {Box, Button, Heading} from '@chakra-ui/react'
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
-import {StoreLocatorList} from '*/components/store-locator/store-locator-list'
-import {StoreLocatorForm} from '*/components/store-locator/store-locator-form'
-import {useStoreLocator} from '*/components/store-locator/use-store-locator'
+import {StoreLocatorList} from './store-locator-list'
+import {StoreLocatorForm} from './store-locator-form'
+import {useStoreLocator} from './use-store-locator'
 
 //This is an API limit and is therefore not configurable
 const NUM_STORES_PER_REQUEST_API_MAX = 200

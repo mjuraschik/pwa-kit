@@ -20,7 +20,7 @@ import {
 
 // import {AlertIcon} from '@salesforce/retail-react-app/app/components/icons'
 import {Controller} from 'react-hook-form'
-import {useStoreLocator} from '*/components/store-locator/use-store-locator'
+import {useStoreLocator} from './use-store-locator'
 
 const useGeolocation = () => {
     const {

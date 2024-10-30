@@ -9,7 +9,7 @@ import {useContext} from 'react'
 import {
     StoreLocatorContext,
     StoreLocatorContextValue
-} from '*/components/store-locator/store-locator-provider'
+} from './store-locator-provider'
 
 export const useStoreLocator = (): StoreLocatorContextValue => {
     const context = useContext(StoreLocatorContext)
