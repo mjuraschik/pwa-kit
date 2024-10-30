@@ -5,31 +5,31 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React from "react";
+import React from 'react'
 import {Box, Container} from '@chakra-ui/react'
-import {StoreLocatorContent} from "*/components/store-locator/store-locator-content";
+import {StoreLocatorContent} from '*/components/store-locator/store-locator-content'
 
 const StoreLocatorPage = () => {
-  return (
-      <Box data-testid="store-locator-page" bg="gray.50" py={[8, 16]}>
-        <Container
-          overflowY="scroll"
-          paddingTop={8}
-          width={["90%"]}
-          bg="white"
-          paddingBottom={14}
-          marginTop={8}
-          marginBottom={8}
-          borderRadius="base"
-        >
-          <StoreLocatorContent />
-        </Container>
-      </Box>
-  );
-};
+    return (
+        <Box data-testid="store-locator-page" bg="gray.50" py={[8, 16]}>
+            <Container
+                overflowY="scroll"
+                paddingTop={8}
+                width={['90%']}
+                bg="white"
+                paddingBottom={14}
+                marginTop={8}
+                marginBottom={8}
+                borderRadius="base"
+            >
+                <StoreLocatorContent />
+            </Container>
+        </Box>
+    )
+}
 
-StoreLocatorPage.getTemplateName = () => "store-locator";
+StoreLocatorPage.getTemplateName = () => 'store-locator'
 
-StoreLocatorPage.propTypes = {};
+StoreLocatorPage.propTypes = {}
 
-export default StoreLocatorPage;
+export default StoreLocatorPage

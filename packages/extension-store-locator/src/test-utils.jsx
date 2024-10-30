@@ -4,30 +4,30 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import React from "react";
-import { render } from "@testing-library/react";
-import { ChakraProvider } from "@chakra-ui/react";
-import { StoreLocatorProvider } from "*/components/store-locator/store-locator-provider";
+import React from 'react'
+import {render} from '@testing-library/react'
+import {ChakraProvider} from '@chakra-ui/react'
+import {StoreLocatorProvider} from '*/components/store-locator/store-locator-provider'
 
 const CONFIG = {
-  path: "/store-locator",
-  defaultDistance: 100,
-  defaultDistanceUnit: "km",
-  defaultPageSize: 10,
-  defaultPostalCode: "10178",
-  defaultCountry: "Germany",
-  defaultCountryCode: "DE",
-  supportedCountries: [
-    {
-      countryCode: "US",
-      countryName: "United States",
-    },
-    {
-      countryCode: "DE",
-      countryName: "Germany",
-    },
-  ],
-};
+    path: '/store-locator',
+    defaultDistance: 100,
+    defaultDistanceUnit: 'km',
+    defaultPageSize: 10,
+    defaultPostalCode: '10178',
+    defaultCountry: 'Germany',
+    defaultCountryCode: 'DE',
+    supportedCountries: [
+        {
+            countryCode: 'US',
+            countryName: 'United States'
+        },
+        {
+            countryCode: 'DE',
+            countryName: 'Germany'
+        }
+    ]
+}
 
 const renderWithProviders = (ui, options = {}) => {
   const Wrapper = ({ children }) => (

@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import React from "react";
-import { renderHook, act } from "@testing-library/react";
-import { StoreLocatorProvider } from "./store-locator-provider";
-import { useStoreLocator } from "./use-store-locator";
+import React from 'react'
+import {renderHook, act} from '@testing-library/react'
+import {StoreLocatorProvider} from './store-locator-provider'
+import {useStoreLocator} from './use-store-locator'
 
 const mockConfig = {
   defaultCountryCode: "US",

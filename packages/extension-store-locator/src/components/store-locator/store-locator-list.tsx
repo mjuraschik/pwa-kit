@@ -7,7 +7,14 @@
 
 import React from 'react'
 import {useStoreLocator} from './use-store-locator'
-import {Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Box} from '@chakra-ui/react'
+import {
+    Accordion,
+    AccordionItem,
+    AccordionButton,
+    AccordionIcon,
+    AccordionPanel,
+    Box
+} from '@chakra-ui/react'
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
 
 type Stores = NonNullable<ReturnType<typeof useSearchStores>['data']>['data']
@@ -20,12 +27,12 @@ export const StoreLocatorList: React.FC<StoreLocatorListProps> = ({storesInfo}) 
     const {searchStoresParams, config} = useStoreLocator()
 
     const displayStoreLocatorStatusMessage = (): string => {
-        if (storesInfo === undefined)
-            return 'Loading locations...'
-        if (storesInfo.length === 0)
-            return 'Sorry, there are no locations in this area'
+        if (storesInfo === undefined) return 'Loading locations...'
+        if (storesInfo.length === 0) return 'Sorry, there are no locations in this area'
         if (searchStoresParams.postalCode !== undefined)
-            return `Viewing stores within ${config.defaultDistance}${config.defaultDistanceUnit} of ${searchStoresParams.postalCode} in 
+            return `Viewing stores within ${config.defaultDistance}${
+                config.defaultDistanceUnit
+            } of ${searchStoresParams.postalCode} in 
                 ${
                     config.supportedCountries.length !== 0
                         ? config.supportedCountries.find(
@@ -61,13 +68,15 @@ export const StoreLocatorList: React.FC<StoreLocatorListProps> = ({storesInfo}) 
                             {store.address1}
                         </Box>
                         <Box fontSize="md" color="gray.600">
-                            {store.city}, {store.stateCode ? store.stateCode : ''} {store.postalCode}
+                            {store.city}, {store.stateCode ? store.stateCode : ''}{' '}
+                            {store.postalCode}
                         </Box>
                         {store.distance !== undefined && (
                             <>
                                 <br />
                                 <Box fontSize="md" color="gray.600">
-                                    {store.distance} {store.distanceUnit}{' away'}
+                                    {store.distance} {store.distanceUnit}
+                                    {' away'}
                                 </Box>
                             </>
                         )}
@@ -75,16 +84,15 @@ export const StoreLocatorList: React.FC<StoreLocatorListProps> = ({storesInfo}) 
                             <>
                                 <br />
                                 <Box fontSize="md" color="gray.600">
-                                    {'Phone: '}{store.phone}
+                                    {'Phone: '}
+                                    {store.phone}
                                 </Box>
                             </>
                         )}
                         {store.storeHours && (
                             <>
                                 <AccordionButton color="blue.700" style={{marginTop: '10px'}}>
-                                    <Box fontSize="lg">
-                                        View More
-                                    </Box>
+                                    <Box fontSize="lg">View More</Box>
                                     <AccordionIcon />
                                 </AccordionButton>
                                 <AccordionPanel mb={6} mt={4}>

@@ -39,9 +39,8 @@ export const StoreLocatorContent: React.FC = () => {
         }
     })
 
-    const storesInfo = isLoading || isFetching
-        ? undefined
-        : searchStoresData?.data?.slice(0, numStoresToShow)
+    const storesInfo =
+        isLoading || isFetching ? undefined : searchStoresData?.data?.slice(0, numStoresToShow)
     const numStores = searchStoresData?.total || 0
 
     return (

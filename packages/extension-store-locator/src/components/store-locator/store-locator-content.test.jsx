@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import React from "react";
-import { screen, fireEvent } from "@testing-library/react";
-import { renderWithProviders } from "../../test-utils";
-import { StoreLocatorContent } from "./store-locator-content";
-import { useSearchStores } from "@salesforce/commerce-sdk-react";
-import { useStoreLocator } from "./use-store-locator";
+import React from 'react'
+import {screen, fireEvent} from '@testing-library/react'
+import {renderWithProviders} from '../../test-utils'
+import {StoreLocatorContent} from './store-locator-content'
+import {useSearchStores} from '@salesforce/commerce-sdk-react'
+import {useStoreLocator} from './use-store-locator'
 
 jest.mock("@salesforce/commerce-sdk-react", () => ({
   useSearchStores: jest.fn(),
@@ -63,8 +63,17 @@ describe("StoreLocatorContent", () => {
     }));
   });
 
-  it("renders the component with store results", () => {
-    renderWithProviders(<StoreLocatorContent />);
+    it('renders the component with store results', () => {
+        renderWithProviders(<StoreLocatorContent />)
+
+        // Check for main heading
+        expect(screen.getByText('Find a Store')).toBeTruthy()
+
+        // Check for store information
+        expect(screen.getByText('Test Store 1')).toBeTruthy()
+        expect(screen.getByText('123 Test St')).toBeTruthy()
+        expect(screen.getByText(/San Francisco, CA 94105/)).toBeTruthy()
+    })
 
     // Check for main heading
     expect(screen.getByText("Find a Store")).toBeTruthy();

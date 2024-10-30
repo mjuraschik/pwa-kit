@@ -6,7 +6,10 @@
  */
 
 import {useContext} from 'react'
-import {StoreLocatorContext, StoreLocatorContextValue} from '*/components/store-locator/store-locator-provider'
+import {
+    StoreLocatorContext,
+    StoreLocatorContextValue
+} from '*/components/store-locator/store-locator-provider'
 
 export const useStoreLocator = (): StoreLocatorContextValue => {
     const context = useContext(StoreLocatorContext)

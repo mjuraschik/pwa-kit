@@ -56,11 +56,7 @@ export const StoreLocatorProvider: React.FC<StoreLocatorProviderProps> = ({confi
         config
     }
 
-    return (
-        <StoreLocatorContext.Provider value={value}>
-            {children}
-        </StoreLocatorContext.Provider>
-    )
+    return <StoreLocatorContext.Provider value={value}>{children}</StoreLocatorContext.Provider>
 }
 
 export type {StoreLocatorContextValue}

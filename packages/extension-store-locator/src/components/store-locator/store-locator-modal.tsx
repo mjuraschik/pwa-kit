@@ -44,13 +44,7 @@ export const StoreLocatorModal: React.FC<StoreLocatorModalProps> = ({isOpen, onC
         </Modal>
     ) : (
         <Modal size="4xl" isOpen={isOpen} onClose={onClose}>
-            <ModalContent
-                position="absolute"
-                top="0"
-                right="0"
-                height="100vh"
-                marginTop="0px"
-            >
+            <ModalContent position="absolute" top="0" right="0" height="100vh" marginTop="0px">
                 <ModalCloseButton onClick={onClose} />
                 <ModalBody pb={8} bg="white" paddingBottom={6} marginTop={6}>
                     <StoreLocatorContent />

@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import React from "react";
-import { screen, fireEvent } from "@testing-library/react";
-import { renderWithProviders } from "../../test-utils";
-import { StoreLocatorForm } from "./store-locator-form";
-import { useStoreLocator } from "./use-store-locator";
+import React from 'react'
+import {screen, fireEvent} from '@testing-library/react'
+import {renderWithProviders} from '../../test-utils'
+import {StoreLocatorForm} from './store-locator-form'
+import {useStoreLocator} from './use-store-locator'
 
 jest.mock("./use-store-locator", () => ({
   useStoreLocator: jest.fn(),
@@ -65,9 +65,9 @@ describe("StoreLocatorForm", () => {
       setUserWantsToShareLocation,
     }));
 
-    renderWithProviders(<StoreLocatorForm refetch={jest.fn()} />);
+        renderWithProviders(<StoreLocatorForm refetch={jest.fn()} />)
 
-    fireEvent.click(screen.getByText("Use My Location"));
-    expect(setUserWantsToShareLocation).toHaveBeenCalledWith(true);
-  });
-});
+        fireEvent.click(screen.getByText('Use My Location'))
+        expect(setUserWantsToShareLocation).toHaveBeenCalledWith(true)
+    })
+})
