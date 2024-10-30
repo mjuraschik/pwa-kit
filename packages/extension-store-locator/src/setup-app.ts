@@ -19,7 +19,6 @@ import {Config} from './types'
 
 import StoreLocatorPage from './pages/store-locator'
 
-const defaultPath = '/sample-page'
 class StoreLocatorExtension extends ApplicationExtension<Config> {
     DEFAULT_PATH = '/store-locator'
     REQUIRED_CONFIG_FIELDS = [
@@ -40,16 +39,16 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
             throw new Error(`Missing required config fields: ${missingFields.join(', ')}`)
         }
 
-        return withStoreLocator({
-            path: config.path ?? this.DEFAULT_PATH,
-            defaultCountry: config.defaultCountry,
-            defaultCountryCode: config.defaultCountryCode,
-            defaultDistance: config.defaultDistance,
-            defaultDistanceUnit: config.defaultDistanceUnit,
-            defaultPageSize: config.defaultPageSize,
-            defaultPostalCode: config.defaultPostalCode,
-            supportedCountries: config.supportedCountries
-        })(withOptionalChakra(App))
+        return withStoreLocator(withOptionalChakra(App), {
+          path: config.path ?? this.DEFAULT_PATH,
+          defaultCountry: config.defaultCountry,
+          defaultCountryCode: config.defaultCountryCode,
+          defaultDistance: config.defaultDistance,
+          defaultDistanceUnit: config.defaultDistanceUnit,
+          defaultPageSize: config.defaultPageSize,
+          defaultPostalCode: config.defaultPostalCode,
+          supportedCountries: config.supportedCountries
+      })
     }
 
     extendRoutes(routes: RouteProps[]): RouteProps[] {

@@ -33,52 +33,9 @@ describe("withStoreLocator", () => {
     });
   });
 
-<<<<<<< HEAD
-  it("wraps component with StoreLocatorProvider", () => {
-    const TestComponent = () => <div>Test Component</div>;
-    const WrappedComponent = withStoreLocator(mockConfig)(TestComponent);
-
-    render(<WrappedComponent />);
-    expect(screen.getByText("Test Component")).toBeTruthy();
-  });
-
-  it("passes props to wrapped component", () => {
-    const TestComponentWithProps = ({ testProp }) => <div>{testProp}</div>;
-    TestComponentWithProps.propTypes = {
-      testProp: PropTypes.string,
-    };
-
-    const WrappedComponent = withStoreLocator(mockConfig)(
-      TestComponentWithProps
-    );
-    render(<WrappedComponent testProp="test value" />);
-
-    expect(screen.getByText("test value")).toBeTruthy();
-  });
-
-  it("preserves component display name", () => {
-    const TestComponent = () => <div>Test Component</div>;
-    TestComponent.displayName = "CustomTestComponent";
-
-    const WrappedComponent = withStoreLocator(mockConfig)(TestComponent);
-    expect(WrappedComponent.displayName).toBe(
-      "WithStoreLocator(CustomTestComponent)"
-    );
-  });
-
-  it("handles components without display name", () => {
-    const TestComponent = () => <div>Test Component</div>;
-    const WrappedComponent = withStoreLocator(mockConfig)(TestComponent);
-
-    expect(WrappedComponent.displayName).toBe(
-      "WithStoreLocator(TestComponent)"
-    );
-  });
-});
-=======
     it('wraps component with StoreLocatorProvider', () => {
         const TestComponent = () => <div>Test Component</div>
-        const WrappedComponent = withStoreLocator(mockConfig)(TestComponent)
+        const WrappedComponent = withStoreLocator(TestComponent, mockConfig)
 
         render(<WrappedComponent />)
         expect(screen.getByText('Test Component')).toBeTruthy()
@@ -90,7 +47,7 @@ describe("withStoreLocator", () => {
             testProp: PropTypes.string
         }
 
-        const WrappedComponent = withStoreLocator(mockConfig)(TestComponentWithProps)
+        const WrappedComponent = withStoreLocator(TestComponentWithProps, mockConfig)
         render(<WrappedComponent testProp="test value" />)
 
         expect(screen.getByText('test value')).toBeTruthy()
@@ -100,15 +57,14 @@ describe("withStoreLocator", () => {
         const TestComponent = () => <div>Test Component</div>
         TestComponent.displayName = 'CustomTestComponent'
 
-        const WrappedComponent = withStoreLocator(mockConfig)(TestComponent)
+        const WrappedComponent = withStoreLocator(TestComponent, mockConfig)
         expect(WrappedComponent.displayName).toBe('WithStoreLocator(CustomTestComponent)')
     })
 
     it('handles components without display name', () => {
         const TestComponent = () => <div>Test Component</div>
-        const WrappedComponent = withStoreLocator(mockConfig)(TestComponent)
+        const WrappedComponent = withStoreLocator(TestComponent, mockConfig)
 
         expect(WrappedComponent.displayName).toBe('WithStoreLocator(TestComponent)')
     })
 })
->>>>>>> cecc47bbcfeb8f9b274a7dc3cf24d715e6ba5efe
