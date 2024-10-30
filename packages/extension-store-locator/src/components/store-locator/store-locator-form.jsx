@@ -8,7 +8,15 @@
 import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {useForm} from 'react-hook-form'
-import { Box, Button, InputGroup, Select, FormControl, FormErrorMessage, Input } from '@chakra-ui/react'
+import {
+    Box,
+    Button,
+    InputGroup,
+    Select,
+    FormControl,
+    FormErrorMessage,
+    Input
+} from '@chakra-ui/react'
 
 // import {AlertIcon} from '@salesforce/retail-react-app/app/components/icons'
 import {Controller} from 'react-hook-form'
@@ -158,10 +166,7 @@ export const StoreLocatorForm = ({refetch}) => {
                     render={({field}) => {
                         return (
                             <FormControl isInvalid={form.formState.errors.postalCode}>
-                                <Input
-                                    {...field}
-                                    placeholder={'Enter postal code'}
-                                />
+                                <Input {...field} placeholder={'Enter postal code'} />
                                 {form.formState.errors.postalCode && (
                                     <FormErrorMessage sx={{top: '-20px'}} color="red.600">
                                         {/* <AlertIcon aria-hidden="true" mr={2} /> */}

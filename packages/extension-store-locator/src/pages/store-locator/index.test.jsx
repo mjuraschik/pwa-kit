@@ -5,28 +5,28 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React from 'react';
-import { screen } from '@testing-library/react';
-import {renderWithProviders} from '../../test-utils';
-import StoreLocatorPage from './index';
+import React from 'react'
+import {screen} from '@testing-library/react'
+import {renderWithProviders} from '../../test-utils'
+import StoreLocatorPage from './index'
 
 // Mock the StoreLocatorContent component since we're only testing the page wrapper
 jest.mock('*/components/store-locator/store-locator-content', () => ({
     StoreLocatorContent: () => <div data-testid="mock-store-locator-content">Mock Content</div>
-}));
+}))
 
 describe('StoreLocatorPage', () => {
     it('renders the store locator page with content', () => {
-        renderWithProviders(<StoreLocatorPage />);
-        
+        renderWithProviders(<StoreLocatorPage />)
+
         // Verify the page wrapper is rendered
-        expect(screen.getByTestId('store-locator-page')).toBeTruthy();
-        
+        expect(screen.getByTestId('store-locator-page')).toBeTruthy()
+
         // Verify the mocked content is rendered
-        expect(screen.getByTestId('mock-store-locator-content')).toBeTruthy();
-    });
+        expect(screen.getByTestId('mock-store-locator-content')).toBeTruthy()
+    })
 
     it('returns correct template name', () => {
-        expect(StoreLocatorPage.getTemplateName()).toBe('store-locator');
-    });
-});
+        expect(StoreLocatorPage.getTemplateName()).toBe('store-locator')
+    })
+})

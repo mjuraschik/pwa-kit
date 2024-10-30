@@ -13,24 +13,31 @@ import {RouteProps} from 'react-router-dom'
 import {ApplicationExtension} from '@salesforce/pwa-kit-extension-sdk/react'
 
 // Local Imports
-import {withOptionalChakra} from "*/components/store-locator/with-optional-chakra-provider"
-import {withStoreLocator} from "*/components/store-locator/with-store-locator"
+import {withOptionalChakra} from '*/components/store-locator/with-optional-chakra-provider'
+import {withStoreLocator} from '*/components/store-locator/with-store-locator'
 import {Config} from './types'
 
 import StoreLocatorPage from './pages/store-locator'
 
-
-const defaultPath: string = '/sample-page'
+const defaultPath = '/sample-page'
 class StoreLocatorExtension extends ApplicationExtension<Config> {
-    DEFAULT_PATH = "/store-locator";
-    REQUIRED_CONFIG_FIELDS = ['defaultCountry', 'defaultCountryCode', 'defaultDistance', 'defaultDistanceUnit', 'defaultPageSize', 'defaultPostalCode', 'supportedCountries']
+    DEFAULT_PATH = '/store-locator'
+    REQUIRED_CONFIG_FIELDS = [
+        'defaultCountry',
+        'defaultCountryCode',
+        'defaultDistance',
+        'defaultDistanceUnit',
+        'defaultPageSize',
+        'defaultPostalCode',
+        'supportedCountries'
+    ]
 
     extendApp<T>(App: React.ComponentType<T>): React.ComponentType<T> {
-        const config = this.getConfig();
+        const config = this.getConfig()
 
-        const missingFields = this.REQUIRED_CONFIG_FIELDS.filter(field => !config[field]);
+        const missingFields = this.REQUIRED_CONFIG_FIELDS.filter((field) => !config[field])
         if (missingFields.length) {
-            throw new Error(`Missing required config fields: ${missingFields.join(', ')}`);
+            throw new Error(`Missing required config fields: ${missingFields.join(', ')}`)
         }
 
         return withStoreLocator({
@@ -42,7 +49,7 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
             defaultPageSize: config.defaultPageSize,
             defaultPostalCode: config.defaultPostalCode,
             supportedCountries: config.supportedCountries
-            })(withOptionalChakra(App))
+        })(withOptionalChakra(App))
     }
 
     extendRoutes(routes: RouteProps[]): RouteProps[] {

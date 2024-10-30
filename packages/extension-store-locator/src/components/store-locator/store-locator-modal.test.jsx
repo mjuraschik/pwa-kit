@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2024, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
 import React from 'react'
 import {screen} from '@testing-library/react'
 import {renderWithProviders} from '../../test-utils'
@@ -6,12 +12,12 @@ import {StoreLocatorModal} from './store-locator-modal'
 // Mock specific Chakra UI components and hooks
 const mockUseBreakpointValue = jest.fn()
 jest.mock('@chakra-ui/react', () => {
-    const originalModule = jest.requireActual('@chakra-ui/react');
+    const originalModule = jest.requireActual('@chakra-ui/react')
     return {
         ...originalModule,
         useBreakpointValue: (...args) => mockUseBreakpointValue
-    };
-});
+    }
+})
 
 jest.mock('@salesforce/commerce-sdk-react', () => ({
     useSearchStores: jest.fn(() => ({
@@ -53,27 +59,27 @@ describe('StoreLocatorModal', () => {
     it('renders desktop view correctly', () => {
         mockUseBreakpointValue.mockReturnValue(true) // Desktop view
         renderWithProviders(<StoreLocatorModal {...mockProps} />)
-        
+
         expect(screen.getByText('Find a Store')).toBeTruthy()
     })
 
     it('renders mobile view correctly', () => {
         mockUseBreakpointValue.mockReturnValue(false) // Mobile view
         renderWithProviders(<StoreLocatorModal {...mockProps} />)
-        
+
         expect(screen.getByText('Find a Store')).toBeTruthy()
     })
 
     it('does not render when closed', () => {
         renderWithProviders(<StoreLocatorModal isOpen={false} onClose={jest.fn()} />)
-        
+
         expect(screen.queryByText('Find a Store')).toBeNull()
     })
 
     it('calls onClose when close button is clicked', () => {
         const onClose = jest.fn()
         renderWithProviders(<StoreLocatorModal isOpen={true} onClose={onClose} />)
-        
+
         const closeButton = screen.getByLabelText('Close')
         closeButton.click()
         expect(onClose).toHaveBeenCalled()

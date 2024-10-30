@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2024, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
 import React from 'react'
 import {screen, fireEvent} from '@testing-library/react'
 import {renderWithProviders} from '../../test-utils'
@@ -59,10 +65,10 @@ describe('StoreLocatorContent', () => {
 
     it('renders the component with store results', () => {
         renderWithProviders(<StoreLocatorContent />)
-        
+
         // Check for main heading
         expect(screen.getByText('Find a Store')).toBeTruthy()
-        
+
         // Check for store information
         expect(screen.getByText('Test Store 1')).toBeTruthy()
         expect(screen.getByText('123 Test St')).toBeTruthy()
