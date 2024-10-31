@@ -10,7 +10,8 @@ import {StoreLocatorProvider, StoreLocatorContext} from './store-locator-provide
 
 describe('StoreLocatorProvider', () => {
     const mockConfig = {
-        test: 1
+        defaultCountryCode: 'US',
+        defaultPostalCode: '10178'
     }
 
     it('provides the expected context value', () => {
@@ -30,8 +31,8 @@ describe('StoreLocatorProvider', () => {
         expect(contextValue?.state).toEqual({
             mode: 'input',
             formValues: {
-                countryCode: '',
-                postalCode: ''
+                countryCode: mockConfig.defaultCountryCode,
+                postalCode: mockConfig.defaultPostalCode
             },
             deviceCoordinates: {
                 latitude: null,

@@ -15,13 +15,14 @@ jest.mock('@salesforce/commerce-sdk-react', () => ({
     useSearchStores: jest.fn()
 }))
 
-// Test wrapper to provide context
-const wrapper = ({children}) => {
-    const config = {
-        defaultDistance: 100,
-        defaultDistanceUnit: 'mi'
-    }
+const config = {
+    defaultDistance: 100,
+    defaultDistanceUnit: 'mi',
+    defaultCountryCode: 'US',
+    defaultPostalCode: '10178'
+}
 
+const wrapper = ({children}) => {
     return <StoreLocatorProvider config={config}>{children}</StoreLocatorProvider>
 }
 
@@ -51,7 +52,10 @@ describe('useStoreLocator', () => {
 
         expect(result.current).toMatchObject({
             mode: 'input',
-            formValues: {countryCode: '', postalCode: ''},
+            formValues: {
+                countryCode: config.defaultCountryCode,
+                postalCode: config.defaultPostalCode
+            },
             deviceCoordinates: {latitude: null, longitude: null},
             isLoading: false,
             data: undefined
