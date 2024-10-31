@@ -16,7 +16,7 @@ import {
     Input
 } from '@chakra-ui/react'
 import {useForm, Controller} from 'react-hook-form'
-import {useStoreLocator} from './v2-use-store-locator'
+import {useStoreLocator} from './use-store-locator'
 
 // todo
 interface FormData {

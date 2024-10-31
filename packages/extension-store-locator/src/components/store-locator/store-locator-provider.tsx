@@ -8,24 +8,27 @@
 import React, {useState, createContext, ReactNode} from 'react'
 import {Config as StoreLocatorConfig} from '../../types/config'
 
-interface SearchStoresParams {
+type Mode = 'device' | 'input'
+interface FormValues {
     countryCode: string
     postalCode: string
-    limit: number
-    latitude?: number
-    longitude?: number
+}
+
+interface DeviceCoordinates {
+    latitude: number | null
+    longitude: number | null
+}
+
+interface StoreLocatorState {
+    mode: Mode
+    formValues: FormValues
+    deviceCoordinates: DeviceCoordinates
+    config: StoreLocatorConfig
 }
 
 interface StoreLocatorContextValue {
-    userHasSetManualGeolocation: boolean
-    setUserHasSetManualGeolocation: (value: boolean) => void
-    automaticGeolocationHasFailed: boolean
-    setAutomaticGeolocationHasFailed: (value: boolean) => void
-    userWantsToShareLocation: boolean
-    setUserWantsToShareLocation: (value: boolean) => void
-    searchStoresParams: SearchStoresParams
-    setSearchStoresParams: React.Dispatch<React.SetStateAction<SearchStoresParams>>
-    config: StoreLocatorConfig
+    state: StoreLocatorState
+    setState: React.Dispatch<React.SetStateAction<StoreLocatorState>>
 }
 
 interface StoreLocatorProviderProps {
@@ -36,29 +39,25 @@ interface StoreLocatorProviderProps {
 export const StoreLocatorContext = createContext<StoreLocatorContextValue | null>(null)
 
 export const StoreLocatorProvider: React.FC<StoreLocatorProviderProps> = ({config, children}) => {
-    const [userHasSetManualGeolocation, setUserHasSetManualGeolocation] = useState(false)
-    const [automaticGeolocationHasFailed, setAutomaticGeolocationHasFailed] = useState(false)
-    const [userWantsToShareLocation, setUserWantsToShareLocation] = useState(false)
-
-    const [searchStoresParams, setSearchStoresParams] = useState<SearchStoresParams>({
-        countryCode: config.defaultCountryCode,
-        postalCode: config.defaultPostalCode,
-        limit: config.defaultPageSize
+    const [state, setState] = useState<StoreLocatorState>({
+        mode: 'input',
+        formValues: {
+            countryCode: '',
+            postalCode: ''
+        },
+        deviceCoordinates: {
+            latitude: null,
+            longitude: null
+        },
+        config
     })
 
     const value: StoreLocatorContextValue = {
-        userHasSetManualGeolocation,
-        setUserHasSetManualGeolocation,
-        automaticGeolocationHasFailed,
-        setAutomaticGeolocationHasFailed,
-        userWantsToShareLocation,
-        setUserWantsToShareLocation,
-        searchStoresParams,
-        setSearchStoresParams,
-        config
+        state,
+        setState
     }
 
     return <StoreLocatorContext.Provider value={value}>{children}</StoreLocatorContext.Provider>
 }
 
-export type {StoreLocatorContextValue}
+export type {StoreLocatorContextValue, StoreLocatorState, Mode, FormValues}

@@ -13,7 +13,7 @@ import {
     Button
 } from '@chakra-ui/react'
 import {StoreLocatorListItem} from './store-locator-list-item'
-import {useStoreLocator} from './v2-use-store-locator'
+import {useStoreLocator} from './use-store-locator'
 import {Stores, Store} from '../../types/store'
 
 interface StoreLocatorListProps {
