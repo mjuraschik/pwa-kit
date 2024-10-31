@@ -5,11 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Accordion,
     AccordionItem,
-    Box
+    Box,
+    Button
 } from '@chakra-ui/react'
 import {StoreLocatorListItem} from './store-locator-list-item'
 import {useStoreLocator} from './v2-use-store-locator'
@@ -21,6 +22,10 @@ interface StoreLocatorListProps {
 
 export const StoreLocatorList: React.FC<StoreLocatorListProps> = () => {
     const {data, isLoading, config, formValues, mode} = useStoreLocator()
+    const [page, setPage] = useState(1)
+    useEffect(() => {
+        setPage(1)
+    }, [data])
 
     const displayStoreLocatorStatusMessage = (): string => {
         if (isLoading) return 'Loading locations...'
@@ -43,7 +48,12 @@ export const StoreLocatorList: React.FC<StoreLocatorListProps> = () => {
         return 'Viewing stores near your location'
     }
 
+    const showNumberOfStores = page * config.defaultPageSize
+    const showLoadMoreButton = data?.total > showNumberOfStores
+    const storesToShow = data?.data?.slice(0, showNumberOfStores) || []
+
     return (
+        <>
         <Accordion allowMultiple flex={[1, 1, 1, 5]}>
             <AccordionItem>
                 <Box
@@ -60,9 +70,25 @@ export const StoreLocatorList: React.FC<StoreLocatorListProps> = () => {
                     {displayStoreLocatorStatusMessage()}
                 </Box>
             </AccordionItem>
-            {data?.data?.map((store: Store, index: number) => (
+            {storesToShow?.map((store: Store, index: number) => (
                 <StoreLocatorListItem key={index} store={store} />
             ))}
-        </Accordion>
+            </Accordion>
+            {showLoadMoreButton && (
+                <Box paddingTop={3} marginTop={3}>
+                    <Button
+                        id="load-more-button"
+                        onClick={() => {
+                            setPage(page + 1)
+                        }}
+                        width="100%"
+                        variant="outline"
+                        marginBottom={4}
+                    >
+                        Load More
+                    </Button>
+                </Box>
+            )}
+        </>
     )
 }

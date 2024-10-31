@@ -38,7 +38,6 @@ export function useGeolocation(options = {}) {
     })
 
     const getLocation = () => {
-        console.log('refresh')
         setLoading(true)
         setError(null)
 
@@ -46,10 +45,8 @@ export function useGeolocation(options = {}) {
             if (!navigator.geolocation) {
                 throw new Error('Geolocation is not supported by this browser.')
             }
-            console.log('getCurrentPosition')
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    console.log('position', position)
                     setCoordinates({
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
@@ -57,7 +54,6 @@ export function useGeolocation(options = {}) {
                     setLoading(false)
                 },
                 (err) => {
-                    console.log('error', err)
                     setError(err instanceof GeolocationPositionError ? err : null)
                     setLoading(false)
                 },
@@ -82,21 +78,8 @@ export function useGeolocation(options = {}) {
 }
 
 export const StoreLocatorForm: React.FC = () => {
-    const {
-        // searchStoresParams,
-        // setSearchStoresParams,
-        // userHasSetManualGeolocation,
-        // setUserHasSetManualGeolocation,
-        // automaticGeolocationHasFailed,
-        // setUserWantsToShareLocation,
-        // userWantsToShareLocation,
-        config,
-        formValues,
-        setFormValues,
-        setDeviceCoordinates
-    } = useStoreLocator()
+    const {config, formValues, setFormValues, setDeviceCoordinates} = useStoreLocator()
 
-    // const {countryCode, postalCode} = searchStoresParams
     const {coordinates, error, refresh} = useGeolocation()
     const form = useForm<FormData>({
         mode: 'onChange',
@@ -109,39 +92,22 @@ export const StoreLocatorForm: React.FC = () => {
     const {control} = form
     useEffect(() => {
         if (coordinates.latitude && coordinates.longitude) {
-            console.log('coordinates', coordinates)
             setDeviceCoordinates(coordinates)
         }
     }, [coordinates])
-
-    // const submitForm = async (formData: FormData): Promise<void> => {
-    //     const {postalCode, countryCode} = formData
-    //     if (postalCode !== '') {
-    //         if (countryCode !== '') {
-    //             setSearchStoresParams({
-    //                 postalCode: postalCode,
-    //                 countryCode: countryCode,
-    //                 limit: config.defaultPageSize
-    //             })
-    //             setUserHasSetManualGeolocation(true)
-    //         } else {
-    //             if (config.supportedCountries.length === 0) {
-    //                 setSearchStoresParams({
-    //                     postalCode: postalCode,
-    //                     countryCode: config.defaultCountryCode,
-    //                     limit: config.defaultPageSize
-    //                 })
-    //                 setUserHasSetManualGeolocation(true)
-    //             }
-    //         }
-    //     }
-    //     refetch()
-    // }
 
     const showCountrySelector = config.supportedCountries.length > 0
 
     const submitForm = (formData: FormData) => {
         setFormValues(formData)
+    }
+
+    const clearForm = () => {
+        form.reset()
+        setFormValues({
+            countryCode: '',
+            postalCode: ''
+        })
     }
 
     return (
@@ -218,7 +184,10 @@ export const StoreLocatorForm: React.FC = () => {
                 Or
             </Box>
             <Button
-                onClick={refresh}
+                onClick={() => {
+                    clearForm()
+                    refresh()
+                }}
                 width="100%"
                 variant="solid"
                 fontWeight="bold"

@@ -8,7 +8,7 @@
 import {useContext} from 'react'
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
 import {StoreLocatorContext} from './v2-store-locator-provider'
-import type {StoreLocatorState, Mode, FormValues} from './v2-store-locator-provider'
+import type {StoreLocatorState, FormValues} from './v2-store-locator-provider'
 
 interface DeviceCoordinates {
     latitude: number | null
@@ -16,7 +16,6 @@ interface DeviceCoordinates {
 }
 
 interface StoreLocatorActions {
-    // setMode: (mode: Mode) => void
     setFormValues: (formValues: FormValues) => void
     setDeviceCoordinates: (coordinates: DeviceCoordinates) => void
 }
@@ -34,7 +33,6 @@ const useStores = (state: StoreLocatorState) => {
             ? {
                   countryCode: state.formValues.countryCode,
                   postalCode: state.formValues.postalCode,
-                  locale: 'en-GB',
                   maxDistance: state.config.defaultDistance,
                   limit: NUM_STORES_PER_REQUEST_API_MAX,
                   distanceUnit: state.config.defaultDistanceUnit
@@ -42,7 +40,6 @@ const useStores = (state: StoreLocatorState) => {
             : {
                   latitude: state.deviceCoordinates.latitude,
                   longitude: state.deviceCoordinates.longitude,
-                  locale: 'en-GB',
                   maxDistance: state.config.defaultDistance,
                   limit: NUM_STORES_PER_REQUEST_API_MAX,
                   distanceUnit: state.config.defaultDistanceUnit
@@ -74,19 +71,17 @@ export const useStoreLocator = (): UseStoreLocatorReturn => {
 
     const {state, setState} = context
     const {data, isLoading} = useStores(state)
-    console.log('data', data)
+
     // There are two modes, input and device. 
     // The input mode is when the user is searching for a store
     // by entering a postal code and country code.
     // The device mode is when the user is searching for a store by sharing their location.
     // The mode is implicitly set by user's action.
     const setFormValues = (formValues: FormValues) => {
-        console.log('setFormValues', formValues)
         setState((prev) => ({...prev, formValues, mode: 'input'}))
     }
 
     const setDeviceCoordinates = (coordinates: DeviceCoordinates) => {
-        console.log('setDeviceCoordinates', coordinates)
         setState((prev) => ({
             ...prev,
             deviceCoordinates: coordinates,
@@ -97,11 +92,10 @@ export const useStoreLocator = (): UseStoreLocatorReturn => {
 
     return {
         ...state,
-        // Actions
-        // setMode,
-        setFormValues,
-        setDeviceCoordinates,
         data,
-        isLoading
+        isLoading,
+        // Actions
+        setFormValues,
+        setDeviceCoordinates
     }
 }

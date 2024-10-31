@@ -25,7 +25,7 @@ const AppConfig = ({children, locals = {}}: AppConfigProps) => {
             clientId: 'c9c45bfd-0ed3-4aa2-9971-40f88962b836',
             organizationId: 'f_ecom_zzrf_001',
             siteId: 'RefArchGlobal',
-            locale: 'en-US',
+            locale: 'en-GB',
             currency: 'USD'
         }
     }
