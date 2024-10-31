@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
     Box,
     Button,
@@ -16,121 +16,150 @@ import {
     Input
 } from '@chakra-ui/react'
 import {useForm, Controller} from 'react-hook-form'
-import {useStoreLocator} from './use-store-locator'
+import {useStoreLocator} from './v2-use-store-locator'
 
 interface StoreLocatorFormProps {
     refetch: () => void
 }
 
+// todo
 interface FormData {
     countryCode: string
     postalCode: string
 }
 
-const useGeolocation = () => {
-    const {
-        searchStoresParams,
-        setSearchStoresParams,
-        setAutomaticGeolocationHasFailed,
-        setUserHasSetManualGeolocation,
-        userHasSetManualGeolocation,
-        config
-    } = useStoreLocator()
+interface GeolocationCoordinates {
+    latitude: number | null
+    longitude: number | null
+}
 
-    const getGeolocationError = (): void => {
-        setAutomaticGeolocationHasFailed(true)
-    }
+export function useGeolocation(options = {}) {
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<GeolocationPositionError | null>(null)
+    const [coordinates, setCoordinates] = useState<GeolocationCoordinates>({
+        latitude: null,
+        longitude: null
+    })
 
-    const getGeolocationSuccess = (position: GeolocationPosition): void => {
-        setAutomaticGeolocationHasFailed(false)
-        setSearchStoresParams({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            limit: config.defaultPageSize,
-            countryCode: searchStoresParams.countryCode,
-            postalCode: searchStoresParams.postalCode
-        })
-    }
+    const getLocation = () => {
+        console.log('refresh')
+        setLoading(true)
+        setError(null)
 
-    const getUserGeolocation = (): void => {
-        if (navigator?.geolocation) {
-            navigator.geolocation.getCurrentPosition(getGeolocationSuccess, getGeolocationError)
-            setUserHasSetManualGeolocation(false)
-        } else {
-            console.log('Geolocation not supported')
+        try {
+            if (!navigator.geolocation) {
+                throw new Error('Geolocation is not supported by this browser.')
+            }
+            console.log('getCurrentPosition')
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    console.log('position', position)
+                    setCoordinates({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    })
+                    setLoading(false)
+                },
+                (err) => {
+                    console.log('error', err)
+                    setError(err instanceof GeolocationPositionError ? err : null)
+                    setLoading(false)
+                },
+                options
+            )
+        } catch (err) {
+            setError(err instanceof GeolocationPositionError ? err : null)
+            setLoading(false)
         }
     }
 
     useEffect(() => {
-        if (!userHasSetManualGeolocation) getUserGeolocation()
+        getLocation()
     }, [])
 
-    return getUserGeolocation
+    return {
+        coordinates,
+        loading,
+        error,
+        refresh: getLocation
+    }
 }
 
-export const StoreLocatorForm: React.FC<StoreLocatorFormProps> = ({refetch}) => {
+export const StoreLocatorForm: React.FC<StoreLocatorFormProps> = () => {
     const {
-        searchStoresParams,
-        setSearchStoresParams,
-        userHasSetManualGeolocation,
-        setUserHasSetManualGeolocation,
-        automaticGeolocationHasFailed,
-        setUserWantsToShareLocation,
-        userWantsToShareLocation,
-        config
+        // searchStoresParams,
+        // setSearchStoresParams,
+        // userHasSetManualGeolocation,
+        // setUserHasSetManualGeolocation,
+        // automaticGeolocationHasFailed,
+        // setUserWantsToShareLocation,
+        // userWantsToShareLocation,
+        config,
+        formValues,
+        setFormValues,
+        setDeviceCoordinates
     } = useStoreLocator()
 
-    const {countryCode, postalCode} = searchStoresParams
-    const getUserGeolocation = useGeolocation()
+    // const {countryCode, postalCode} = searchStoresParams
+    const {coordinates, error, refresh} = useGeolocation()
     const form = useForm<FormData>({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: {
-            countryCode: userHasSetManualGeolocation ? countryCode : '',
-            postalCode: userHasSetManualGeolocation ? postalCode : ''
+            countryCode: formValues.countryCode,
+            postalCode: formValues.postalCode
         }
     })
     const {control} = form
-
-    const submitForm = async (formData: FormData): Promise<void> => {
-        const {postalCode, countryCode} = formData
-        if (postalCode !== '') {
-            if (countryCode !== '') {
-                setSearchStoresParams({
-                    postalCode: postalCode,
-                    countryCode: countryCode,
-                    limit: config.defaultPageSize
-                })
-                setUserHasSetManualGeolocation(true)
-            } else {
-                if (config.supportedCountries.length === 0) {
-                    setSearchStoresParams({
-                        postalCode: postalCode,
-                        countryCode: config.defaultCountryCode,
-                        limit: config.defaultPageSize
-                    })
-                    setUserHasSetManualGeolocation(true)
-                }
-            }
+    useEffect(() => {
+        if (coordinates.latitude && coordinates.longitude) {
+            console.log('coordinates', coordinates)
+            setDeviceCoordinates(coordinates)
         }
-        refetch()
+    }, [coordinates])
+
+    // const submitForm = async (formData: FormData): Promise<void> => {
+    //     const {postalCode, countryCode} = formData
+    //     if (postalCode !== '') {
+    //         if (countryCode !== '') {
+    //             setSearchStoresParams({
+    //                 postalCode: postalCode,
+    //                 countryCode: countryCode,
+    //                 limit: config.defaultPageSize
+    //             })
+    //             setUserHasSetManualGeolocation(true)
+    //         } else {
+    //             if (config.supportedCountries.length === 0) {
+    //                 setSearchStoresParams({
+    //                     postalCode: postalCode,
+    //                     countryCode: config.defaultCountryCode,
+    //                     limit: config.defaultPageSize
+    //                 })
+    //                 setUserHasSetManualGeolocation(true)
+    //             }
+    //         }
+    //     }
+    //     refetch()
+    // }
+
+    const showCountrySelector = config.supportedCountries.length > 0
+
+    const submitForm = (formData: FormData) => {
+        setFormValues(formData)
     }
 
     return (
         <form id="store-locator-form" onSubmit={form.handleSubmit(submitForm)}>
             <InputGroup>
-                {config.supportedCountries.length > 0 && (
+                {showCountrySelector && (
                     <Controller
                         name="countryCode"
                         control={control}
-                        defaultValue={
-                            userHasSetManualGeolocation ? searchStoresParams?.countryCode : ''
-                        }
                         rules={{
                             required: 'Please select a country.'
                         }}
                         render={({field}) => {
-                            return config.supportedCountries.length !== 0 ? (
+                            return (
                                 <FormControl isInvalid={!!form.formState.errors.countryCode}>
                                     <Select
                                         {...field}
@@ -157,8 +186,6 @@ export const StoreLocatorForm: React.FC<StoreLocatorFormProps> = ({refetch}) => 
                                         </FormErrorMessage>
                                     )}
                                 </FormControl>
-                            ) : (
-                                <></>
                             )
                         }}
                     />
@@ -171,7 +198,6 @@ export const StoreLocatorForm: React.FC<StoreLocatorFormProps> = ({refetch}) => 
                     rules={{
                         required: 'Please enter a postal code.'
                     }}
-                    defaultValue={userHasSetManualGeolocation ? searchStoresParams?.postalCode : ''}
                     render={({field}) => {
                         return (
                             <FormControl isInvalid={!!form.formState.errors.postalCode}>
@@ -185,16 +211,7 @@ export const StoreLocatorForm: React.FC<StoreLocatorFormProps> = ({refetch}) => 
                         )
                     }}
                 />
-                <Button
-                    key="find-button"
-                    type="submit"
-                    onClick={() => {
-                        setUserWantsToShareLocation(false)
-                    }}
-                    width="15%"
-                    marginLeft={2}
-                    variant="solid"
-                >
+                <Button key="find-button" type="submit" width="15%" marginLeft={2} variant="solid">
                     Find
                 </Button>
             </InputGroup>
@@ -205,11 +222,7 @@ export const StoreLocatorForm: React.FC<StoreLocatorFormProps> = ({refetch}) => 
                 Or
             </Box>
             <Button
-                key="use-my-location-button"
-                onClick={() => {
-                    setUserWantsToShareLocation(true)
-                    getUserGeolocation()
-                }}
+                onClick={refresh}
                 width="100%"
                 variant="solid"
                 fontWeight="bold"
@@ -217,7 +230,7 @@ export const StoreLocatorForm: React.FC<StoreLocatorFormProps> = ({refetch}) => 
             >
                 Use My Location
             </Button>
-            <FormControl isInvalid={automaticGeolocationHasFailed && userWantsToShareLocation}>
+            <FormControl isInvalid={!!error}>
                 <FormErrorMessage
                     color="red.600"
                     alignItems="center"
@@ -229,4 +242,4 @@ export const StoreLocatorForm: React.FC<StoreLocatorFormProps> = ({refetch}) => 
             </FormControl>
         </form>
     )
-} 
+}

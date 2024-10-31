@@ -16,41 +16,41 @@ import {useStoreLocator} from './use-store-locator'
 const NUM_STORES_PER_REQUEST_API_MAX = 200
 
 export const StoreLocatorContent = (): JSX.Element => {
-    const {searchStoresParams, config} = useStoreLocator()
-    const {countryCode, postalCode, latitude, longitude, limit} = searchStoresParams
+    // const {searchStoresParams, config} = useStoreLocator()
+    // const {countryCode, postalCode, latitude, longitude, limit} = searchStoresParams
 
-    const [numStoresToShow, setNumStoresToShow] = useState<number>(limit)
+    // const [numStoresToShow, setNumStoresToShow] = useState<number>(limit)
 
-    const {
-        data: searchStoresData,
-        isLoading,
-        refetch,
-        isFetching
-    } = useSearchStores({
-        parameters: {
-            countryCode,
-            postalCode,
-            latitude,
-            longitude,
-            locale: 'en-GB',
-            maxDistance: config.defaultDistance,
-            limit: NUM_STORES_PER_REQUEST_API_MAX,
-            distanceUnit: config.defaultDistanceUnit
-        }
-    })
+    // const {
+    //     data: searchStoresData,
+    //     isLoading,
+    //     refetch,
+    //     isFetching
+    // } = useSearchStores({
+    //     parameters: {
+    //         countryCode,
+    //         postalCode,
+    //         latitude,
+    //         longitude,
+    //         locale: 'en-GB',
+    //         maxDistance: config.defaultDistance,
+    //         limit: NUM_STORES_PER_REQUEST_API_MAX,
+    //         distanceUnit: config.defaultDistanceUnit
+    //     }
+    // })
 
-    const storesInfo =
-        isLoading || isFetching ? undefined : searchStoresData?.data?.slice(0, numStoresToShow)
-    const numStores = searchStoresData?.total || 0
+    // const storesInfo =
+    //     isLoading || isFetching ? undefined : searchStoresData?.data?.slice(0, numStoresToShow)
+    // const numStores = searchStoresData?.total || 0
 
     return (
         <>
             <Heading fontSize="2xl" style={{marginBottom: '25px'}}>
                 Find a Store
             </Heading>
-            <StoreLocatorForm refetch={refetch} />
-            <StoreLocatorList storesInfo={storesInfo} />
-            {!isFetching &&
+            <StoreLocatorForm />
+            {/* <StoreLocatorList storesInfo={storesInfo} /> */}
+            {/* {!isFetching &&
             numStoresToShow < numStores &&
             numStoresToShow < NUM_STORES_PER_REQUEST_API_MAX ? (
                 <Box paddingTop="10px" marginTop="10px">
@@ -71,7 +71,7 @@ export const StoreLocatorContent = (): JSX.Element => {
                         Load More
                     </Button>
                 </Box>
-            ) : null}
+            ) : null} */}
         </>
     )
 }
