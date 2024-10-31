@@ -19,30 +19,9 @@ jest.mock('@chakra-ui/react', () => {
     }
 })
 
-jest.mock('@salesforce/commerce-sdk-react', () => ({
-    useSearchStores: jest.fn(() => ({
-        data: {
-            data: [
-                {
-                    name: 'Test Store 1',
-                    address1: '123 Test St',
-                    city: 'San Francisco',
-                    stateCode: 'CA',
-                    postalCode: '94105',
-                    phone: '555-1234',
-                    distance: 0.5,
-                    distanceUnit: 'mi',
-                    storeHours: '<p>Mon-Fri: 9AM-9PM</p>'
-                }
-            ],
-            total: 1,
-            limit: 10,
-            offset: 0
-        },
-        isLoading: false,
-        isFetching: false,
-        refetch: jest.fn()
-    }))
+// Mock the StoreLocatorContent component
+jest.mock('./store-locator-content', () => ({
+    StoreLocatorContent: () => <div data-testid="store-locator-content">Store Locator Content</div>
 }))
 
 describe('StoreLocatorModal', () => {
@@ -60,20 +39,23 @@ describe('StoreLocatorModal', () => {
         mockUseBreakpointValue.mockReturnValue(true) // Desktop view
         renderWithProviders(<StoreLocatorModal {...mockProps} />)
 
-        expect(screen.getByText('Find a Store')).toBeTruthy()
+        expect(screen.getByText('Store Locator Content')).toBeTruthy()
+        expect(screen.getByTestId('store-locator-content')).toBeTruthy()
     })
 
     it('renders mobile view correctly', () => {
         mockUseBreakpointValue.mockReturnValue(false) // Mobile view
         renderWithProviders(<StoreLocatorModal {...mockProps} />)
 
-        expect(screen.getByText('Find a Store')).toBeTruthy()
+        expect(screen.getByText('Store Locator Content')).toBeTruthy()
+        expect(screen.getByTestId('store-locator-content')).toBeTruthy()
     })
 
     it('does not render when closed', () => {
         renderWithProviders(<StoreLocatorModal isOpen={false} onClose={jest.fn()} />)
 
-        expect(screen.queryByText('Find a Store')).toBeNull()
+        expect(screen.queryByText('Store Locator Content')).toBeNull()
+        expect(screen.queryByTestId('store-locator-content')).toBeNull()
     })
 
     it('calls onClose when close button is clicked', () => {
