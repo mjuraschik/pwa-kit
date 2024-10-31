@@ -1,71 +1,151 @@
 /*
- * Copyright (c) 2024, Salesforce, Inc.
+ * Copyright (c) 2024, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+
 import React from 'react'
-import {screen, fireEvent} from '@testing-library/react'
-import {renderWithProviders} from '../../test-utils'
+import {render, screen} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {StoreLocatorForm} from './store-locator-form'
 import {useStoreLocator} from './use-store-locator'
+import {useGeolocation} from './use-geo-location'
 
 jest.mock('./use-store-locator', () => ({
     useStoreLocator: jest.fn()
 }))
 
-const mockStoreLocatorContext = {
-    searchStoresParams: {
-        countryCode: 'US',
-        postalCode: '94105'
-    },
-    userHasSetManualGeolocation: false,
-    automaticGeolocationHasFailed: false,
-    setUserWantsToShareLocation: jest.fn(),
-    userWantsToShareLocation: false,
-    config: {
+jest.mock('./use-geo-location', () => ({
+    useGeolocation: jest.fn()
+}))
+
+describe('StoreLocatorForm', () => {
+    const mockConfig = {
         supportedCountries: [
             {countryCode: 'US', countryName: 'United States'},
             {countryCode: 'CA', countryName: 'Canada'}
         ]
     }
-}
 
-describe('StoreLocatorForm', () => {
+    const mockSetFormValues = jest.fn()
+    const mockSetDeviceCoordinates = jest.fn()
+    let user
+
     beforeEach(() => {
-        useStoreLocator.mockImplementation(() => mockStoreLocatorContext)
-    })
+        jest.clearAllMocks()
+        user = userEvent.setup()
 
-    it('renders the component with all inputs', () => {
-        renderWithProviders(<StoreLocatorForm refetch={jest.fn()} />)
-
-        expect(screen.getByText('Select a country')).toBeTruthy()
-        expect(screen.getByPlaceholderText('Enter postal code')).toBeTruthy()
-        expect(screen.getByText('Find')).toBeTruthy()
-        expect(screen.getByText('Use My Location')).toBeTruthy()
-    })
-
-    it('shows geolocation error when automatic geolocation fails', () => {
         useStoreLocator.mockImplementation(() => ({
-            ...mockStoreLocatorContext,
-            automaticGeolocationHasFailed: true,
-            userWantsToShareLocation: true
+            config: mockConfig,
+            formValues: {countryCode: '', postalCode: ''},
+            setFormValues: mockSetFormValues,
+            setDeviceCoordinates: mockSetDeviceCoordinates
         }))
 
-        renderWithProviders(<StoreLocatorForm refetch={jest.fn()} />)
-        expect(screen.getByText('Please agree to share your location')).toBeTruthy()
+        useGeolocation.mockImplementation(() => ({
+            coordinates: {latitude: null, longitude: null},
+            error: null,
+            refresh: jest.fn()
+        }))
     })
 
-    it('handles Use My Location button click', () => {
-        const setUserWantsToShareLocation = jest.fn()
-        useStoreLocator.mockImplementation(() => ({
-            ...mockStoreLocatorContext,
-            setUserWantsToShareLocation
+    it('renders postal code input field', () => {
+        render(<StoreLocatorForm />)
+        const postalCodeInput = screen.queryByPlaceholderText('Enter postal code')
+        expect(postalCodeInput).not.toBe(null)
+    })
+
+    it('renders country selector when supportedCountries exist', () => {
+        render(<StoreLocatorForm />)
+        const countrySelect = screen.queryByText('Select a country')
+        expect(countrySelect).not.toBe(null)
+    })
+
+    it('renders "Use My Location" button', () => {
+        render(<StoreLocatorForm />)
+        const locationButton = screen.queryByText('Use My Location')
+        expect(locationButton).not.toBe(null)
+    })
+
+    it('submits form with entered values', async () => {
+        render(<StoreLocatorForm />)
+        
+        const countrySelect = screen.getByRole('combobox')
+        const postalCodeInput = screen.getByPlaceholderText('Enter postal code')
+        
+        await user.selectOptions(countrySelect, 'US')
+        await user.type(postalCodeInput, '12345')
+        
+        const findButton = screen.getByText('Find')
+        await user.click(findButton)
+
+        expect(mockSetFormValues).toHaveBeenCalledWith({
+            countryCode: 'US',
+            postalCode: '12345'
+        })
+    })
+
+    it('shows validation error for empty postal code', async () => {
+        render(<StoreLocatorForm />)
+        
+        const findButton = screen.getByText('Find')
+        await user.click(findButton)
+
+        const errorMessage = screen.queryByText('Please enter a postal code.')
+        expect(errorMessage).not.toBe(null)
+    })
+
+    it('clears form when "Use My Location" is clicked', async () => {
+        const mockRefresh = jest.fn()
+        useGeolocation.mockImplementation(() => ({
+            coordinates: {latitude: null, longitude: null},
+            error: null,
+            refresh: mockRefresh
         }))
 
-        renderWithProviders(<StoreLocatorForm refetch={jest.fn()} />)
+        render(<StoreLocatorForm />)
+        
+        const countrySelect = screen.getByRole('combobox')
+        const postalCodeInput = screen.getByPlaceholderText('Enter postal code')
+        
+        await user.selectOptions(countrySelect, 'US')
+        await user.type(postalCodeInput, '12345')
 
-        fireEvent.click(screen.getByText('Use My Location'))
-        expect(setUserWantsToShareLocation).toHaveBeenCalledWith(true)
+        const locationButton = screen.getByText('Use My Location')
+        await user.click(locationButton)
+
+
+        expect(mockSetFormValues).toHaveBeenCalledWith({
+            countryCode: '',
+            postalCode: ''
+        })
+        expect(mockRefresh).toHaveBeenCalled()
+    })
+
+    it('updates device coordinates when geolocation is successful', () => {
+        const mockCoordinates = {latitude: 37.7749, longitude: -122.4194}
+        useGeolocation.mockImplementation(() => ({
+            coordinates: mockCoordinates,
+            error: null,
+            refresh: jest.fn()
+        }))
+
+        render(<StoreLocatorForm />)
+
+        expect(mockSetDeviceCoordinates).toHaveBeenCalledWith(mockCoordinates)
+    })
+
+    it('shows geolocation error message when permission is denied', () => {
+        useGeolocation.mockImplementation(() => ({
+            coordinates: {latitude: null, longitude: null},
+            error: new Error('Geolocation permission denied'),
+            refresh: jest.fn()
+        }))
+
+        render(<StoreLocatorForm />)
+
+        const errorMessage = screen.queryByText('Please agree to share your location')
+        expect(errorMessage).not.toBe(null)
     })
 })
