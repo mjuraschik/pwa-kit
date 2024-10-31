@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import {
     Box,
     Button,
@@ -17,71 +17,14 @@ import {
 } from '@chakra-ui/react'
 import {useForm, Controller} from 'react-hook-form'
 import {useStoreLocator} from './use-store-locator'
-
-// todo
-interface FormData {
-    countryCode: string
-    postalCode: string
-}
-
-interface GeolocationCoordinates {
-    latitude: number | null
-    longitude: number | null
-}
-
-export function useGeolocation(options = {}) {
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<GeolocationPositionError | null>(null)
-    const [coordinates, setCoordinates] = useState<GeolocationCoordinates>({
-        latitude: null,
-        longitude: null
-    })
-
-    const getLocation = () => {
-        setLoading(true)
-        setError(null)
-
-        try {
-            if (!navigator.geolocation) {
-                throw new Error('Geolocation is not supported by this browser.')
-            }
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setCoordinates({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                    })
-                    setLoading(false)
-                },
-                (err) => {
-                    setError(err instanceof GeolocationPositionError ? err : null)
-                    setLoading(false)
-                },
-                options
-            )
-        } catch (err) {
-            setError(err instanceof GeolocationPositionError ? err : null)
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        getLocation()
-    }, [])
-
-    return {
-        coordinates,
-        loading,
-        error,
-        refresh: getLocation
-    }
-}
+import type {FormValues} from './store-locator-provider'
+import {useGeolocation} from './use-geo-location'
 
 export const StoreLocatorForm: React.FC = () => {
     const {config, formValues, setFormValues, setDeviceCoordinates} = useStoreLocator()
 
     const {coordinates, error, refresh} = useGeolocation()
-    const form = useForm<FormData>({
+    const form = useForm<FormValues>({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: {
@@ -98,8 +41,8 @@ export const StoreLocatorForm: React.FC = () => {
 
     const showCountrySelector = config.supportedCountries.length > 0
 
-    const submitForm = (formData: FormData) => {
-        setFormValues(formData)
+    const submitForm = (formValues: FormValues) => {
+        setFormValues(formValues)
     }
 
     const clearForm = () => {

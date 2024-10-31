@@ -8,12 +8,7 @@
 import {useContext} from 'react'
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
 import {StoreLocatorContext} from './store-locator-provider'
-import type {StoreLocatorState, FormValues} from './store-locator-provider'
-
-interface DeviceCoordinates {
-    latitude: number | null
-    longitude: number | null
-}
+import type {StoreLocatorState, FormValues, DeviceCoordinates} from './store-locator-provider'
 
 interface StoreLocatorActions {
     setFormValues: (formValues: FormValues) => void
