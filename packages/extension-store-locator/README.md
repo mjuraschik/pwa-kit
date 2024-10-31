@@ -71,6 +71,10 @@ The Store Locator extension is configured via the `mobify.app.extensions` proper
 }
 ```
 
+## System Diagram
+
+![System Diagram](./diagram.png)
+
 
 ## Overridable Files
 
