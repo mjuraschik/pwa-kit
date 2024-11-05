@@ -30,6 +30,7 @@
     "@salesforce/pwa-kit-runtime": "4.0.0-dev",
     "card-validator": "^8.1.1",
     "cross-fetch": "^3.1.4",
+    "focus-visible": "^5.2.0",
     "helmet": "^4.6.0",
     "nanoid": "^3.3.4",
     "prop-types": "^15.8.1",

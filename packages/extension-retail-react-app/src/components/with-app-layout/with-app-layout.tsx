@@ -10,6 +10,9 @@ import React, {useState, useEffect} from 'react'
 import {useHistory, useLocation} from 'react-router-dom'
 import {Helmet} from 'react-helmet'
 
+// Removes focus for non-keyboard interactions for the whole application
+import 'focus-visible/dist/focus-visible'
+
 // Platform Imports
 import {getAssetUrl} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
 import {getAppOrigin} from '@salesforce/pwa-kit-react-sdk/utils/url'
@@ -23,28 +26,28 @@ import {Box, Center, Fade, Spinner, useDisclosure, useStyleConfig} from '@chakra
 import {SkipNavLink, SkipNavContent} from '@chakra-ui/skip-nav'
 
 // Local Project Components
-import Header from '../../components/header'
-import OfflineBanner from '../../components/offline-banner'
-import OfflineBoundary from '../../components/offline-boundary'
-import ScrollToTop from '../../components/scroll-to-top'
-import Footer from '../../components/footer'
+import {DrawerMenu} from '../drawer-menu'
+import {HideOnDesktop, HideOnMobile} from '../responsive'
+import {ListMenu, ListMenuContent} from '../list-menu'
+import {withCommerceSdkReactHookData} from '../with-commerce-sdk-react-hook-data'
+import AboveHeader from '../above-header'
 import CheckoutHeader from '../../pages/checkout/partials/checkout-header'
 import CheckoutFooter from '../../pages/checkout/partials/checkout-footer'
-import {DrawerMenu} from '../../components/drawer-menu'
-import {ListMenu, ListMenuContent} from '../../components/list-menu'
-import {HideOnDesktop, HideOnMobile} from '../../components/responsive'
-import AboveHeader from '../../components/_app/partials/above-header'
-import StoreLocatorModal from '../../components/store-locator-modal'
-import useActiveData from '../../hooks/use-active-data'
-import {withCommerceSdkReactHookData} from '../../components/with-commerce-sdk-react-hook-data'
+import Footer from '../footer'
+import Header from '../header'
+import OfflineBanner from '../offline-banner'
+import OfflineBoundary from '../offline-boundary'
+import Seo from '../seo'
+import ScrollToTop from '../scroll-to-top'
+import StoreLocatorModal from '../store-locator-modal'
 
-// Local Imports
+// Local Project Hooks
 import {AuthModal, useAuthModal} from '../../hooks/use-auth-modal'
 import {AddToCartModalProvider} from '../../hooks/use-add-to-cart-modal'
 import {useCurrentCustomer} from '../../hooks/use-current-customer'
 import {useCurrentBasket} from '../../hooks/use-current-basket'
 import {watchOnlineStatus, flatten} from '../../utils/utils'
-import Seo from '../../components/seo'
+import useActiveData from '../../hooks/use-active-data'
 import useMultiSite from '../../hooks/use-multi-site'
 
 // CONSTANTS
@@ -106,7 +109,6 @@ const ListMenuContentWithData = withCommerceSdkReactHookData(
 const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
     const WithAppLayout: React.FC<P> = (props: WithAppLayoutProps) => {
 
-        const {children} = props
     const {data: categoriesTree} = useCategory({
         parameters: {id: CAT_MENU_DEFAULT_ROOT_CATEGORY, levels: CAT_MENU_DEFAULT_NAV_SSR_DEPTH}
     })
@@ -128,7 +130,6 @@ const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P
         onOpen: onOpenStoreLocator,
         onClose: onCloseStoreLocator
     } = useDisclosure()
-
 
     // Used to conditionally render header/footer for checkout page
     const isCheckout = /\/checkout$/.test(location?.pathname)

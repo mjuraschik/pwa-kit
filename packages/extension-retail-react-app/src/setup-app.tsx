@@ -70,6 +70,7 @@ class Sample extends ApplicationExtension<Config> {
             withStorefrontPreview,
             withCommerceSdkReact
         ]
+
         return applyHOCs(App, requiredHOCs)
     }
 

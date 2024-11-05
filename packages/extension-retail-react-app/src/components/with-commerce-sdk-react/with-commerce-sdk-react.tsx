@@ -12,10 +12,13 @@ import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 import {CommerceApiProvider} from '@salesforce/commerce-sdk-react'
 import {getAppOrigin} from '@salesforce/pwa-kit-react-sdk/utils/url'
 import {proxyBasePath} from '@salesforce/pwa-kit-runtime/utils/ssr-namespace-paths'
+import {useApplicationExtensions} from '@salesforce/pwa-kit-extension-sdk/react'
 import {useCorrelationId} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
 import {useServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
 import createLogger from '@salesforce/pwa-kit-runtime/utils/logger-factory'
 
+// Local Imports
+import {resolveSiteFromUrl, resolveLocaleFromUrl} from '../../utils/site-utils'
 
 // Define a type for the HOC props
 type WithCommerceSDKReactProps = {
@@ -35,26 +38,19 @@ type WithCommerceSDKReactProps = {
 // Define the HOC function
 const withCommerceSDKReact = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
     const WithCommerceSDKReact: React.FC<P> = (props: WithCommerceSDKReactProps) => {
+        const applicationExtensions = useApplicationExtensions()
+        const thisApplicationExtension = applicationExtensions[0]
         
         const {req} = useServerContext()
-        if (req) {
-            // console.log('request: ', req)
-        }
+        const path = req?.originalUrl || `${window.location.pathname}${window.location.search}`
 
-        const config = {
-            proxyPath: "/mobify/proxy/api",
-            parameters: {
-                clientId: "c9c45bfd-0ed3-4aa2-9971-40f88962b836",
-                organizationId: "f_ecom_zzrf_001",
-                shortCode: "8o7m175y",
-                siteId: "RefArch"
-            }
-          }
+        // TODO: 
+        const {commerceAPI: commerceAPIConfig} = thisApplicationExtension.getConfig()
 
         const appOrigin = getAppOrigin()
-        const siteId = config?.parameters?.siteId || 'RefArch'
-        const localeId = 'en-US'
-        const preferredCurrency = 'USD'
+        const site = resolveSiteFromUrl(path)
+        const locale = resolveLocaleFromUrl(path)
+    
         // @ts-ignore
         const {correlationId} = useCorrelationId()
         const headers = {
@@ -63,19 +59,19 @@ const withCommerceSDKReact = <P extends object>(WrappedComponent: React.Componen
         
         return (
             <CommerceApiProvider
-                shortCode={config.parameters.shortCode}
-                clientId={config.parameters.clientId}
-                organizationId={config.parameters.organizationId}
-                siteId={siteId}
-                locale={localeId}
-                currency={preferredCurrency}
+                shortCode={commerceAPIConfig.parameters.shortCode}
+                clientId={commerceAPIConfig.parameters.clientId}
+                organizationId={commerceAPIConfig.parameters.organizationId}
+                siteId={site.id}
+                locale={locale.id}
+                currency={locale.preferredCurrency}
                 redirectURI={`${appOrigin}/callback`}
-                proxy={`${appOrigin}${config.proxyPath}`}
+                proxy={`${appOrigin}${commerceAPIConfig.proxyPath}`}
                 headers={headers}
                 // Uncomment 'enablePWAKitPrivateClient' to use SLAS private client login flows.
                 // Make sure to also enable useSLASPrivateClient in ssr.js when enabling this setting.
                 // enablePWAKitPrivateClient={true}
-                OCAPISessionsURL={`${appOrigin}${proxyBasePath}/ocapi/s/${siteId}/dw/shop/v22_8/sessions`}
+                OCAPISessionsURL={`${appOrigin}${proxyBasePath}/ocapi/s/${site.id}/dw/shop/v22_8/sessions`}
                 logger={createLogger({packageName: 'commerce-sdk-react'})}
             >
                 <WrappedComponent {...(props as P)} />

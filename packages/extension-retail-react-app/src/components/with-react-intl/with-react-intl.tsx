@@ -60,6 +60,7 @@ const withReactIntl = <P extends object>(WrappedComponent: React.ComponentType<P
                     // Otherwise, it'll continue to fetch the missing translation file again
                     return {}
                 }
+                
                 return fetchTranslations(targetLocale)
             },
             enabled: isServer
