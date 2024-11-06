@@ -16,6 +16,7 @@ sh.config.silent = false
 
 const TEMPLATE_PREFIX = 'template-'
 const EXTENSION_BASE_NAME = 'extension-base'
+const EXTENSION_RETAIL_REACT_APP_NAME = 'extension-retail-react-app'
 
 const monorepoRoot = p.resolve(__dirname, '..', '..', '..')
 const templatesDir = p.resolve(__dirname, '..', 'templates')
@@ -32,7 +33,7 @@ const main = () => {
         'mrt-reference-app'
     ]
 
-    const extensionPkgName = [EXTENSION_BASE_NAME]
+    const extensionPkgName = [EXTENSION_BASE_NAME, EXTENSION_RETAIL_REACT_APP_NAME]
 
     if (!sh.test('-d', templatesDir)) {
         sh.mkdir('-p', templatesDir)
