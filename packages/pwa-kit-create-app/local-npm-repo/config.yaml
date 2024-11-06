@@ -15,7 +15,7 @@ uplinks:
     cache: false
 
 # Some resources (templates|extensions) are larger than the default 10mb limit.
-max_body_size: 25mb
+max_body_size: 200mb
 
 # Allow anybody to publish any package, with no auth.
 packages:
