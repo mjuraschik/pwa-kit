@@ -44,7 +44,7 @@ import {
 import {AuthHelpers, useAuthHelper, useCustomerType} from '@salesforce/commerce-sdk-react'
 import Link from '../../components/link'
 // Icons
-import {BrandLogo, SignoutIcon, StoreIcon, UserIcon} from '../../components/icons'
+import {BrandLogo, SignoutIcon, UserIcon} from '../../components/icons'
 
 // Others
 import {noop} from '../../utils/utils'

@@ -16,10 +16,7 @@ import 'focus-visible/dist/focus-visible'
 // Platform Imports
 import {getAssetUrl} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
 import {getAppOrigin} from '@salesforce/pwa-kit-react-sdk/utils/url'
-import {
-    useCategory,
-    useShopperBasketsMutation
-} from '@salesforce/commerce-sdk-react'
+import {useCategory, useShopperBasketsMutation} from '@salesforce/commerce-sdk-react'
 
 // Chakra
 import {Box, Center, Fade, Spinner, useDisclosure, useStyleConfig} from '@chakra-ui/react'
@@ -107,116 +104,115 @@ const ListMenuContentWithData = withCommerceSdkReactHookData(
 // Define the HOC function
 const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
     const WithAppLayout: React.FC<P> = (props: WithAppLayoutProps) => {
-
-    const {data: categoriesTree} = useCategory({
-        parameters: {id: CAT_MENU_DEFAULT_ROOT_CATEGORY, levels: CAT_MENU_DEFAULT_NAV_SSR_DEPTH}
-    })
-    const categories = flatten(categoriesTree || {}, 'categories')
-    
-    const appOrigin = getAppOrigin()
-    const activeData = useActiveData()
-    const history = useHistory()
-    const location = useLocation()
-    const authModal = useAuthModal()
-    const {site, locale, buildUrl} = useMultiSite()
-
-    const [isOnline, setIsOnline] = useState(true)
-    const styles = useStyleConfig('App')
-
-    const {isOpen, onOpen, onClose} = useDisclosure()
-
-    // Used to conditionally render header/footer for checkout page
-    const isCheckout = /\/checkout$/.test(location?.pathname)
-
-    const {l10n} = site
-    // Get the current currency to be used through out the app
-    const currency = locale.preferredCurrency || l10n.defaultCurrency
-
-    // Handle creating a new basket if there isn't one already assigned to the current
-    // customer.
-    const {data: customer} = useCurrentCustomer()
-    const {data: basket} = useCurrentBasket()
-
-    const updateBasket = useShopperBasketsMutation('updateBasket')
-    const updateCustomerForBasket = useShopperBasketsMutation('updateCustomerForBasket')
-
-    useEffect(() => {
-        // update the basket currency if it doesn't match the current locale currency
-        if (basket?.currency && basket?.currency !== currency) {
-            updateBasket.mutate({
-                parameters: {basketId: basket.basketId},
-                body: {currency}
-            })
-        }
-    }, [basket?.currency])
-
-    useEffect(() => {
-        // update the basket customer email
-        if (
-            basket &&
-            customer?.isRegistered &&
-            customer?.email &&
-            customer?.email !== basket?.customerInfo?.email
-        ) {
-            updateCustomerForBasket.mutate({
-                parameters: {basketId: basket.basketId},
-                body: {
-                    email: customer.email
-                }
-            })
-        }
-    }, [customer?.isRegistered, customer?.email, basket?.customerInfo?.email])
-
-    useEffect(() => {
-        // Listen for online status changes.
-        watchOnlineStatus((isOnline) => {
-            setIsOnline(isOnline)
+        const {data: categoriesTree} = useCategory({
+            parameters: {id: CAT_MENU_DEFAULT_ROOT_CATEGORY, levels: CAT_MENU_DEFAULT_NAV_SSR_DEPTH}
         })
-    }, [])
+        const categories = flatten(categoriesTree || {}, 'categories')
 
-    useEffect(() => {
-        // Lets automatically close the mobile navigation when the
-        // location path is changed.
-        onClose()
-    }, [location])
+        const appOrigin = getAppOrigin()
+        const activeData = useActiveData()
+        const history = useHistory()
+        const location = useLocation()
+        const authModal = useAuthModal()
+        const {site, locale, buildUrl} = useMultiSite()
 
-    const onLogoClick = () => {
-        // Goto the home page.
-        const path = buildUrl(HOME_HREF)
+        const [isOnline, setIsOnline] = useState(true)
+        const styles = useStyleConfig('App')
 
-        history.push(path)
+        const {isOpen, onOpen, onClose} = useDisclosure()
 
-        // Close the drawer.
-        onClose()
-    }
+        // Used to conditionally render header/footer for checkout page
+        const isCheckout = /\/checkout$/.test(location?.pathname)
 
-    const onCartClick = () => {
-        const path = buildUrl('/cart')
-        history.push(path)
+        const {l10n} = site
+        // Get the current currency to be used through out the app
+        const currency = locale.preferredCurrency || l10n.defaultCurrency
 
-        // Close the drawer.
-        onClose()
-    }
+        // Handle creating a new basket if there isn't one already assigned to the current
+        // customer.
+        const {data: customer} = useCurrentCustomer()
+        const {data: basket} = useCurrentBasket()
 
-    const onAccountClick = () => {
-        // Link to account page if registered; Header component will show auth modal for guest users
-        const path = buildUrl('/account')
-        history.push(path)
-    }
+        const updateBasket = useShopperBasketsMutation('updateBasket')
+        const updateCustomerForBasket = useShopperBasketsMutation('updateCustomerForBasket')
 
-    const onWishlistClick = () => {
-        // Link to wishlist page if registered; Header component will show auth modal for guest users
-        const path = buildUrl('/account/wishlist')
-        history.push(path)
-    }
+        useEffect(() => {
+            // update the basket currency if it doesn't match the current locale currency
+            if (basket?.currency && basket?.currency !== currency) {
+                updateBasket.mutate({
+                    parameters: {basketId: basket.basketId},
+                    body: {currency}
+                })
+            }
+        }, [basket?.currency])
 
-    const trackPage = () => {
-        activeData.trackPage(site.id, locale.id, currency)
-    }
+        useEffect(() => {
+            // update the basket customer email
+            if (
+                basket &&
+                customer?.isRegistered &&
+                customer?.email &&
+                customer?.email !== basket?.customerInfo?.email
+            ) {
+                updateCustomerForBasket.mutate({
+                    parameters: {basketId: basket.basketId},
+                    body: {
+                        email: customer.email
+                    }
+                })
+            }
+        }, [customer?.isRegistered, customer?.email, basket?.customerInfo?.email])
 
-    useEffect(() => {
-        trackPage()
-    }, [location])
+        useEffect(() => {
+            // Listen for online status changes.
+            watchOnlineStatus((isOnline) => {
+                setIsOnline(isOnline)
+            })
+        }, [])
+
+        useEffect(() => {
+            // Lets automatically close the mobile navigation when the
+            // location path is changed.
+            onClose()
+        }, [location])
+
+        const onLogoClick = () => {
+            // Goto the home page.
+            const path = buildUrl(HOME_HREF)
+
+            history.push(path)
+
+            // Close the drawer.
+            onClose()
+        }
+
+        const onCartClick = () => {
+            const path = buildUrl('/cart')
+            history.push(path)
+
+            // Close the drawer.
+            onClose()
+        }
+
+        const onAccountClick = () => {
+            // Link to account page if registered; Header component will show auth modal for guest users
+            const path = buildUrl('/account')
+            history.push(path)
+        }
+
+        const onWishlistClick = () => {
+            // Link to wishlist page if registered; Header component will show auth modal for guest users
+            const path = buildUrl('/account/wishlist')
+            history.push(path)
+        }
+
+        const trackPage = () => {
+            void activeData.trackPage(site.id, locale.id, currency)
+        }
+
+        useEffect(() => {
+            trackPage()
+        }, [location])
 
         return (
             <Box className="sf-app" {...styles.container}>
@@ -229,7 +225,7 @@ const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P
                         ></script>
                     )}
                 </Helmet>
-                
+
                 <Seo>
                     <meta name="theme-color" content={THEME_COLOR} />
                     <meta name="apple-mobile-web-app-title" content={DEFAULT_SITE_TITLE} />
@@ -241,11 +237,11 @@ const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P
 
                     {/* Urls for all localized versions of this page (including current page)
                     For more details on hrefLang, see https://developers.google.com/search/docs/advanced/crawling/localized-versions */}
-                    {site.l10n?.supportedLocales.map((locale) => (
+                    {site.l10n?.supportedLocales.map((locale: any) => (
                         <link
                             rel="alternate"
                             hrefLang={locale.id.toLowerCase()}
-                            href={`${appOrigin}${buildUrl(location.pathname)}`}
+                            href={`${appOrigin}${buildUrl(location.pathname) as string}`}
                             key={locale.id}
                         />
                     ))}
@@ -253,7 +249,7 @@ const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P
                     <link
                         rel="alternate"
                         hrefLang={site.l10n.defaultLocale.slice(0, 2)}
-                        href={`${appOrigin}${buildUrl(location.pathname)}`}
+                        href={`${appOrigin}${buildUrl(location.pathname) as string}`}
                     />
                     {/* A wider fallback for user locales that the app does not support */}
                     <link rel="alternate" hrefLang="x-default" href={`${appOrigin}/`} />
@@ -279,9 +275,7 @@ const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P
                                             isOpen={isOpen}
                                             onClose={onClose}
                                             onLogoClick={onLogoClick}
-                                            root={
-                                                categories?.[CAT_MENU_DEFAULT_ROOT_CATEGORY]
-                                            }
+                                            root={categories?.[CAT_MENU_DEFAULT_ROOT_CATEGORY]}
                                             itemsKey="categories"
                                             itemsCountKey="onlineSubCategoriesCount"
                                             itemComponent={DrawerMenuItemWithData}
@@ -290,9 +284,7 @@ const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P
 
                                     <HideOnMobile>
                                         <ListMenu
-                                            root={
-                                                categories?.[CAT_MENU_DEFAULT_ROOT_CATEGORY]
-                                            }
+                                            root={categories?.[CAT_MENU_DEFAULT_ROOT_CATEGORY]}
                                             itemsKey="categories"
                                             itemsCountKey="onlineSubCategoriesCount"
                                             contentComponent={ListMenuContentWithData}
@@ -350,7 +342,7 @@ const withAppLayout = <P extends object>(WrappedComponent: React.ComponentType<P
                         async="async"
                     ></script>
                 )}
-            </Box>      
+            </Box>
         )
     }
 

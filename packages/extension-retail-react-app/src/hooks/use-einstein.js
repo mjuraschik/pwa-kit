@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import {useMemo, useState} from 'react'
-// import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
 import {getExtensionConfig as getConfig} from '../utils/get-extension-config'
 
 import {
@@ -391,17 +390,7 @@ export class EinsteinAPI {
 const useEinstein = () => {
     const api = useCommerceApi()
     const {getTokenWhenReady} = useAccessToken()
-    // TODO: The easiest fix for us is to replace all uses of getConfig with something that returns
-    // the config for this extension.
-    // const {
-    //     app: {einsteinAPI: config}
-    // } = getConfig()
-    const config = {
-        "host": "https://api.cquotient.com",
-        "einsteinId": "1ea06c6e-c936-4324-bcf0-fada93f83bb1",
-        "siteId": "aaij-MobileFirst",
-        "isProduction": false
-    }
+    const {einsteinAPI: config} = getConfig()
     const {host, einsteinId, siteId, isProduction} = config
 
     const {getUsidWhenReady} = useUsid()

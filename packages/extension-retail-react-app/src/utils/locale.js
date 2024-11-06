@@ -6,7 +6,7 @@
  */
 
 import PropTypes from 'prop-types'
-import {getStaticAssetUrl, getAssetUrl} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
+import {getStaticAssetUrl} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
 import {getAppOrigin} from '@salesforce/pwa-kit-react-sdk/utils/url'
 import logger from './logger-instance'
 import fetch from 'cross-fetch'

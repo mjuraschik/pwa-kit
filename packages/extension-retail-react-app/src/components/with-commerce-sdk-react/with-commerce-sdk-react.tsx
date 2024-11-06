@@ -22,16 +22,16 @@ import {resolveSiteFromUrl, resolveLocaleFromUrl} from '../../utils/site-utils'
 
 // Define a type for the HOC props
 type WithCommerceSDKReactProps = {
-    shortCode: string,
-    clientId: string,
-    organizationId: string,
-    siteId: string,
-    locale: string,
-    currency: string,
-    redirectURI: string,
-    proxy: string,
-    headers: Record<string, string>,
-    OCAPISessionsURL: string,
+    shortCode: string
+    clientId: string
+    organizationId: string
+    siteId: string
+    locale: string
+    currency: string
+    redirectURI: string
+    proxy: string
+    headers: Record<string, string>
+    OCAPISessionsURL: string
     logger: any
 }
 
@@ -40,23 +40,22 @@ const withCommerceSDKReact = <P extends object>(WrappedComponent: React.Componen
     const WithCommerceSDKReact: React.FC<P> = (props: WithCommerceSDKReactProps) => {
         const applicationExtensions = useApplicationExtensions()
         const thisApplicationExtension = applicationExtensions[0]
-        
+
         const {req} = useServerContext()
         const path = req?.originalUrl || `${window.location.pathname}${window.location.search}`
 
-        // TODO: 
-        const {commerceAPI: commerceAPIConfig} = thisApplicationExtension.getConfig()
+        // TODO:
+        const {commerceAPI: commerceAPIConfig}: any = thisApplicationExtension.getConfig()
 
         const appOrigin = getAppOrigin()
-        const site = resolveSiteFromUrl(path)
-        const locale = resolveLocaleFromUrl(path)
-    
-        // @ts-ignore
+        const site: any = resolveSiteFromUrl(path)
+        const locale: any = resolveLocaleFromUrl(path)
+
         const {correlationId} = useCorrelationId()
         const headers = {
             'correlation-id': correlationId
         }
-        
+
         return (
             <CommerceApiProvider
                 shortCode={commerceAPIConfig.parameters.shortCode}
@@ -66,12 +65,14 @@ const withCommerceSDKReact = <P extends object>(WrappedComponent: React.Componen
                 locale={locale.id}
                 currency={locale.preferredCurrency}
                 redirectURI={`${appOrigin}/callback`}
-                proxy={`${appOrigin}${commerceAPIConfig.proxyPath}`}
+                proxy={`${appOrigin}${commerceAPIConfig.proxyPath as string}`}
                 headers={headers}
                 // Uncomment 'enablePWAKitPrivateClient' to use SLAS private client login flows.
                 // Make sure to also enable useSLASPrivateClient in ssr.js when enabling this setting.
                 // enablePWAKitPrivateClient={true}
-                OCAPISessionsURL={`${appOrigin}${proxyBasePath}/ocapi/s/${site.id}/dw/shop/v22_8/sessions`}
+                OCAPISessionsURL={`${appOrigin}${proxyBasePath}/ocapi/s/${
+                    site.id as string
+                }/dw/shop/v22_8/sessions`}
                 logger={createLogger({packageName: 'commerce-sdk-react'})}
             >
                 <WrappedComponent {...(props as P)} />

@@ -39,7 +39,7 @@ const withReactIntl = <P extends object>(WrappedComponent: React.ComponentType<P
                 //
                 // If this function returns an empty array (e.g. there isn't locale in the page url),
                 // then the app would use the default locale as the fallback.
-    
+
                 // NOTE: Your implementation may differ, this is just what we did.
                 return [locale?.id || DEFAULT_LOCALE]
             },
@@ -48,10 +48,9 @@ const withReactIntl = <P extends object>(WrappedComponent: React.ComponentType<P
 
         // If the translation file exists, it'll be served directly from static folder (and won't reach this code here).
         // However, if the file is missing, the App would render a 404 page.
-        const is404ForMissingTranslationFile = /\/static\/translations\/compiled\/[^.]+\.json$/.test(
-            location?.pathname
-        )
-        
+        const is404ForMissingTranslationFile =
+            /\/static\/translations\/compiled\/[^.]+\.json$/.test(location?.pathname)
+
         const {data: messages} = useQuery({
             queryKey: ['app', 'translations', 'messages', targetLocale],
             queryFn: () => {
@@ -60,14 +59,14 @@ const withReactIntl = <P extends object>(WrappedComponent: React.ComponentType<P
                     // Otherwise, it'll continue to fetch the missing translation file again
                     return {}
                 }
-                
+
                 return fetchTranslations(targetLocale)
             },
             enabled: isServer
         })
 
         return (
-            <IntlProvider 
+            <IntlProvider
                 onError={(err) => {
                     if (!messages) {
                         // During the ssr prepass phase the messages object has not loaded, so we can suppress

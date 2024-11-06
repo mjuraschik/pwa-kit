@@ -60,10 +60,10 @@ class RetailReactApp extends ApplicationExtension<Config> {
         // NOTE: The order of these HOCs is important!
         const requiredHOCs = [
             withAppLayout,
-            withChakraUI, 
+            withChakraUI,
             withCurrency,
             withReactIntl,
-            withMultiSite, 
+            withMultiSite,
             withStorefrontPreview,
             withCommerceSdkReact
         ]
@@ -138,9 +138,13 @@ class RetailReactApp extends ApplicationExtension<Config> {
             }
         ]
 
-        return configureRoutes([...extensionRoutes, ...routes], {app: this.getConfig()}, {
-            ignoredRoutes: ['/callback', '*']
-        })
+        return configureRoutes(
+            [...extensionRoutes, ...routes],
+            {app: this.getConfig()},
+            {
+                ignoredRoutes: ['/callback', '*']
+            }
+        )
     }
 }
 

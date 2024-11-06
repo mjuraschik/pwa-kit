@@ -19,7 +19,7 @@
   "devDependencies": {
     "@loadable/component": "^5.15.3",
     "@salesforce/extension-retail-react-app": "1.0.0-dev",
-    "@salesforce/extension-store-locator": "1.0.0-dev",
+    "@salesforce/extension-store-locator": "0.1.0-dev",
     "@salesforce/pwa-kit-extension-sdk": "4.0.0-dev",
     "@salesforce/pwa-kit-dev": "4.0.0-dev",
     "@salesforce/pwa-kit-react-sdk": "4.0.0-dev",
@@ -148,7 +148,29 @@
             "enabled": true
           }
         ],
-        "@salesforce/extension-retail-react-app"
+        [
+          "@salesforce/extension-store-locator", 
+          {
+            "enabled": true,
+            "path": "/store-locator",
+            "defaultDistance": 100,
+            "defaultDistanceUnit": "km",
+            "defaultPageSize": 10,
+            "defaultPostalCode": "10178",
+            "defaultCountry": "Germany",
+            "defaultCountryCode": "DE",
+            "supportedCountries": [
+              {
+                "countryCode": "US",
+                "countryName": "United States"
+              },
+              {
+                "countryCode": "DE",
+                "countryName": "Germany"
+              }
+            ]
+          }
+        ]
       ]
     },
     "ssrEnabled": true,

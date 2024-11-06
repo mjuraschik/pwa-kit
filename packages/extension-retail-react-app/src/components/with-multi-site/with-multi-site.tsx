@@ -23,28 +23,22 @@ type WithMultiSiteProps = React.ComponentPropsWithoutRef<any>
 // Define the HOC function
 const withMultiSite = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
     const WithMultiSite: React.FC<P> = (props: WithMultiSiteProps) => {
-        
         const applicationExtensions = useApplicationExtensions()
         const thisApplicationExtension = applicationExtensions[0]
-        
+
         const {req} = useServerContext()
         const path = req?.originalUrl || `${window.location.pathname}${window.location.search}`
 
-        // TODO: 
+        // TODO:
         const config = thisApplicationExtension.getConfig()
 
-        const site = resolveSiteFromUrl(path)
-        const locale = resolveLocaleFromUrl(path)
+        const site: any = resolveSiteFromUrl(path)
+        const locale: any = resolveLocaleFromUrl(path)
 
-        // @ts-ignore
         const buildUrl = createUrlTemplate(config, site.alias || site.id, locale.id)
-        
+
         return (
-            <MultiSiteProvider 
-                site={site} 
-                locale={locale}
-                buildUrl={buildUrl}
-            >
+            <MultiSiteProvider site={site} locale={locale} buildUrl={buildUrl}>
                 <WrappedComponent {...(props as P)} />
             </MultiSiteProvider>
         )

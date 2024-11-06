@@ -171,4 +171,3 @@ export const REMOVE_UNAVAILABLE_CART_ITEM_DIALOG_CONFIG = {
     }),
     onPrimaryAction: noop
 }
-
