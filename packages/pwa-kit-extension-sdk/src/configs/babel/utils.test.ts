@@ -20,9 +20,10 @@ jest.mock('fs-extra', () => ({
 }))
 
 const getApplicationExtensionInfo = originalGetApplicationExtensionInfo as jest.Mock
-const realpathSyncMock = fse.realpathSync as unknown as jest.Mock // Explicitly cast as jest.Mock
 
 describe('buildBabelExtensibilityArgs', () => {
+    const realpathSyncMock = jest.spyOn(fse, 'realpathSync') as jest.Mock
+
     beforeEach(() => {
         // Set up mock return values for getApplicationExtensionInfo
         getApplicationExtensionInfo.mockReturnValue({
