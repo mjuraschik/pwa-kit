@@ -71,7 +71,7 @@ export interface Config extends ApplicationExtensionConfig {
     // anything. ✅ We are only going to provide the component, it's on your to hook up the error component. 
     // TODO: Add default config value ✅
 
-    // NOTE: Think about namespacing for extensions.
+    // TODO: Test overriding page
     // TODO: Write tests for HOCs
     // TODO: Write Readme, including steps to install.
     // TODO: Get auto integration of store locator back to working
