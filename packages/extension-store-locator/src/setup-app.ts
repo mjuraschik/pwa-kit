@@ -21,12 +21,12 @@ import StoreLocatorPage from './pages/store-locator'
 
 class StoreLocatorExtension extends ApplicationExtension<Config> {
     DEFAULT_PATH = '/store-locator'
+    DEFAULT_RADIUS = 100
+    DEFAULT_RADIUS_UNIT = 'km'
+    DEFAULT_PAGE_SIZE = 10
     REQUIRED_CONFIG_FIELDS = [
         'defaultCountry',
         'defaultCountryCode',
-        'radius',
-        'radiusUnit',
-        'defaultPageSize',
         'defaultPostalCode',
         'supportedCountries'
     ]
@@ -43,9 +43,9 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
             path: config.path ?? this.DEFAULT_PATH,
             defaultCountry: config.defaultCountry,
             defaultCountryCode: config.defaultCountryCode,
-            radius: config.radius,
-            radiusUnit: config.radiusUnit,
-            defaultPageSize: config.defaultPageSize,
+            radius: config.radius ?? this.DEFAULT_RADIUS,
+            radiusUnit: config.radiusUnit ?? this.DEFAULT_RADIUS_UNIT,
+            defaultPageSize: config.defaultPageSize ?? this.DEFAULT_PAGE_SIZE,
             defaultPostalCode: config.defaultPostalCode,
             supportedCountries: config.supportedCountries
         })
