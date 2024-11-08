@@ -66,13 +66,14 @@ export interface Config extends ApplicationExtensionConfig {
     }
     // TODO: Add pages to enabled disable easily. ✅
     // TODO: Move static assets to proper destination. ✅
-    // NOTE: Think about namespacing for extensions.
+    // TODO: Fix getting static image.. we need a way to get the id of the extension. ✅ We need a way to get
     // TODO: Think about the _error and how it works with extensions, right now I don't think it does
     // anything. ✅ We are only going to provide the component, it's on your to hook up the error component. 
+    // TODO: Add default config value ✅
+
+    // NOTE: Think about namespacing for extensions.
     // TODO: Write tests for HOCs
-    // TODO: Add default config value ✅? Maybe move this to another PR
     // TODO: Write Readme, including steps to install.
-    // TODO: Fix getting static image.. we need a way to get the id of the extension. ✅ We need a way to get
     // TODO: Get auto integration of store locator back to working
     // TODO: Fix tests
 }
