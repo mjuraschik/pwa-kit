@@ -24,30 +24,23 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
     DEFAULT_RADIUS = 100
     DEFAULT_RADIUS_UNIT = 'km'
     DEFAULT_PAGE_SIZE = 10
-    REQUIRED_CONFIG_FIELDS = [
-        'defaultCountry',
-        'defaultCountryCode',
-        'defaultPostalCode',
-        'supportedCountries'
-    ]
 
     extendApp<T>(App: React.ComponentType<T>): React.ComponentType<T> {
         const config = this.getConfig()
 
-        const missingFields = this.REQUIRED_CONFIG_FIELDS.filter((field) => !config[field])
-        if (missingFields.length) {
-            throw new Error(`Missing required config fields: ${missingFields.join(', ')}`)
+        if (!config.supportedCountries || config.supportedCountries.length === 0) {
+            console.warn('[extension-store-locator] Missing supportedCountries, this extension will not work.')
         }
 
         return withStoreLocator(withOptionalChakra(App), {
             path: config.path ?? this.DEFAULT_PATH,
-            defaultCountry: config.defaultCountry,
-            defaultCountryCode: config.defaultCountryCode,
             radius: config.radius ?? this.DEFAULT_RADIUS,
             radiusUnit: config.radiusUnit ?? this.DEFAULT_RADIUS_UNIT,
             defaultPageSize: config.defaultPageSize ?? this.DEFAULT_PAGE_SIZE,
-            defaultPostalCode: config.defaultPostalCode,
-            supportedCountries: config.supportedCountries
+            defaultCountry: config.defaultCountry ?? "",
+            defaultCountryCode: config.defaultCountryCode ?? "",
+            defaultPostalCode: config.defaultPostalCode ?? "",
+            supportedCountries: config.supportedCountries ?? []
         })
     }
 
