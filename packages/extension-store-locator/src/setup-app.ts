@@ -24,8 +24,8 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
     REQUIRED_CONFIG_FIELDS = [
         'defaultCountry',
         'defaultCountryCode',
-        'defaultDistance',
-        'defaultDistanceUnit',
+        'radius',
+        'radiusUnit',
         'defaultPageSize',
         'defaultPostalCode',
         'supportedCountries'
@@ -43,8 +43,8 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
             path: config.path ?? this.DEFAULT_PATH,
             defaultCountry: config.defaultCountry,
             defaultCountryCode: config.defaultCountryCode,
-            defaultDistance: config.defaultDistance,
-            defaultDistanceUnit: config.defaultDistanceUnit,
+            radius: config.radius,
+            radiusUnit: config.radiusUnit,
             defaultPageSize: config.defaultPageSize,
             defaultPostalCode: config.defaultPostalCode,
             supportedCountries: config.supportedCountries
