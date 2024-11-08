@@ -53,8 +53,7 @@ import {
     HOME_HREF,
     THEME_COLOR,
     CAT_MENU_DEFAULT_NAV_SSR_DEPTH,
-    CAT_MENU_DEFAULT_ROOT_CATEGORY,
-    ACTIVE_DATA_ENABLED
+    CAT_MENU_DEFAULT_ROOT_CATEGORY
 } from '../../constants'
 
 // Define a type for the HOC props
@@ -330,7 +329,7 @@ const withLayout = <P extends object>(WrappedComponent: React.ComponentType<P>) 
                         onLoad={trackPage}
                     ></script>
                 )}
-                {ACTIVE_DATA_ENABLED && (
+                {config.activeDataEnabled && (
                     <script
                         src={getStaticAssetUrl('libs/dwac-21.7.js', {appExtensionPackageName: '@salesforce/extension-retail-react-app'})}
                         type="text/javascript"

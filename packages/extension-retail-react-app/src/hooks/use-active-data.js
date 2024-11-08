@@ -5,14 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 /*global dw*/
-import {ACTIVE_DATA_ENABLED} from '../constants'
 import {proxyBasePath} from '@salesforce/pwa-kit-runtime/utils/ssr-namespace-paths'
 import logger from '../utils/logger-instance'
+import useConfig from '../hooks/use-config'
 
 const useActiveData = () => {
     // Returns true when the feature flag is enabled and the tracking scripts have been executed
     // This MUST be called before using the `dw` variable, otherwise a ReferenceError will be thrown
-    const canTrack = () => ACTIVE_DATA_ENABLED && typeof dw !== 'undefined'
+    const {activeDataEnabled = false} = useConfig()
+
+    const canTrack = () => activeDataEnabled && typeof dw !== 'undefined'
     return {
         async sendViewProduct(category, product, type) {
             if (!canTrack()) return
