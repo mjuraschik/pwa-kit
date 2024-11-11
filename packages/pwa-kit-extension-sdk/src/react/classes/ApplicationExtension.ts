@@ -62,7 +62,7 @@ export class ApplicationExtension<
      * @param routes - All the application routes from both extensions and base application.
      * @returns routes - The modified application routes.
      */
-    public beforeMatch(routes: RouteProps[]): RouteProps[] {
+    public beforeRouteMatch(routes: RouteProps[]): RouteProps[] {
         return routes
     }
 }

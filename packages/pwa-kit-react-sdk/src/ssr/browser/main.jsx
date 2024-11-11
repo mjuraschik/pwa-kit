@@ -50,10 +50,10 @@ export const OuterApp = ({routes, error, extensions, WrappedApp, locals, onHydra
     const AppConfig = getAppConfig()
     const isInitialPageRef = useRef(true)
 
-    // Invoke the Application Extensions 'beforeMatch' hook. This hook accepts ALL the routes for the current
+    // Invoke the Application Extensions 'beforeRouteMatch' hook. This hook accepts ALL the routes for the current
     // application including all routes added from the configured extensions.
     extensions.forEach((applicationExtension) => {
-        routes = applicationExtension.beforeMatch(routes)
+        routes = applicationExtension.beforeRouteMatch(routes)
     })
 
     return (

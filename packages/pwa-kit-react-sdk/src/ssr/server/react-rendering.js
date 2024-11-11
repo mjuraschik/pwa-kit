@@ -152,9 +152,9 @@ export const render = async (req, res, next) => {
 
     // Step 1 - Find the match.
 
-    // Call `beforeMatch` application extension hook.
+    // Call `beforeRouteMatch` application extension hook.
     applicationExtensions.forEach((applicationExtension) => {
-        routes = applicationExtension.beforeMatch(routes)
+        routes = applicationExtension.beforeRouteMatch(routes)
     })
 
     res.__performanceTimer.mark(PERFORMANCE_MARKS.routeMatching, 'start')
