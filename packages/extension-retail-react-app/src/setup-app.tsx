@@ -109,15 +109,14 @@ class RetailReactApp extends ApplicationExtension<Config> {
             return (config.pages || [])[component.displayName] !== false
         })
 
-        return configureRoutes([...extensionRoutes, ...routes], config, {
-            ignoredRoutes: ['/callback']
-        })
+        return [...extensionRoutes, ...routes]
     }
 
-    processRoutes(routes: RouteProps[]): RouteProps[] {
+    // Called before the route with all the routes
+    beforeMatch(allRoutes: RouteProps[]): RouteProps[] {
         const config = this.getConfig()
 
-        return configureRoutes(routes, config, {
+        return configureRoutes(allRoutes, config, {
             ignoredRoutes: ['/callback']
         })
     }

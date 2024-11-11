@@ -46,9 +46,15 @@ export const registerServiceWorker = (url) => {
     })
 }
 
-export const OuterApp = ({routes, error, WrappedApp, locals, onHydrate}) => {
+export const OuterApp = ({routes, error, extensions, WrappedApp, locals, onHydrate}) => {
     const AppConfig = getAppConfig()
     const isInitialPageRef = useRef(true)
+
+    // Invoke the Application Extensions 'beforeMatch' hook. This hook accepts ALL the routes for the current
+    // application including all routes added from the configured extensions.
+    extensions.forEach((applicationExtension) => {
+        routes = applicationExtension.beforeMatch(routes)
+    })
 
     return (
         <ServerContext.Provider value={{}}>
@@ -129,6 +135,7 @@ export const start = async () => {
         error: window.__ERROR__,
         locals: locals,
         routes: getRoutes(locals),
+        extensions: applicationExtensions,
         WrappedApp
     }
 

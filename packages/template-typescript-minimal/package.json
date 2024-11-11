@@ -32,6 +32,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
+    "react-intl": "^5.25.1",
     "react-router-dom": "^5.3.4",
     "typescript": "4.9.5",
     "@chakra-ui/react": "^2.8.2",
@@ -49,9 +50,8 @@
         [
           "@salesforce/extension-retail-react-app", 
           {
-            "pages": {
-              "ProductDetail": true
-            },
+            "enabled": true,
+            "pages": {},
             "url": {
               "site": "path",
               "locale": "path",
@@ -147,8 +147,7 @@
               "einsteinId": "1ea06c6e-c936-4324-bcf0-fada93f83bb1",
               "siteId": "aaij-MobileFirst",
               "isProduction": false
-            },
-            "enabled": true
+            }
           }
         ],
         [

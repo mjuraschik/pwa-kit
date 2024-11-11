@@ -12,6 +12,7 @@
     "@salesforce/pwa-kit-react-sdk": "4.0.0-dev",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-intl": "^5.25.1",
     "react-router-dom": "^5.3.4"
   },
   "peerDependenciesMeta": {
