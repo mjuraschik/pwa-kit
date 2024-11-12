@@ -5,12 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import {
-    ApplicationExtensionEntry,
-    ApplicationExtensionEntryArray,
-    ApplicationExtensionConfig
-} from '../../types'
+import {ApplicationExtensionEntryArray, ApplicationExtensionConfig} from '../../types'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
+
+// NOTE: please make sure that the imported modules do not include 'path'.
+// This way getConfiguredExtensions can be called from both server and client side.
 
 const DEFAULT_CONFIG: ApplicationExtensionConfig = {
     enabled: true
@@ -64,36 +63,51 @@ export const kebabToLowerCamelCase = (str: string) =>
 
 // Returns true if the entry passes is a ApplicationExtensionEntryArray type.
 // TODO: This looks like it could be done in a more generic way.
-const isApplicationExtensionEntryArray = (entry: ApplicationExtensionEntryArray): boolean => {
+const isApplicationExtensionEntryArray = (entry: unknown[]): boolean => {
     const [nameRef, config] = entry || []
-    return (
+    const isValid =
         typeof nameRef === 'string' &&
         typeof config === 'object' &&
         !!nameRef.match(/^(?:@([^/]+)\/)?extension-(.+)$/)
-    )
+
+    if (!isValid) {
+        // TODO: use our logger factory
+        console.warn(
+            'Skipping this application extension entry because it is not of valid format. Please double check your configuration.',
+            entry
+        )
+    }
+
+    return isValid
 }
 
 /**
  * Normalize and expand the extension configuration array so that it is easier to process.
- * @param {{String, Object}[]} extensions - The extensions configuration value as defined in the PWA-Kit config.
- * @returns {Object[]} extensions - The extensions array in object form.
+ * @param extensions - The extensions configuration value as defined in the PWA-Kit config.
+ * @returns a list of extensions all in tuple format
  *
  * @example
- * const result = expand(["store-finder", ["account-pages", {singlePage: true}], './extensions/local-extension']);
+ * const result = expand([
+ *   '@salesforce/extension-a',
+ *   ['@salesforce/extension-b', {foo: 'bar'}],
+ *   ['@salesforce/extension-c']
+ * ]);
  * console.log(result)
- * // [["@salesforce/extension-store-finder", {}], ["@salesforce/extension-account-pages", {singlePage: true}], ["/home/project/extensions/local-extension", {}]]
+ * [
+ *   ['@salesforce/extension-a', {enabled: true}],
+ *   ['@salesforce/extension-b', {enabled: true, foo: 'bar'}],
+ *   ['@salesforce/extension-c', {enabled: true}]
+ * ]
  */
-export const expand = (
-    extensions: ApplicationExtensionEntry[] = []
-): ApplicationExtensionEntryArray[] =>
+export const expand = (extensions: unknown[] = []): ApplicationExtensionEntryArray[] =>
     extensions
         .filter((extension) => Boolean(extension))
         .map((extension) => {
-            const thing: [string, any] = Array.isArray(extension)
-                ? extension
+            const tuple: [string, any] = Array.isArray(extension)
+                ? [extension[0], {...DEFAULT_CONFIG, ...extension[1]}]
                 : [extension, DEFAULT_CONFIG]
 
-            return thing
+            return tuple
         })
         .filter(isApplicationExtensionEntryArray)
 
