@@ -7,6 +7,7 @@
 
 // Third-party imports
 import path from 'path'
+import fs from 'fs'
 
 // Local
 import {expand} from './index'
@@ -15,17 +16,14 @@ import {expand} from './index'
 import {ApplicationExtensionEntry, BuildCandidatePathsOptions} from '../../types'
 
 // TODO: Should this be in a constants folder?
-const EXTENSION_NAMESPACE = '@salesforce'
 const NODE_MODULES = 'node_modules'
 const OVERRIDES = 'overrides'
 const APP = 'app'
 const SRC = 'src'
-const PWA_KIT_REACT_SDK = 'pwa-kit-react-sdk'
 
 // TODO: We should determine if we want the `overrides-resolver-plugin` to handle resolution of application special
 // components like _app and _document. If so we can update this map and remove the special logic from our webpack
 // configuration.
-const SDK_COMPONENT_MAP: Record<string, string> = {}
 const INDEX_FILE = 'index' // TODO: Make this value obey the webpack's `resolve.mainFiles` options.
 
 // Returns true/false indicating if the importPath resolves to a same named file as the sourcePath.
@@ -46,6 +44,34 @@ export const isSelfReference = (importPath: string, sourcePath: string) => {
     return sourcePath.endsWith(importPath)
 }
 
+/**
+ * Finds the closest package.json file from the given directory path and retrieves its package name.
+ * @param startPath The starting directory path.
+ * @returns The package name from the closest package.json, or null if not found.
+ */
+const getPackageName = (startPath: string): string | null => {
+    let currentPath = path.resolve(startPath)
+
+    while (currentPath !== path.parse(currentPath).root) {
+        const packageJsonPath = path.join(currentPath, 'package.json')
+
+        if (fs.existsSync(packageJsonPath)) {
+            try {
+                const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+                return packageJson.name || null;
+            } catch (error) {
+                console.error(`Failed to parse package.json at ${packageJsonPath}:`, error)
+                return null;
+            }
+        }
+
+        // Move one directory up
+        currentPath = path.dirname(currentPath)
+    }
+
+    return null
+}
+
 // TODO: The extensionsEntries really isn't optional, so maybe it shouldn't exist in the opts object?
 /**
  * Based on the current extensibility configuration, return an array of candidate file paths to be used
@@ -58,60 +84,42 @@ export const isSelfReference = (importPath: string, sourcePath: string) => {
  * @param {String} opts.projectDir - Absolute path of the base project.
  */
 export const buildCandidatePaths = (
-    importPath: string,
-    sourcePath: string,
+    resourcePath: string,
     opts: BuildCandidatePathsOptions
 ) => {
-    // Replace $ character as it has done its job getting us to this point.
-    importPath = importPath.replace('$/', '')
-
     const {extensionEntries = [], projectDir = process.cwd()} = opts
-    const isSelfReferenceImport = isSelfReference(importPath, sourcePath)
     let paths = []
+
+    // Get the import path relative to the project base directory.
+    const projectRelPath = resourcePath.split(`${SRC}/`)[1].split('.')[0]
+    
+    // console.log('projectRelPath: ', projectRelPath)
+    // console.log('getPackageName: ', getPackageName(resourcePath))
+    // console.log('expand(extensionEntries): ', expand(extensionEntries))
 
     // Map all the extensions and resolve the module names to absolute paths.
     paths = expand(extensionEntries)
         .filter(([, {enabled}]) => typeof enabled === 'undefined' || enabled)
         .reverse()
+        // TODO: Split on current extension.
         .reduce((acc, extensionEntry) => {
             // The reference can be a module/package or an absolute path to a file.
             const [extensionRef] = extensionEntry
             const srcPath = path.join(projectDir, NODE_MODULES, extensionRef, SRC)
+            
             return [
                 ...acc,
-                path.join(srcPath, OVERRIDES, importPath),
-                path.join(srcPath, importPath)
+                path.join(srcPath, OVERRIDES, projectRelPath)
             ]
         }, [] as ApplicationExtensionEntry[])
 
     // Add non-extension search locations locations. The base project and the sdk as the final callback.
     paths = [
-        // Base Project
-        path.join(projectDir, APP, OVERRIDES, importPath),
-        path.join(projectDir, APP, importPath),
+        // Base Project: We might want to include it as its original file.
+        path.join(projectDir, APP, OVERRIDES, projectRelPath),
         // Extensions
-        ...paths,
-        // SDK
-        ...(SDK_COMPONENT_MAP[importPath]
-            ? path.join(
-                  projectDir,
-                  NODE_MODULES,
-                  EXTENSION_NAMESPACE,
-                  PWA_KIT_REACT_SDK,
-                  SDK_COMPONENT_MAP[importPath]
-              )
-            : [])
+        ...paths
     ]
-
-    // Under certain circumstances we want to truncate the candidate path array to prevent circular dependencies.
-    // In particular, we only want to include extensions up to, but not including, the importing extension source if it is
-    // a self-referenced import (e.g. importing routes from an overridden file names routes)
-    if (isSelfReferenceImport) {
-        // NOTE: Overriding files requires that you use the exact file name, you cannot replace a non-index file with one that
-        // is an index file.
-        const index = paths.indexOf(sourcePath.split('.')[0])
-        paths = paths.slice(index + 2)
-    }
 
     return paths
 }

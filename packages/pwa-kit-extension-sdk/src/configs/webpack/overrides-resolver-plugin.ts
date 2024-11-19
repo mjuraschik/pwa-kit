@@ -75,7 +75,7 @@ export class OverridesResolverPlugin {
                 basedir: this.options.projectDir,
                 extensions: this.options.fileExtensions,
                 packageIterator: () =>
-                    buildCandidatePaths(importPath, sourcePath, {
+                    buildCandidatePaths(importPath, {
                         extensionEntries: this.options.extensions,
                         projectDir: this.options.projectDir
                     }),

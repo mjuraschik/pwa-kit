@@ -21,7 +21,8 @@ import SpeedMeasurePlugin from 'speed-measure-webpack-plugin'
 import WebpackNotifierPlugin from 'webpack-notifier'
 
 // PWA-Kit Plugins
-import {OverridesResolverPlugin} from '@salesforce/pwa-kit-extension-sdk/configs/webpack'
+// import {OverridesResolverPlugin} from '@salesforce/pwa-kit-extension-sdk/configs/webpack'
+// import OverridesLoader from '@salesforce/pwa-kit-extension-sdk/configs/webpack/overrides-loader'
 
 // Local Plugins
 import {sdkReplacementPlugin} from './plugins'
@@ -141,6 +142,33 @@ const findDepInStack = (pkg) => {
     return candidate
 }
 
+
+// class SharedStatePlugin {
+//     apply(compiler) {
+//         compiler.hooks.compilation.tap('SharedStatePlugin', (compilation) => {
+//             // Initialize shared state
+//             const sharedState = {
+//                 mySharedData: {},
+//             };
+
+//             // Attach shared state to each module
+//             compilation.hooks.normalModuleLoader.tap('SharedStatePlugin', (loaderContext) => {
+//                 loaderContext.sharedState = sharedState;
+//             });
+//         });
+//     }
+// }
+class EarlyHookPlugin {
+    apply(compiler) {
+      compiler.hooks.initialize.tap('EarlyHookPlugin', () => {
+        console.log('Webpack environment setup is happening!');
+        // Modify compiler settings or environment variables here
+        compiler.customData = getConfiguredExtensions(getConfig())
+      });
+    }
+  }
+  
+
 const baseConfig = (target) => {
     if (!['web', 'node'].includes(target)) {
         throw Error(`The value "${target}" is not a supported webpack target`)
@@ -188,11 +216,11 @@ const baseConfig = (target) => {
                 },
                 resolve: {
                     plugins: [
-                        new OverridesResolverPlugin({
-                            projectDir: process.cwd(),
-                            extensions: getConfiguredExtensions(getConfig()),
-                            fileExtensions: SUPPORTED_FILE_EXTENSIONS
-                        })
+                        // new OverridesResolverPlugin({
+                        //     projectDir: process.cwd(),
+                        //     extensions: getConfiguredExtensions(getConfig()),
+                        //     fileExtensions: SUPPORTED_FILE_EXTENSIONS
+                        // })
                     ],
                     extensions: SUPPORTED_FILE_EXTENSIONS,
                     alias: {
@@ -215,14 +243,20 @@ const baseConfig = (target) => {
                     },
                     ...(target === 'web' ? {fallback: {crypto: false}} : {})
                 },
+                resolveLoader: {
+                    alias: {
+                        override: '/Users/bchypak/Projects/pwa-kit/packages/pwa-kit-extension-sdk/dist/configs/webpack/overrides-loader.js',
+                    }
+                },
                 plugins: [
+                    new EarlyHookPlugin(),
                     new webpack.DefinePlugin({
                         DEBUG,
                         NODE_ENV: `'${process.env.NODE_ENV}'`,
                         WEBPACK_TARGET: `'${target}'`,
                         ['global.GENTLY']: false
                     }),
-
+                    // new SharedStatePlugin(),
                     mode === development && new webpack.NoEmitOnErrorsPlugin(),
 
                     sdkReplacementPlugin(),
@@ -364,6 +398,9 @@ const enableReactRefresh = (config) => {
 
     const newRule = ruleForBabelLoader([require.resolve('react-refresh/babel')])
     const rules = findAndReplace(config.module.rules, (rule) => rule.id === 'babel-loader', newRule)
+
+    // NOTE: This ensures that files processed with the override-loader do not get processed again for hmr.
+    rules[0].exclude = (resource) => resource.includes('?noHMR=true')
 
     return {
         ...config,
