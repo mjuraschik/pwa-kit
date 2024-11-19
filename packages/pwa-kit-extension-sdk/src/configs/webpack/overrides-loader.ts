@@ -15,6 +15,7 @@ import {buildCandidatePaths} from '../../shared/utils'
 // Constants
 const SRC = 'src'
 
+// TODO: Move this to a utility folder.
 /**
  * Finds the closest package.json file from the given directory path and retrieves its package name.
  * @param startPath The starting directory path.
