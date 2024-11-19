@@ -988,20 +988,22 @@ const runGenerator = async (
                 mobify: {app: {extensions: [answers.project.name]}}
             })
 
-            console.log('Replacing "@salesforce/extension-base" with', answers.project.name, 'in', outputDir)
-            // do a file content replacement for /src/setup-app.ts in the outputDir
-            // find all instances of "@salesforce/extension-base" and replace with answers.project.name
-            const setupAppPath = p.join(outputDir, 'src', 'setup-app.ts')
-            if (fs.existsSync(setupAppPath)) {
+            // TODO: The generator is growing, we should refactor this to be more maintainable.
+            const processGeneratedExtension = () => {
+                // do a file content replacement for /src/setup-app.ts in the outputDir
+                // find all instances of "@salesforce/extension-base" and replace with answers.project.name
+                const setupAppPath = p.join(outputDir, 'src', 'setup-app.ts')
+                if (fs.existsSync(setupAppPath)) {
                 let setupAppContent = fs.readFileSync(setupAppPath, 'utf8')
-                setupAppContent = setupAppContent.replace(
-                    /@salesforce\/extension-base/g, 
-                    answers.project.name
-                )
-                fs.writeFileSync(setupAppPath, setupAppContent)
+                    setupAppContent = setupAppContent.replace(
+                        /@salesforce\/extension-base/g,
+                        answers.project.name
+                    )
+                    fs.writeFileSync(setupAppPath, setupAppContent)
+                }
             }
 
-
+            processGeneratedExtension()
 
             // Create the .npmignore file, excluding the typescript-minimal local dev project folder
             createNpmIgnoreFile(outputDir, [`${LOCAL_DEV_PROJECT_DIR}/`])
