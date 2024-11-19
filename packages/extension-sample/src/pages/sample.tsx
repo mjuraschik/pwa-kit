@@ -28,6 +28,10 @@ const Sample = () => {
                 PWA-Kit project. Its dependancies were automatically installed and the extension
                 configured into your projects extensions array.
             </p>
+            <p>
+                <b>Extension config:</b>
+                <pre>{JSON.stringify(config, null, 2)}</pre>
+            </p>
             <div
                 style={{
                     border: '1px solid darkGray',
