@@ -18,8 +18,10 @@ import withRedBorder from '$/components/with-red-border'
 import SamplePage from './pages/sample'
 
 const defaultPath = '/sample-page'
+
 class Sample extends ApplicationExtension<Config> {
-    static override readonly id = '@salesforce/extension-base'
+    // Recommended to use the same id as the package name.
+    static readonly id = '@salesforce/extension-base'
 
     extendApp<T>(App: React.ComponentType<T>): React.ComponentType<T> {
         return withRedBorder(App)
