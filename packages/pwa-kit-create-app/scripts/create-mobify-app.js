@@ -990,16 +990,16 @@ const runGenerator = async (
 
             // TODO: The generator is growing, we should refactor this to be more maintainable.
             const processGeneratedExtension = () => {
-                // do a file content replacement for /src/setup-app.ts in the outputDir
+                // do a file content replacement for extension-meta.json in the outputDir
                 // find all instances of "@salesforce/extension-base" and replace with answers.project.name
-                const setupAppPath = p.join(outputDir, 'src', 'setup-app.ts')
-                if (fs.existsSync(setupAppPath)) {
-                let setupAppContent = fs.readFileSync(setupAppPath, 'utf8')
-                    setupAppContent = setupAppContent.replace(
+                const extensionMetaJsonPath = p.join(outputDir, 'extension-meta.json')
+                if (fs.existsSync(extensionMetaJsonPath)) {
+                    let extensionMetaJsonContent = fs.readFileSync(extensionMetaJsonPath, 'utf8')
+                    extensionMetaJsonContent = extensionMetaJsonContent.replace(
                         /@salesforce\/extension-base/g,
                         answers.project.name
                     )
-                    fs.writeFileSync(setupAppPath, setupAppContent)
+                    fs.writeFileSync(extensionMetaJsonPath, extensionMetaJsonContent)
                 }
             }
 
