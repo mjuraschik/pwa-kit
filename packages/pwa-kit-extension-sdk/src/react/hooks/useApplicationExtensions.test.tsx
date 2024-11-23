@@ -1,0 +1,58 @@
+import React, {ReactNode} from 'react'
+import {renderHook} from '@testing-library/react'
+import {useApplicationExtensions, useApplicationExtension} from './useApplicationExtensions'
+import {ApplicationExtensionsContext} from '../contexts'
+import {ApplicationExtension} from '../classes/ApplicationExtension'
+
+class TestExtension1 extends ApplicationExtension<{}> {
+    static id = 'test-extension-1'
+}
+
+class TestExtension2 extends ApplicationExtension<{}> {
+    static id = 'test-extension-2'
+}
+
+const createWrapper = (extensions: ApplicationExtension<any>[]) => {
+    return ({children}: {children: ReactNode}) => (
+        <ApplicationExtensionsContext.Provider value={extensions}>
+            {children}
+        </ApplicationExtensionsContext.Provider>
+    )
+}
+
+describe('useApplicationExtensions', () => {
+    it('throws error when used outside of ApplicationExtensionsProvider', () => {
+        const {result} = renderHook(() => useApplicationExtensions())
+        expect(() => result.current).toThrow(
+            "'useApplicationExtensions' must be used within ApplicationExtensionsProvider!"
+        )
+    })
+
+    it('returns all extensions from context', () => {
+        const mockExtensions = [new TestExtension1({}), new TestExtension2({})]
+        const wrapper = createWrapper(mockExtensions)
+        const {result} = renderHook(() => useApplicationExtensions(), {wrapper})
+        
+        expect(result.current).toEqual(mockExtensions)
+    })
+})
+
+describe('useApplicationExtension', () => {
+    it('returns undefined when extension is not found', () => {
+        const mockExtensions = [new TestExtension1({})]
+        const wrapper = createWrapper(mockExtensions)
+        const {result} = renderHook(() => useApplicationExtension('non-existent-id'), {wrapper})
+        
+        expect(result.current).toBeUndefined()
+    })
+
+    it('returns the correct extension when found by id', () => {
+        const extension1 = new TestExtension1({})
+        const extension2 = new TestExtension2({})
+        const mockExtensions = [extension1, extension2]
+        const wrapper = createWrapper(mockExtensions)
+        const {result} = renderHook(() => useApplicationExtension('test-extension-1'), {wrapper})
+        
+        expect(result.current).toBe(extension1)
+    })
+}) 
