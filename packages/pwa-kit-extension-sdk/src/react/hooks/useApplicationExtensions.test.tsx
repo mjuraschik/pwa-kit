@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 /*
  * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
