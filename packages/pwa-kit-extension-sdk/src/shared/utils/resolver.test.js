@@ -12,7 +12,7 @@ describe('resolverUtils', () => {
     describe('"buildCandidatePaths" util returns array of paths used to module resolving base on the provided extension configuration', () => {
         ;[
             {
-                name: 'Correct paths are returned when dollar-prefixed import is used in an application extension',
+                name: 'Correct paths are returned when overridable import is used in an application extension',
                 resourcePath: path.join('pages', 'sample'),
                 extensions: [['extension-a'], ['extension-b'], ['extension-c']],
                 expected: [

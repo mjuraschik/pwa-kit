@@ -61,7 +61,6 @@ describe('Overrides Resolver Loader', () => {
                         buildPlugins: () => plugins
                     })
 
-                    // Here we are looking at the first module imported via the dollar syntax and testing that it's right.
                     const compiler: ExtendedCompiler = stats.compilation.compiler
                     output = compiler.custom
                 } catch (e) {

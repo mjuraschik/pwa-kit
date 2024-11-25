@@ -264,7 +264,7 @@ describe('Overrides Resolver Loader', () => {
                         ]
                     })
 
-                    // Here we are looking at the first module imported via the dollar syntax and testing that it's right.
+                    // Here we are looking at the first module imported via an overridable import and testing that it's right.
                     output = stats?.toJson({source: true})
                 } catch (e) {
                     console.log(e)
