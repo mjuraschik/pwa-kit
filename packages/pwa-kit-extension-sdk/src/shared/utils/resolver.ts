@@ -44,7 +44,6 @@ export const getPackageName = (projectPath: string, opts: any): string | undefin
     return packageName
 }
 
-// TODO: The extensionsEntries really isn't optional, so maybe it shouldn't exist in the opts object?
 /**
  * Based on the current extensibility configuration and the provided import path, return a list of paths
  * representing potential locations for overrides for the given file.
