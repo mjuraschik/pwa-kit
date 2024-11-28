@@ -10,7 +10,7 @@ A [PWA Kit](https://github.com/SalesforceCommerceCloud/pwa-kit) extension that a
 ## Installation
 
 ```sh
-npm install @salesforce/extension-store-locator
+npm install @salesforce/extension-chakra-store-locator
 ```
 
 ## Peer Dependancies
@@ -43,7 +43,7 @@ The Store Locator extension is configured via the `mobify.app.extensions` proper
     "app": {
       "extensions": [
         [
-          "@salesforce/extension-store-locator",
+          "@salesforce/extension-chakra-store-locator",
           {
             "enabled": true,
             "path": "/store-locator",
