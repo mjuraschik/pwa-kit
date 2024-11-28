@@ -42,7 +42,7 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
     // like when you use a mono-repo or local npm packages that you can't do this. So as a fallback you have to process
     // the packageJSON file.
     const packageName = getPackageName(projectPath, {filesystem: options.resolveOptions})
-    console.log('getPackageName: ', packageName)
+
     if (!packageName) {
         console.warn('OVERRIDES-LOADER: Unable to determine import package name. Bailing...')
         return resourcePath
@@ -61,8 +61,6 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
         extensionEntries: applicationExtensions
     })
 
-    console.log('paths: ', paths)
-
     // Also include the base override path and the path from the extension doing the import.
     const resolvedResourcePath = resolve.sync(projectRelPath, {
         basedir,
@@ -70,7 +68,7 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
         packageIterator: () => paths,
         ...options?.resolveOptions
     })
-    console.log('resolvedResourcePath: ', resolvedResourcePath)
+
     // Tell Webpack to treat this new resource as a dependency of the original module in order to have the dependency
     // transpiled with all the same loaders/plugins that the orginal file was.
     this.addDependency(resolvedResourcePath)
