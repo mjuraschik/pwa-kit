@@ -14,9 +14,18 @@ describe('resolverUtils', () => {
             {
                 name: 'Correct paths are returned when overridable import is used in an application extension',
                 resourcePath: path.join('pages', 'sample'),
-                packageName: 'extension-a',
+                importSourceExtension: 'extension-a',
+                canonicalSource: path.join(
+                    process.cwd(),
+                    'node_modules',
+                    'extension-a',
+                    'src',
+                    'pages',
+                    'sample.tsx'
+                ),
                 extensions: [['extension-a'], ['extension-b'], ['extension-c']],
                 expected: [
+                    path.join(process.cwd(), 'app', 'overrides', 'extension-a', 'pages', 'sample'),
                     path.join(
                         process.cwd(),
                         'node_modules',
@@ -42,19 +51,26 @@ describe('resolverUtils', () => {
                         'node_modules',
                         'extension-a',
                         'src',
-                        'overrides',
-                        'extension-a',
                         'pages',
-                        'sample'
+                        'sample.tsx'
                     )
                 ]
             },
             {
                 name: 'Correct paths are returned when "some" extensions are disabled',
                 resourcePath: path.join('pages', 'sample'),
-                packageName: 'extension-a',
+                importSourceExtension: 'extension-a',
+                canonicalSource: path.join(
+                    process.cwd(),
+                    'node_modules',
+                    'extension-a',
+                    'src',
+                    'pages',
+                    'sample.tsx'
+                ),
                 extensions: [['extension-a'], ['extension-b'], ['extension-c', {enabled: false}]],
                 expected: [
+                    path.join(process.cwd(), 'app', 'overrides', 'extension-a', 'pages', 'sample'),
                     path.join(
                         process.cwd(),
                         'node_modules',
@@ -70,30 +86,51 @@ describe('resolverUtils', () => {
                         'node_modules',
                         'extension-a',
                         'src',
-                        'overrides',
-                        'extension-a',
                         'pages',
-                        'sample'
+                        'sample.tsx'
                     )
                 ]
             },
             {
                 name: 'Correct paths are returned when "all" extensions are disabled',
                 resourcePath: path.join('pages', 'sample'),
-                packageName: 'extension-a',
+                importSourceExtension: 'extension-a',
+                canonicalSource: path.join(
+                    process.cwd(),
+                    'node_modules',
+                    'extension-a',
+                    'src',
+                    'pages',
+                    'sample.tsx'
+                ),
                 extensions: [
                     ['extension-a', {enabled: false}],
                     ['extension-b', {enabled: false}],
                     ['extension-c', {enabled: false}]
                 ],
-                expected: []
+                expected: [
+                    path.join(process.cwd(), 'app', 'overrides', 'extension-a', 'pages', 'sample'),
+                    path.join(
+                        process.cwd(),
+                        'node_modules',
+                        'extension-a',
+                        'src',
+                        'pages',
+                        'sample.tsx'
+                    )
+                ]
             }
         ].forEach((testCase) => {
             test(`${testCase.name}`, () => {
-                const result = resolverUtils.buildCandidatePaths(testCase.resourcePath, {
-                    packageName: testCase.packageName,
-                    extensionEntries: testCase.extensions
-                })
+                const result = resolverUtils.buildCandidatePaths(
+                    testCase.resourcePath,
+                    testCase.importSourceExtension,
+                    {
+                        canonicalSource: testCase.canonicalSource,
+                        packageName: testCase.packageName,
+                        extensionEntries: testCase.extensions
+                    }
+                )
 
                 expect(result).toEqual(testCase.expected)
             })
