@@ -891,7 +891,7 @@ const runGenerator = async (
         selectedAppExtensions = [],
         extractAppExtensions = false
     } = answers.project
-    console.log('#')
+    console.log('#', preset, answers)
 
     // Check if the output directory doesn't already exist.
     checkOutputDir(outputDir)
@@ -1019,7 +1019,7 @@ const runGenerator = async (
         })
     } else {
         console.log('there')
-
+        console.log('selectedAppExtensions: ', selectedAppExtensions)
         processAppExtensions(selectedAppExtensions, extractAppExtensions, appExtensionsDir)
         console.log('there')
 
