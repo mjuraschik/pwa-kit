@@ -877,15 +877,17 @@ const runGenerator = async (
 ) => {
     const {answers, preset} = context
     const {templateSource} = preset
-
+    console.log('#')
     const {
         extend = false,
         selectedAppExtensions = [],
         extractAppExtensions = false
     } = answers.project
+    console.log('#')
 
     // Check if the output directory doesn't already exist.
     checkOutputDir(outputDir)
+    console.log('#')
 
     // Ensure the output directory exists
     fs.mkdirSync(outputDir, {recursive: true})
@@ -897,6 +899,7 @@ const runGenerator = async (
     const appExtensionsDir = p.join(outputDir, 'app', 'application-extensions')
     const {id, type} = templateSource
     let tarPath
+    console.log('#')
 
     console.log('type: ', type)
     switch (type) {
@@ -928,6 +931,7 @@ const runGenerator = async (
 
     // Copy the base template either from the package or npm.
     sh.cp('-rf', p.join(packagePath, '*'), outputDir)
+    console.log('#')
 
     // Copy template specific assets over.
     const assetsDir = p.join(ASSETS_TEMPLATES_DIR, id)
@@ -941,9 +945,12 @@ const runGenerator = async (
                 processTemplate(relFilePath, assetsDir, outputDir, context)
             })
     }
+    console.log('#')
 
     // Check project type and handle appropriately
     if (answers.project.type === 'PWAKitAppExtensionProject') {
+        console.log('#')
+
         const devOutputDir = p.join(outputDir, LOCAL_DEV_PROJECT_DIR)
 
         // Update the root package.json to add a start script
@@ -1003,8 +1010,13 @@ const runGenerator = async (
             projectName: localDevProjectContext.answers.project.name
         })
     } else {
+        console.log('#')
+
         processAppExtensions(selectedAppExtensions, extractAppExtensions, appExtensionsDir)
+        console.log('#')
+
     }
+    console.log('#')
 
     // Add selected Application Extensions to devDependencies and mobify object
     const appExtensionDeps = selectedAppExtensions.reduce((acc, appExtensionName) => {
@@ -1019,6 +1031,7 @@ const runGenerator = async (
             : version
         return acc
     }, {})
+    console.log('#')
 
     console.log('Updating the package json.. here are the selected extensions: ', selectedAppExtensions)
     updatePackageJson(p.resolve(outputDir, 'package.json'), {
