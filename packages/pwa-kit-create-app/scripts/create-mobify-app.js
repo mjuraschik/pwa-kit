@@ -1029,8 +1029,11 @@ const runGenerator = async (
 
     // Add selected Application Extensions to devDependencies and mobify object
     const appExtensionDeps = selectedAppExtensions.reduce((acc, appExtensionName) => {
+        console.log('acc; ', acc)
+        console.log('appExtensionName; ', appExtensionName)
+
         // Find the corresponding Application Extension details
-        const appExtensionDetails = context.availableAppExtensions.find(
+        const appExtensionDetails = context?.availableAppExtensions?.find(
             (ext) => ext.value === appExtensionName
         )
         const version = appExtensionDetails ? appExtensionDetails.version : '1.0.0-dev'
