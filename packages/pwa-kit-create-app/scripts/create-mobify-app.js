@@ -346,7 +346,7 @@ const PRESETS = [
         },
         questions: [...EXTENSIBILITY_QUESTIONS, ...RETAIL_REACT_APP_QUESTIONS],
         answers: {
-            ['project.extend']: true,
+            ['project.extend']: false,
             ['project.hybrid']: false,
             ['project.type']: 'PWAKitAppProject',
             ['project.useApplicationExtensibility']: true,
