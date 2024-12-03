@@ -801,17 +801,22 @@ const processAppExtensions = (
     extractAppExtensions = false,
     appExtensionsDir
 ) => {
+    console.log('there there')
     if (appExtensions.length > 0 && extractAppExtensions) {
+        console.log('there there', appExtensions)
+
         appExtensions.forEach((appExtensionName) => {
             // Create the full path for the temporary directory, preserving the namespace
             const appExtensionTmp = p.join(os.tmpdir(), `extract-${appExtensionName}`)
             fs.mkdirSync(appExtensionTmp, {recursive: true})
+            console.log('there there', appExtensions)
 
             const appExtensionTarFile = sh
                 .exec(`npm pack ${appExtensionName} --pack-destination="${appExtensionTmp}"`, {
                     silent: true
                 })
                 .stdout.trim()
+                console.log('there there', appExtensions)
 
             const appExtensionTarPath = p.join(appExtensionTmp, appExtensionTarFile)
 
@@ -821,13 +826,16 @@ const processAppExtensions = (
                 cwd: appExtensionTmp,
                 sync: true
             })
+            console.log('there there', appExtensions)
 
             // Copy the Application Extension into the appropriate folder inside application-extensions
             const appExtensionTmpPath = p.join(appExtensionTmp, 'package')
             const appExtensionDestDir = p.join(appExtensionsDir, appExtensionName)
             sh.mkdir('-p', appExtensionDestDir)
+            console.log('there there', appExtensions)
 
             sh.cp('-rf', p.join(appExtensionTmpPath, '*'), appExtensionDestDir)
+            console.log('there there', appExtensions)
 
             // Clean up the temporary Application Extension directory
             sh.rm('-rf', appExtensionTmp)
@@ -949,7 +957,7 @@ const runGenerator = async (
 
     // Check project type and handle appropriately
     if (answers.project.type === 'PWAKitAppExtensionProject') {
-        console.log('#')
+        console.log('here')
 
         const devOutputDir = p.join(outputDir, LOCAL_DEV_PROJECT_DIR)
 
@@ -1010,10 +1018,10 @@ const runGenerator = async (
             projectName: localDevProjectContext.answers.project.name
         })
     } else {
-        console.log('#')
+        console.log('there')
 
         processAppExtensions(selectedAppExtensions, extractAppExtensions, appExtensionsDir)
-        console.log('#')
+        console.log('there')
 
     }
     console.log('#')
