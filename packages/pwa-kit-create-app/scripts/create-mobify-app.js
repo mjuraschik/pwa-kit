@@ -898,6 +898,7 @@ const runGenerator = async (
     const {id, type} = templateSource
     let tarPath
 
+    console.log('type: ', type)
     switch (type) {
         case TEMPLATE_SOURCE_NPM: {
             const tarFile = sh
