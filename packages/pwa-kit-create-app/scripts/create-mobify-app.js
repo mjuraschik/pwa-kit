@@ -802,22 +802,16 @@ const processAppExtensions = (
     extractAppExtensions = false,
     appExtensionsDir
 ) => {
-    console.log('there there')
     if (appExtensions.length > 0 && extractAppExtensions) {
-        console.log('there there', appExtensions)
-
         appExtensions.forEach((appExtensionName) => {
             // Create the full path for the temporary directory, preserving the namespace
             const appExtensionTmp = p.join(os.tmpdir(), `extract-${appExtensionName}`)
             fs.mkdirSync(appExtensionTmp, {recursive: true})
-            console.log('there there', appExtensions)
-
             const appExtensionTarFile = sh
                 .exec(`npm pack ${appExtensionName} --pack-destination="${appExtensionTmp}"`, {
                     silent: true
                 })
                 .stdout.trim()
-                console.log('there there', appExtensions)
 
             const appExtensionTarPath = p.join(appExtensionTmp, appExtensionTarFile)
 
@@ -827,16 +821,13 @@ const processAppExtensions = (
                 cwd: appExtensionTmp,
                 sync: true
             })
-            console.log('there there', appExtensions)
 
             // Copy the Application Extension into the appropriate folder inside application-extensions
             const appExtensionTmpPath = p.join(appExtensionTmp, 'package')
             const appExtensionDestDir = p.join(appExtensionsDir, appExtensionName)
             sh.mkdir('-p', appExtensionDestDir)
-            console.log('there there', appExtensions)
 
             sh.cp('-rf', p.join(appExtensionTmpPath, '*'), appExtensionDestDir)
-            console.log('there there', appExtensions)
 
             // Clean up the temporary Application Extension directory
             sh.rm('-rf', appExtensionTmp)
@@ -886,17 +877,14 @@ const runGenerator = async (
 ) => {
     const {answers, preset} = context
     const {templateSource} = preset
-    console.log('#')
     const {
         extend = false,
         selectedAppExtensions = [],
         extractAppExtensions = false
     } = answers.project
-    console.log('#', preset, answers)
 
     // Check if the output directory doesn't already exist.
     checkOutputDir(outputDir)
-    console.log('#')
 
     // Ensure the output directory exists
     fs.mkdirSync(outputDir, {recursive: true})
@@ -908,9 +896,7 @@ const runGenerator = async (
     const appExtensionsDir = p.join(outputDir, 'app', 'application-extensions')
     const {id, type} = templateSource
     let tarPath
-    console.log('#')
 
-    console.log('type: ', type)
     switch (type) {
         case TEMPLATE_SOURCE_NPM: {
             const tarFile = sh
@@ -940,7 +926,6 @@ const runGenerator = async (
 
     // Copy the base template either from the package or npm.
     sh.cp('-rf', p.join(packagePath, '*'), outputDir)
-    console.log('#')
 
     // Copy template specific assets over.
     const assetsDir = p.join(ASSETS_TEMPLATES_DIR, id)
@@ -954,12 +939,9 @@ const runGenerator = async (
                 processTemplate(relFilePath, assetsDir, outputDir, context)
             })
     }
-    console.log('#')
 
     // Check project type and handle appropriately
     if (answers.project.type === 'PWAKitAppExtensionProject') {
-        console.log('here')
-
         const devOutputDir = p.join(outputDir, LOCAL_DEV_PROJECT_DIR)
 
         // Update the root package.json to add a start script
@@ -1019,18 +1001,12 @@ const runGenerator = async (
             projectName: localDevProjectContext.answers.project.name
         })
     } else {
-        console.log('there')
-        console.log('selectedAppExtensions: ', selectedAppExtensions)
         processAppExtensions(selectedAppExtensions, extractAppExtensions, appExtensionsDir)
-        console.log('there')
 
     }
-    console.log('#')
 
     // Add selected Application Extensions to devDependencies and mobify object
     const appExtensionDeps = selectedAppExtensions.reduce((acc, appExtensionName) => {
-        console.log('acc; ', acc)
-        console.log('appExtensionName; ', appExtensionName)
 
         // Find the corresponding Application Extension details
         const appExtensionDetails = context?.availableAppExtensions?.find(
@@ -1043,9 +1019,7 @@ const runGenerator = async (
             : version
         return acc
     }, {})
-    console.log('#')
 
-    console.log('Updating the package json.. here are the selected extensions: ', selectedAppExtensions)
     updatePackageJson(p.resolve(outputDir, 'package.json'), {
         name: getSlugifiedProjectName(context.answers.project.name || context.preset.id),
         version: GENERATED_PROJECT_VERSION,
