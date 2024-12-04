@@ -925,7 +925,7 @@ const runGenerator = async (
     })
 
     // Copy the base template either from the package or npm.
-    sh.cp('-rf', p.join(packagePath, '*'), outputDir)
+    sh.cp('-rf', p.join(packagePath, '{*,.*}'), outputDir)
 
     // Copy template specific assets over.
     const assetsDir = p.join(ASSETS_TEMPLATES_DIR, id)
