@@ -10,10 +10,7 @@ module.exports = {
     testURL: 'http://localhost/',
     verbose: true,
     collectCoverage: true,
-    coveragePathIgnorePatterns: [
-        "app/application-extensions",
-        "/node_modules/"
-    ],
+    coveragePathIgnorePatterns: ['app/application-extensions', '/node_modules/'],
     // We need access to jsdom globally in tests.
     // jsdom isn't accessible so we need to use this
     // 3rd party test environment wrapper. When we
