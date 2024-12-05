@@ -57,7 +57,7 @@ describe('Overrides Resolver Loader', () => {
                     // Extensions with overrides
                     '/node_modules/@salesforce/extension-that/src/overrides/@salesforce/extension-this/pages/sample-page.jsx':
                         '// @salesforce/extension-that',
-                    '/node_modules/@salesforce/extension-other/src/overrides/@salesforce/other/pages/sample-page.jsx':
+                    '/node_modules/@salesforce/extension-other/src/overrides/@salesforce/extension-this/pages/sample-page.jsx':
                         '// @salesforce/extension-other',
 
                     // Extension using overridable import
