@@ -351,7 +351,7 @@ const PRESETS = [
             ['project.extractAppExtensions']: true,
             ['project.type']: 'PWAKitAppProject',
             ['project.useApplicationExtensibility']: true,
-            ['project.selectedAppExtensions']: ['@salesforce/extension-chakra-storefront'],
+            ['project.selectedAppExtensions']: ['@salesforce/extension-chakra-storefront', '@salesforce/extension-chakra-store-locator'],
             ['project.name']: 'retail-react-app',
             ['project.commerce.instanceUrl']: 'https://zzrf-001.dx.commercecloud.salesforce.com',
             ['project.commerce.clientId']: 'c9c45bfd-0ed3-4aa2-9971-40f88962b836',
