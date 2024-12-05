@@ -81,8 +81,8 @@ The Store Locator extension is configured via the `mobify.app.extensions` proper
 The following files in the extension can be overridden in your project:
 
 ```
-/src/components/store-locator/store-locator-list-item.tsx
-/src/components/store-locator/store-locator-heading.tsx
+/src/components/list-item.tsx
+/src/components/heading.tsx
 ```
 
 ### Store Locator List Item
@@ -96,6 +96,5 @@ your-project/
   src/
     overrides/
       components/
-        store-locator/
-          store-locator-list-item.tsx
+          list-item.tsx
 ```
