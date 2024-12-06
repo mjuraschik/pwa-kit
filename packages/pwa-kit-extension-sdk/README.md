@@ -69,7 +69,7 @@ This SDK consists of both Webpack and Babel plugins/loaders that are used to int
     Result resolution path:
 
     1. Check if file exists in the base application overrides `app/overrides/pages/checkout`
-    2. Next, check if file extists in the last extension applied to the base application `node_modules/@salesforce/extension-chakra-store-locator/src/overrides/pages/checkout`
+    2. Next, check if file exists in the last extension applied to the base application `node_modules/@salesforce/extension-chakra-store-locator/src/overrides/pages/checkout`
     3. Finally, check if file extists in the exension configured prior `node_modules/@salesforce/extension-chakra-chakra-storefront/src/overrides/pages/checkout` and do not go any further as you have reached the source importing module which is the canonical source.
 
 
