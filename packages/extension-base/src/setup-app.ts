@@ -54,7 +54,7 @@ class Sample extends ApplicationExtension<Config> {
     /**
      * This method is used on the server during the rendering pipeline. It's provided a list of all the routes that your application
      * is configured with, including those defined in the base application and those added by all the extensions. You can use this
-     * methods to modify these routes in any way you want, but you must return an array of routes as a result.
+     * method to modify these routes in any way you want, but you must return an array of routes as a result.
      */
     beforeRouteMatch(allRoutes: RouteProps[]): RouteProps[] {
         return allRoutes
