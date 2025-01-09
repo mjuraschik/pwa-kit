@@ -14,6 +14,7 @@ import {ApplicationExtension} from '@salesforce/pwa-kit-extension-sdk/react'
 
 // Local Imports
 import {withOptionalChakra} from './components/with-optional-chakra-provider'
+import {withOptionalCommerceSdkReactProvider} from './components/with-optional-commerce-sdk-react-provider'
 import {withStoreLocator} from './components/with-store-locator'
 import {Config} from './types'
 
@@ -35,7 +36,7 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
             )
         }
 
-        return withStoreLocator(withOptionalChakra(App), config)
+        return withStoreLocator(withOptionalCommerceSdkReactProvider(withOptionalChakra(App), config), config)
     }
 
     extendRoutes(routes: RouteProps[]): RouteProps[] {
