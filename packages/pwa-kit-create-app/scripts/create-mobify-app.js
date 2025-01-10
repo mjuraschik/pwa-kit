@@ -501,8 +501,8 @@ const PRESETS = [
         private: true
     },
     {
-        id: 'app-extension-sample-extract',
-        name: 'Application Extension sample project (Extract Application Extensions code)',
+        id: 'app-extension-starter-extract',
+        name: 'Application Extension starter project (Extract Application Extensions code)',
         description:
             'Generate an Application Extension using typescript-minimal template with the Application Extensions code extracted.',
         templateSource: {
@@ -511,15 +511,15 @@ const PRESETS = [
         },
         questions: TYPESCRIPT_MINIMAL_QUESTIONS,
         answers: {
-            ['project.name']: 'app-extension-sample-extract',
-            ['project.selectedAppExtensions']: ['extension-sample'],
+            ['project.name']: 'app-extension-starter-extract',
+            ['project.selectedAppExtensions']: ['extension-starter'],
             ['project.extractAppExtensions']: true
         },
         private: true
     },
     {
-        id: 'app-extension-sample-no-extract',
-        name: 'Application Extension sample project (Without extracting Application Extensions code)',
+        id: 'app-extension-starter-no-extract',
+        name: 'Application Extension starter project (Without extracting Application Extensions code)',
         description:
             'Generate an Application Extension using typescript-minimal template without the Applications Extensions code extracted.',
         templateSource: {
@@ -528,8 +528,8 @@ const PRESETS = [
         },
         questions: TYPESCRIPT_MINIMAL_QUESTIONS,
         answers: {
-            ['project.name']: 'app-extension-sample-no-extract',
-            ['project.selectedAppExtensions']: ['extension-sample'],
+            ['project.name']: 'app-extension-starter-no-extract',
+            ['project.selectedAppExtensions']: ['extension-starter'],
             ['project.extractAppExtensions']: false
         },
         private: true
