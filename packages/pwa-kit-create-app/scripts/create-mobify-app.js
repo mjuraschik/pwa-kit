@@ -512,6 +512,7 @@ const PRESETS = [
         questions: TYPESCRIPT_MINIMAL_QUESTIONS,
         answers: {
             ['project.name']: 'app-extension-starter-extract',
+            ['project.type']: 'PWAKitAppExtensionProject',
             ['project.selectedAppExtensions']: ['extension-starter'],
             ['project.extractAppExtensions']: true
         },
@@ -529,6 +530,7 @@ const PRESETS = [
         questions: TYPESCRIPT_MINIMAL_QUESTIONS,
         answers: {
             ['project.name']: 'app-extension-starter-no-extract',
+            ['project.type']: 'PWAKitAppExtensionProject',
             ['project.selectedAppExtensions']: ['extension-starter'],
             ['project.extractAppExtensions']: false
         },
