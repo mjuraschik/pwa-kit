@@ -31,7 +31,7 @@ const useHasCommerceApiProvider = () => {
     }
 
     return hasProvider
-} 
+}
 
 type WithOptionalCommerceSdkReactProvider = React.ComponentPropsWithoutRef<any>
 
@@ -51,7 +51,9 @@ export const withOptionalCommerceSdkReactProvider = <P extends object>(
             return <WrappedComponent {...(props as P)} />
         }
         if (!config.commerceApi || !config.commerceApi?.parameters) {
-            logger.error('CommerceApiProvider is not installed and no commerceApi config is provided, this extension may not work as expected.')
+            logger.error(
+                'CommerceApiProvider is not installed and no commerceApi config is provided, this extension may not work as expected.'
+            )
             return <WrappedComponent {...(props as P)} />
         }
         const appOrigin = getAppOrigin()

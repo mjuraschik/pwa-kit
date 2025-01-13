@@ -39,7 +39,8 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
 
         const HOCs = [
             (component: React.ComponentType<any>) => withStoreLocator(component, config),
-            (component: React.ComponentType<any>) => withOptionalCommerceSdkReactProvider(component, config),
+            (component: React.ComponentType<any>) =>
+                withOptionalCommerceSdkReactProvider(component, config),
             (component: React.ComponentType<any>) => withOptionalChakra(component)
         ]
 

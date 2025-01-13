@@ -9,10 +9,12 @@ import {render, screen} from '@testing-library/react'
 import {withOptionalCommerceSdkReactProvider} from './with-optional-commerce-sdk-react-provider'
 import PropTypes from 'prop-types'
 
-// Mock external dependencies
 jest.mock('@salesforce/commerce-sdk-react', () => ({
     useCommerceApi: jest.fn(),
-    CommerceApiProvider: ({children}) => <div data-testid="commerce-provider">{children}</div>
+    // eslint-disable-next-line react/prop-types
+    CommerceApiProvider: ({children}) => {
+        return <div data-testid="commerce-provider">{children}</div>
+    }
 }))
 
 jest.mock('@salesforce/pwa-kit-react-sdk/utils/url', () => ({
@@ -40,6 +42,7 @@ describe('withOptionalCommerceSdkReactProvider', () => {
     })
 
     it('wraps component with CommerceApiProvider when no provider exists', () => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const {useCommerceApi} = require('@salesforce/commerce-sdk-react')
         useCommerceApi.mockImplementation(() => {
             throw new Error('No provider')
@@ -53,8 +56,9 @@ describe('withOptionalCommerceSdkReactProvider', () => {
     })
 
     it('does not wrap component when provider already exists', () => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const {useCommerceApi} = require('@salesforce/commerce-sdk-react')
-        useCommerceApi.mockReturnValue({ ShopperProducts: {}, ShopperBaskets: {} })
+        useCommerceApi.mockReturnValue({ShopperProducts: {}, ShopperBaskets: {}})
 
         const WrappedComponent = withOptionalCommerceSdkReactProvider(TestComponent, mockConfig)
         const {container} = render(<WrappedComponent />)
@@ -69,18 +73,23 @@ describe('withOptionalCommerceSdkReactProvider', () => {
             testProp: PropTypes.string
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const {useCommerceApi} = require('@salesforce/commerce-sdk-react')
         useCommerceApi.mockImplementation(() => {
             throw new Error('No provider')
         })
 
-        const WrappedComponent = withOptionalCommerceSdkReactProvider(TestComponentWithProps, mockConfig)
+        const WrappedComponent = withOptionalCommerceSdkReactProvider(
+            TestComponentWithProps,
+            mockConfig
+        )
         render(<WrappedComponent testProp="test value" />)
 
         expect(screen.getByText('test value')).toBeTruthy()
     })
 
     it('renders wrapped component without provider when config is missing', () => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const {useCommerceApi} = require('@salesforce/commerce-sdk-react')
         useCommerceApi.mockImplementation(() => {
             throw new Error('No provider')
@@ -93,4 +102,4 @@ describe('withOptionalCommerceSdkReactProvider', () => {
         expect(container.querySelector('[data-testid="commerce-provider"]')).toBeNull()
         expect(screen.getByText('Test Component')).toBeTruthy()
     })
-}) 
+})
