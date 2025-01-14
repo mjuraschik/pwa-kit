@@ -158,8 +158,8 @@ beforeEach(() => {
                     paymentCard: {
                         cardType: 'Master Card',
                         creditCardExpired: false,
-                        expirationMonth: 1,
-                        expirationYear: 2030,
+                        expirationMonth: 12,
+                        expirationYear: 2040,
                         holder: 'Test McTester',
                         maskedNumber: '************5454',
                         numberLastDigits: '5454',
@@ -276,7 +276,7 @@ test('Can proceed through checkout steps as guest', async () => {
                         cardType: 'Visa',
                         creditCardExpired: false,
                         expirationMonth: 12,
-                        expirationYear: 2024,
+                        expirationYear: 2040,
                         holder: 'Testy McTester',
                         maskedNumber: '************1111',
                         numberLastDigits: '1111',
@@ -505,7 +505,7 @@ test('Can proceed through checkout as registered customer', async () => {
     // Verify applied payment and billing address
     expect(step3Content.getByText('Master Card')).toBeInTheDocument()
     expect(step3Content.getByText('•••• 5454')).toBeInTheDocument()
-    expect(step3Content.getByText('1/2040')).toBeInTheDocument()
+    expect(step3Content.getByText('12/2040')).toBeInTheDocument()
 
     expect(step3Content.getByText('123 Main St')).toBeInTheDocument()
 
