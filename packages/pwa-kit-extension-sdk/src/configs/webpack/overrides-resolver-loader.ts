@@ -85,7 +85,7 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
 
     // Provided a match and group representing a relative path, replace it with an absolute path using the new base directory.
     const convertRelativePaths = (match: string, relativePath: string) => {
-        const absolutePath = path.resolve(newBasedir, relativePath)
+        const absolutePath = path.posix.resolve(newBasedir, relativePath)
         return match.replace(relativePath, absolutePath)
     }
 
