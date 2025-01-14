@@ -1,9 +1,12 @@
- __                       _          __      _                 _             
-/ _\ __ _ _ __ ___  _ __ | | ___    /__\_  _| |_ ___ _ __  ___(_) ___  _ __  
-\ \ / _` | '_ ` _ \| '_ \| |/ _ \  /_\ \ \/ / __/ _ \ '_ \/ __| |/ _ \| '_ \ 
-_\ \ (_| | | | | | | |_) | |  __/ //__  >  <| ||  __/ | | \__ \ | (_) | | | |
-\__/\__,_|_| |_| |_| .__/|_|\___| \__/ /_/\_\\__\___|_| |_|___/_|\___/|_| |_|
-                   |_|                                                       
+:loudspeaker: Hey there, Salesforce Commerce Cloud community!
+
+We’re excited to hear your thoughts on your developer experience with PWA Kit and the Composable Storefront generally! Your feedback is incredibly valuable in helping us guide our roadmap and improve our offering.
+
+:clipboard: Take our quick survey here: [Survey](https://forms.gle/bUZNxQ3QKUcrjhV18) 
+
+Feel free to share this survey link with your colleagues, partners, or anyone who has experience with PWA Kit. Your input will help us shape the future of our development tools.
+
+Thank you for being a part of our community and for your continuous support! :raised_hands:
 
 # Description
 
@@ -52,11 +55,11 @@ the extension as they like.
 # Installation
 
 ```
-> npm install @salesforce/extension-sample<br/>
+> npm install @salesforce/extension-starter<br/>
 > Downloading npm package... <br/>
-> Installing extention... <br/>
+> Installing extension... <br/>
 > Finished. <br/>
-> Congratulations! The Sample extension was successfully installed! Please visit https://www.npmjs.com/package/@salesforce/extension-sample for more information on how to use this extension.
+> Congratulations! The Sample extension was successfully installed! Please visit https://www.npmjs.com/package/@salesforce/extension-starter for more information on how to use this extension.
 ```
 
 # Advanced Usage

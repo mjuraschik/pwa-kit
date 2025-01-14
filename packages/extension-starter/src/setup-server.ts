@@ -15,7 +15,7 @@ import {ApplicationExtension} from '@salesforce/pwa-kit-extension-sdk/express'
 import {Config} from './types'
 import extensionMeta from '../extension-meta.json'
 
-class SampleExtension extends ApplicationExtension<Config> {
+class StarterExtension extends ApplicationExtension<Config> {
     static readonly id = extensionMeta.id
 
     /**
@@ -23,9 +23,9 @@ class SampleExtension extends ApplicationExtension<Config> {
      */
     extendApp(app: Application): Application {
         app.get('/sample', (req, res) => {
-            console.log('SampleExtension extendApp GET /sample')
+            console.log('StarterExtension extendApp GET /sample')
             res.send(
-                `<p>Hello from an express SampleExtension!</p>
+                `<p>Hello starter extension!</p>
                 <pre>extensionConfig = ${JSON.stringify(this.getConfig())}</pre>`
             )
         })
@@ -34,4 +34,4 @@ class SampleExtension extends ApplicationExtension<Config> {
     }
 }
 
-export default SampleExtension
+export default StarterExtension
