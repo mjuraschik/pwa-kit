@@ -52,7 +52,7 @@ describe('AppConfig', () => {
 
     afterAll(() => {
         window.localStorage.setItem.mockRestore()
-        global.fetch.mockClear()
+        global.fetch?.mockClear?.()
         global.fetch = originalFetch
     })
 
