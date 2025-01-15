@@ -1,4 +1,4 @@
-## v4.0.0-extensibility-preview.3 (Dec 13, 2024)
+## v4.0.0-extensibility-preview.3 (Jan 14, 2025)
 - Ensure build command works on windows when path includes spaces. [#2204](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2204)
 ## v4.0.0-extensibility-preview.2 (Dec 09, 2024)
 ## v4.0.0-extensibility-preview.1 (Dec 09, 2024)
