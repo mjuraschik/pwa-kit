@@ -145,6 +145,7 @@ const validateOverrideSource = (source: string, options: any = {}) => {
         return false
     }
 
+    // TODO: This is going to be addressed in future change.
     if (isMonoRepo) {
         normalizedSource = `@salesforce/${source.replace('/Users/bchypak/Projects/pwa-kit/packages/', '')}`
     } else {
