@@ -166,7 +166,7 @@ const isSourceInDotFile = (source, target) => {
 
     let overridables = []
     try {
-        overridables = fse.readFileSync(`${projectDir}/.overridable`, 'utf8').split('\n')
+        overridables = fse.readFileSync(`${projectDir}/.force_overrides`, 'utf8').split('\n')
     }
     catch (e) {
         // console.error('No .overridable file found')
