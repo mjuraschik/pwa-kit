@@ -11,7 +11,7 @@ import path from 'path'
 import resolve from 'resolve'
 
 // Local Imports
-import {buildCandidatePaths, getPackageName} from '../../shared/utils'
+import {buildCandidatePaths, getPackageName, SETUP_FILE_REGEX} from '../../shared/utils'
 
 // Types
 import type {ExtendedCompiler} from './types'
@@ -22,6 +22,12 @@ const IMPORT_REGEX = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"](\..*?)['"]/g
 const OVERRIDABLE_FILE_NAME = '.force_overrides'
 const REQUIRES_REGEX = /require\(['"](\..*?)['"]\)/g
 const SRC = 'src'
+
+// Cache for processed overrides
+const OVERRIDABLE_CACHE = {
+    node: [] as string[],
+    web: [] as string[]
+}
 
 /**
  * Webpack loader to override the resolution of a module based on the PWA-Kit applications
@@ -118,11 +124,6 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
     })
 }
 
-const OVERRIDABLE_CACHE = {
-    node: [] as string[],
-    web: [] as string[]
-}
-
 /**
  * 
  * @param {*} source 
@@ -133,13 +134,14 @@ const validateOverrideSource = (source: string, options: any = {}) => {
     const {target = 'node', overridables = []} = options
     const isMonoRepo = true
     const isExtensionFile = source.includes(`${path.sep}${EXTENSION_PACKAGE_PREFIX}`)
+    const isSetupFile = SETUP_FILE_REGEX.test(source)
     const targetCache = OVERRIDABLE_CACHE[target as keyof typeof OVERRIDABLE_CACHE]
 
     // Exit early if we have:
     // 1. Processed this file already.
     // 2. The file is not an extension file.
-    // 3. TBD - The file is in the disallowed list.
-    if (targetCache.includes(source) || !isExtensionFile) {
+    // 3. The file is an extension setup file.
+    if (targetCache.includes(source) || !isExtensionFile || isSetupFile) {
         return false
     }
 
