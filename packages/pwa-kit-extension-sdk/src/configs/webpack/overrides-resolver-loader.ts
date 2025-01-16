@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import {LoaderContext} from 'webpack'
+import {LoaderContext, web} from 'webpack'
+import fse from 'fs-extra'
 import os from 'os'
 import path from 'path'
 import resolve from 'resolve'
@@ -16,7 +17,9 @@ import {buildCandidatePaths, getPackageName} from '../../shared/utils'
 import type {ExtendedCompiler} from './types'
 
 // Constants
+const EXTENSION_PACKAGE_PREFIX = 'extension-'
 const IMPORT_REGEX = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"](\..*?)['"]/g
+const OVERRIDABLE_FILE_NAME = '.force_overrides'
 const REQUIRES_REGEX = /require\(['"](\..*?)['"]\)/g
 const SRC = 'src'
 
@@ -113,6 +116,91 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
         // future dev's this might be a place that needs to be adjusted.
         callback(null, adjustedSource)
     })
+}
+
+const OVERRIDABLE_CACHE = {
+    node: [] as string[],
+    web: [] as string[]
+}
+
+/**
+ * 
+ * @param {*} source 
+ * @returns 
+ */
+const validateOverrideSource = (source: string, options: any = {}) => {
+    let normalizedSource
+    const {target = 'node', overridables = []} = options
+    const isMonoRepo = true
+    const isExtensionFile = source.includes(`${path.sep}${EXTENSION_PACKAGE_PREFIX}`)
+    const targetCache = OVERRIDABLE_CACHE[target as keyof typeof OVERRIDABLE_CACHE]
+
+    // Exit early if we have:
+    // 1. Processed this file already.
+    // 2. The file is not an extension file.
+    // 3. TBD - The file is in the disallowed list.
+    if (targetCache.includes(source) || !isExtensionFile) {
+        return false
+    }
+
+    if (isMonoRepo) {
+        normalizedSource = `@salesforce/${source.replace('/Users/bchypak/Projects/pwa-kit/packages/', '')}`
+    } else {
+        // we are going to do something else here?
+        normalizedSource = source
+    }
+
+    // Check if the normalized source is in the list of overridables.
+    const hasOverride = overridables.includes(normalizedSource)
+
+    // If we have an override, add it to the cache so we don't process it again.
+    if (hasOverride) {
+        console.log('Manual Override for: ', source)
+        targetCache.push(source)
+    }
+
+    return hasOverride
+}
+
+/**
+ * Generates a Webpack rule for application extensibility, configuring the loader for
+ * handling application extensions based on the target (e.g., 'node' for server-side,
+ * 'react' for client-side).
+ *
+ * @param {Object} [options={}] - Options to customize the Webpack rule.
+ * @param {Object} [options.loaderOptions={}] - Loader-specific options.
+ * @param {string} [options.loaderOptions.target=DEFAULT_TARGET] - The target environment, either 'node' or 'react'.
+ * @param {Object} [options.loaderOptions.appConfig] - Optional application configuration to pass to the loader.
+ *
+ * @returns {Object} A Webpack rule configuration object for handling application extensions.
+ */
+export const ruleForOverrideResolver = (options: any = {}) => {
+    const {projectDir, target} = options
+    let overridables: string[] = []
+
+    try {
+        overridables = 
+            fse
+            .readFileSync(path.join(projectDir, OVERRIDABLE_FILE_NAME), 'utf8')
+            .split(/\r?\n/)
+            .filter((line) => !line.startsWith('//'))
+    }
+    catch (e) {
+        // If where is no .force_overrides file, we can safely return null.
+        return null
+    }
+
+    return {
+        test: (source: string) => { 
+          return validateOverrideSource(source, {
+            target, 
+            overridables
+          })
+        },
+        use: {
+            loader: '@salesforce/pwa-kit-extension-sdk/configs/webpack/overrides-resolver-loader'
+        }
+    }
 }
 
 // Export the loader as the default export with proper typing

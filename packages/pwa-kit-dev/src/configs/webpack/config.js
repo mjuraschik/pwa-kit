@@ -30,7 +30,7 @@ import {sdkReplacementPlugin} from './plugins'
 import {CLIENT, SERVER, CLIENT_OPTIONAL, SSR, REQUEST_PROCESSOR} from './config-names'
 
 // Utilities
-import {ruleForApplicationExtensibility} from '@salesforce/pwa-kit-extension-sdk/configs/webpack'
+import {ruleForApplicationExtensibility, ruleForOverrideResolver} from '@salesforce/pwa-kit-extension-sdk/configs/webpack'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
 import {
     buildAliases,
@@ -139,49 +139,6 @@ const findDepInStack = (pkg) => {
         }
     }
     return candidate
-}
-
-const dontProcessAgainWeb = []
-
-const dontProcessAgainNode = []
-/**
- * 
- * @param {*} source 
- * @returns 
- */
-const isSourceInDotFile = (source, target) => {
-    const sourceOriginal = source
-    const isMonoRepo = true
-    const isExtensionFile = source.includes('packages/extension-')
-
-    let dontProcessAgain = target === 'web' ? dontProcessAgainWeb : dontProcessAgainNode
-    
-    if (dontProcessAgain.includes(sourceOriginal)) {
-        return false
-    }
-
-    if (!isExtensionFile) {
-        return false
-    }
-
-    let overridables = []
-    try {
-        overridables = fse.readFileSync(`${projectDir}/.force_overrides`, 'utf8').split('\n')
-    }
-    catch (e) {
-        // console.error('No .overridable file found')
-    }
-
-    if (isMonoRepo) {
-        source = `@salesforce/${source.replace('/Users/bchypak/Projects/pwa-kit/packages/', '')}`
-    }
-
-    if (overridables.includes(source)) {
-        console.log('Manual Override for: ', source)
-        dontProcessAgain.push(sourceOriginal)
-    }
-
-    return overridables.includes(source)
 }
 
 const baseConfig = (target) => {
@@ -314,14 +271,7 @@ const baseConfig = (target) => {
                                 target: 'node'
                             }
                         }),
-                        {
-                            test: (source) => { 
-                              return isSourceInDotFile(source, target)
-                            },
-                            use: {
-                                loader: '@salesforce/pwa-kit-extension-sdk/configs/webpack/overrides-resolver-loader'
-                            }
-                        }
+                        ruleForOverrideResolver({target, projectDir})
                     ].filter(Boolean)
                 }
             }
