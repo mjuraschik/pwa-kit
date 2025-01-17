@@ -37,13 +37,14 @@ import {
     nameRegex,
     getConfiguredExtensions
 } from '@salesforce/pwa-kit-extension-sdk/shared/utils'
+import { symlink } from 'fs'
 
 const projectDir = process.cwd()
 const pkg = fse.readJsonSync(resolve(projectDir, 'package.json'))
 const buildDir = process.env.PWA_KIT_BUILD_DIR
     ? resolve(process.env.PWA_KIT_BUILD_DIR)
     : resolve(projectDir, 'build')
-
+const isMonoRepo = fse.existsSync(resolve(projectDir, '..', '..', 'lerna.json'))
 const production = 'production'
 const development = 'development'
 const analyzeBundle = process.env.MOBIFY_ANALYZE === 'true'
@@ -271,7 +272,7 @@ const baseConfig = (target) => {
                                 target: 'node'
                             }
                         }),
-                        ruleForOverrideResolver({target, projectDir})
+                        ruleForOverrideResolver({target, projectDir, isMonoRepo})
                     ].filter(Boolean)
                 }
             }

@@ -18,8 +18,11 @@ import type {ExtendedCompiler} from './types'
 
 // Constants
 const EXTENSION_PACKAGE_PREFIX = 'extension-'
+const EXTENSION_PACKAGE_WORKSPACE = '@salesforce'
 const IMPORT_REGEX = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"](\..*?)['"]/g
 const OVERRIDABLE_FILE_NAME = '.force_overrides'
+const MONO_REPO_WORKSPACE_FOLDER = `${path.sep}packages${path.sep}`
+const NODE_MODULES_FOLDER = `${path.sep}packages${path.sep}`
 const REQUIRES_REGEX = /require\(['"](\..*?)['"]\)/g
 const SRC = 'src'
 
@@ -75,7 +78,6 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
         extensionEntries: applicationExtensions
     })
 
-    console.log('Candidate Paths:', paths)
     // Also include the base override path and the path from the extension doing the import.
     const resolvedResourcePath = resolve.sync(projectRelPath, {
         basedir,
@@ -131,8 +133,7 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
  */
 const validateOverrideSource = (source: string, options: any = {}) => {
     let normalizedSource
-    const {target = 'node', overridables = []} = options
-    const isMonoRepo = true
+    const {isMonoRepo = false, target = 'node', overridables = []} = options
     const isExtensionFile = source.includes(`${path.sep}${EXTENSION_PACKAGE_PREFIX}`)
     const isSetupFile = SETUP_FILE_REGEX.test(source)
     const targetCache = OVERRIDABLE_CACHE[target as keyof typeof OVERRIDABLE_CACHE]
@@ -145,14 +146,15 @@ const validateOverrideSource = (source: string, options: any = {}) => {
         return false
     }
 
-    // TODO: This is going to be addressed in future change.
     if (isMonoRepo) {
-        normalizedSource = `@salesforce/${source.replace('/Users/bchypak/Projects/pwa-kit/packages/', '')}`
+        // For now we are going to make the assumption that all our extension projects in our mono repo
+        // are part of the `@salesforce` namespace, this is pretty safe.
+        normalizedSource = `${EXTENSION_PACKAGE_WORKSPACE}${path.sep}${source.split(MONO_REPO_WORKSPACE_FOLDER).pop()}`
     } else {
         // we are going to do something else here?
-        normalizedSource = source
+        normalizedSource = source.split(NODE_MODULES_FOLDER).pop()
     }
-
+    console.log('Normalized Source: ', normalizedSource)
     // Check if the normalized source is in the list of overridables.
     const hasOverride = overridables.includes(normalizedSource)
 
@@ -171,14 +173,14 @@ const validateOverrideSource = (source: string, options: any = {}) => {
  * 'react' for client-side).
  *
  * @param {Object} [options={}] - Options to customize the Webpack rule.
- * @param {Object} [options.loaderOptions={}] - Loader-specific options.
- * @param {string} [options.loaderOptions.target=DEFAULT_TARGET] - The target environment, either 'node' or 'react'.
- * @param {Object} [options.loaderOptions.appConfig] - Optional application configuration to pass to the loader.
+ * @param {Object} [options.projectDir={}] - Loader-specific options.
+ * @param {string} [options.target=DEFAULT_TARGET] - The target environment, either 'node' or 'react'.
+ * @param {Object} [options.isMonoRepo] - Optional application configuration to pass to the loader.
  *
  * @returns {Object} A Webpack rule configuration object for handling application extensions.
  */
 export const ruleForOverrideResolver = (options: any = {}) => {
-    const {projectDir, target} = options
+    const {projectDir, target, isMonoRepo} = options
     let overridables: string[] = []
 
     try {
@@ -196,6 +198,7 @@ export const ruleForOverrideResolver = (options: any = {}) => {
     return {
         test: (source: string) => { 
           return validateOverrideSource(source, {
+            isMonoRepo,
             target, 
             overridables
           })
