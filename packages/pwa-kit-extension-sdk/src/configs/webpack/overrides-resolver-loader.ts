@@ -21,8 +21,8 @@ const EXTENSION_PACKAGE_PREFIX = 'extension-'
 const EXTENSION_PACKAGE_NAMESPACE = '@salesforce'
 const IMPORT_REGEX = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"](\..*?)['"]/g
 const OVERRIDABLE_FILE_NAME = '.force_overrides'
-const MONO_REPO_WORKSPACE_FOLDER = `${path.sep}packages${path.sep}`
-const NODE_MODULES_FOLDER = `${path.sep}node_modules${path.sep}`
+const MONO_REPO_WORKSPACE_FOLDER = 'packages'
+const NODE_MODULES_FOLDER = 'node_modules'
 const REQUIRES_REGEX = /require\(['"](\..*?)['"]\)/g
 const SRC = 'src'
 
@@ -162,7 +162,13 @@ export const validateOverrideSource = (source: string, options: any = {}) => {
 
     // We are only concerned with the source path relative to the extension package namespace.
     normalizedSource = `${
-        source.split(isMonoRepo ? MONO_REPO_WORKSPACE_FOLDER : NODE_MODULES_FOLDER).pop() ?? ''
+        source
+            .split(
+                `${path.sep}${isMonoRepo ? MONO_REPO_WORKSPACE_FOLDER : NODE_MODULES_FOLDER}${
+                    path.sep
+                }`
+            )
+            .pop() ?? ''
     }`
 
     // At this point the path is either POSIX or windows, we need to normalize it to POSIX.
