@@ -22,7 +22,7 @@ const EXTENSION_PACKAGE_WORKSPACE = '@salesforce'
 const IMPORT_REGEX = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"](\..*?)['"]/g
 const OVERRIDABLE_FILE_NAME = '.force_overrides'
 const MONO_REPO_WORKSPACE_FOLDER = `${path.sep}packages${path.sep}`
-const NODE_MODULES_FOLDER = `${path.sep}packages${path.sep}`
+const NODE_MODULES_FOLDER = `${path.sep}node_modules${path.sep}`
 const REQUIRES_REGEX = /require\(['"](\..*?)['"]\)/g
 const SRC = 'src'
 
