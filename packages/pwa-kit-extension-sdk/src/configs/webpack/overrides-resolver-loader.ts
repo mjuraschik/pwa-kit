@@ -146,6 +146,9 @@ const validateOverrideSource = (source: string, options: any = {}) => {
         return false
     }
 
+    // Because our webpack configuration is setup to resolve symlinks, we need to normalize the source path because
+    // the source path passed to the loaded is not representative of what you would see in a generated project (e.g.
+    // it doesn't resolve to being in the node_modules folder).
     if (isMonoRepo) {
         // For now we are going to make the assumption that all our extension projects in our mono repo
         // are part of the `@salesforce` namespace, this is pretty safe.
