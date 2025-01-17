@@ -18,7 +18,7 @@ import type {ExtendedCompiler} from './types'
 
 // Constants
 const EXTENSION_PACKAGE_PREFIX = 'extension-'
-const EXTENSION_PACKAGE_WORKSPACE = '@salesforce'
+const EXTENSION_PACKAGE_NAMESPACE = '@salesforce'
 const IMPORT_REGEX = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"](\..*?)['"]/g
 const OVERRIDABLE_FILE_NAME = '.force_overrides'
 const MONO_REPO_WORKSPACE_FOLDER = `${path.sep}packages${path.sep}`
@@ -31,6 +31,9 @@ const OVERRIDABLE_CACHE = {
     node: [] as string[],
     web: [] as string[]
 }
+
+// Export the cache for testing purposes
+export const __OVERRIDABLE_CACHE__ = OVERRIDABLE_CACHE
 
 /**
  * Webpack loader to override the resolution of a module based on the PWA-Kit applications
@@ -127,11 +130,18 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
 }
 
 /**
+ * Return a boolean indicating if the source file should be processed by the override loader based on
+ * various conditions including the cache state, the source file type, and the presence of an override file
+ * in the provided overridables list.
  *
- * @param {*} source
- * @returns
+ * @param source
+ * @param options
+ * @param {string} [options.projectDir] - Loader-specific options.
+ * @param {string} [options.target=DEFAULT_TARGET] - The target environment, either 'node' or 'web'.
+ * @param {boolean} [options.isMonoRepo] - Changes the source path normalization based on if the project is run in a mono-repo.
+ * @returns {boolean} - A boolean indicating if the source file should be processed by the override loader.
  */
-const validateOverrideSource = (source: string, options: any = {}) => {
+export const validateOverrideSource = (source: string, options: any = {}) => {
     const {isMonoRepo = false, target = 'node', overridables = []} = options
     const isExtensionFile = source.includes(`${path.sep}${EXTENSION_PACKAGE_PREFIX}`)
     const isSetupFile = SETUP_FILE_REGEX.test(source)
@@ -152,7 +162,7 @@ const validateOverrideSource = (source: string, options: any = {}) => {
     // For now we are going to make the assumption that all our extension projects in our mono repo
     // are part of the `@salesforce` namespace, this is pretty safe.
     const normalizedSource = isMonoRepo
-        ? `${EXTENSION_PACKAGE_WORKSPACE}${path.sep}${
+        ? `${EXTENSION_PACKAGE_NAMESPACE}${path.sep}${
               source.split(MONO_REPO_WORKSPACE_FOLDER).pop() ?? ''
           }`
         : source.split(NODE_MODULES_FOLDER).pop()
@@ -171,12 +181,13 @@ const validateOverrideSource = (source: string, options: any = {}) => {
 /**
  * Generates a Webpack rule for application extensibility, configuring the loader for
  * handling application extensions based on the target (e.g., 'node' for server-side,
- * 'react' for client-side).
+ * 'web' for client-side). Specifically this enables the ability to override the resolution
+ * via the `.force_overrides` file.
  *
  * @param {Object} [options={}] - Options to customize the Webpack rule.
- * @param {Object} [options.projectDir={}] - Loader-specific options.
- * @param {string} [options.target=DEFAULT_TARGET] - The target environment, either 'node' or 'react'.
- * @param {Object} [options.isMonoRepo] - Optional application configuration to pass to the loader.
+ * @param {string} [options.projectDir] - Loader-specific options.
+ * @param {string} [options.target=DEFAULT_TARGET] - The target environment, either 'node' or 'web'.
+ * @param {boolean} [options.isMonoRepo] - Changes the source path normalization based on if the project is run in a mono-repo.
  *
  * @returns {Object} A Webpack rule configuration object for handling application extensions.
  */
