@@ -5,13 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React, {useEffect} from 'react'
+import React from 'react'
 import {Box, Container} from '@chakra-ui/react'
 import {StoreLocatorContent} from '../../components/content'
 
 import {useExtensionStore} from '../../hooks/use-extension-store'
-// import {useStore as useExtensionsStore} from '@salesforce/pwa-kit-extension-sdk/react'
-
 
 const StoreLocatorPage = () => {
     const {setCounter, counter} = useExtensionStore()

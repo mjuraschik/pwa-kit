@@ -58,24 +58,30 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
         ]
     }
 
-    getStoreSlice(): {sliceName: string; sliceInitializer: any} {
-        return {
-            sliceName: StoreLocatorExtension.id,
-            sliceInitializer: (set: any) => ({
-                counter: 0,
-                setCounter: () =>
-                    set((state: any) => ({
-                      state: {
-                        ...state.state,
-                        ['@salesforce/extension-chakra-store-locator']: {
-                            ...state.state['@salesforce/extension-chakra-store-locator'],
-                            counter: state.state['@salesforce/extension-chakra-store-locator'].counter + 1
-                        }
-                        
-                      },
-                    }))
-            })
-        }
+    getSliceInitializer(): any {
+        return (set: any) => ({
+            counter: 0,
+            setCounter: () => 
+                set((state: any) => {
+                    console.log('state: ', state)
+                    console.log('state: ', {})
+                    return {
+                        state: {
+                          ...state.state,
+                          ['@salesforce/extension-chakra-store-locator']: {
+                              ...state.state['@salesforce/extension-chakra-store-locator'],
+                              counter: state.state['@salesforce/extension-chakra-store-locator'].counter + 1
+                          }
+                          
+                        },
+                      }
+                })
+            // setCounter: (state: any) => {
+            //     return {
+            //         counter: state.counter + 1
+            //     }
+            // }
+        })
     }
 }
 
