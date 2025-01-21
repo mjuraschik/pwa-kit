@@ -39,29 +39,31 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
             )
         }
 
+        const withApplicationExtensionStoreOptions = {
+            id: extensionMeta.id,
+            sliceInitializer: (set: any, get: any) => ({
+                // TODO: Kevin, this is where you are going to place your initial state and actions. E.g. "modalOpen: false" etc.
+                counter: 0,
+                incrementCounter: () =>
+                    {
+                        console.log('incrementCounter', get())
+                        set((state: any) => ({
+                            counter: state.counter + 1
+                        }))
+                    },
+                decrementCounter: () =>
+                    set((state: any) => ({
+                        counter: state.counter - 1
+                    }))
+            })
+        }
+
         const HOCs = [
             (component: React.ComponentType<any>) => withStoreLocator(component, config),
             (component: React.ComponentType<any>) =>
                 withOptionalCommerceSdkReactProvider(component, config),
             (component: React.ComponentType<any>) => withOptionalChakra(component),
-            // TODO: Remove after cleaning up the API
-            (component: React.ComponentType<any>) => withApplicationExtensionStore(
-                component, 
-                {
-                    id: '@salesforce/extension-chakra-store-locator',
-                    sliceInitializer: (set: any, get: any) => ({
-                        counter: 0,
-                        incrementCounter: () =>
-                            set((state: any) => ({
-                                counter: state.counter + 1
-                            })),
-                        decrementCounter: () =>
-                            set((state: any) => ({
-                                counter: state.counter - 1
-                            }))
-                    })
-                }
-            )
+            (component: React.ComponentType<any>) => withApplicationExtensionStore(component, withApplicationExtensionStoreOptions)
         ]
 
         return applyHOCs(App, HOCs)

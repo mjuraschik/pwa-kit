@@ -24,19 +24,22 @@ export const useApplicationExtensionsStore = create<BaseStore>()(
             set((state) => ({
                 state: {
                     ...state.state,
-                    // [sliceName]: sliceInitializer(set, get)
-                    // Here we have a modified version of the "set" that sets only the slice.
-                    [sliceName]: sliceInitializer((action: any) => {
-                        set((state: any) => ({
-                            state: {
-                                ...state.state,
-                                [sliceName]: {
-                                    ...state.state[sliceName],
-                                    ...action(state.state[sliceName])
+                    [sliceName]: sliceInitializer(
+                        // Narrowed version of set. Which allows setting state of the current slice only.
+                        (action: any) => {
+                            set((state: any) => ({
+                                state: {
+                                    ...state.state,
+                                    [sliceName]: {
+                                        ...state.state[sliceName],
+                                        ...action(state.state[sliceName])
+                                    }
                                 }
-                            }
-                        }))
-                    }, get)
+                            }))
+                        }, 
+                        // Narrowed version of get. Which returns state of the current slice.
+                        () => get().state[sliceName]
+                    )
                 }
             }))
         },

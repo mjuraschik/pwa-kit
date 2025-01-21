@@ -12,20 +12,32 @@ import React from 'react'
 import {useApplicationExtensionsStore} from '../hooks/useApplicationExtensionsStore'
 
 // Local Types
+import {SliceInitializer} from '../hooks/useApplicationExtensionsStore'
+
+// Local Types
 type withStoreOptions = {
-    id?: string,
-    sliceInitializer?: any
+    id: string
+    sliceInitializer: SliceInitializer<any>
 }
 
-const withStore = <C,>(WrappedComponent: React.ComponentType<C>, options: withStoreOptions) => {
-    const {id = '@salesforce/extension-chakra-store-locator', sliceInitializer} = options
+/**
+ * This HOC is used to add a slice to the global store for an extension.
+ *
+ * @param WrappedComponent
+ * @param options
+ * @returns
+ */
+const withApplicationExtensionStore = <C,>(
+    WrappedComponent: React.ComponentType<C>,
+    options: withStoreOptions
+) => {
+    const {id, sliceInitializer} = options
 
     // Because there extensions have unique slice names, we can safely add them to the global store.
-    useApplicationExtensionsStore
-        .getState()
-        .addSlice(id, sliceInitializer)
+    useApplicationExtensionsStore.getState().addSlice(id, sliceInitializer)
 
+    // Return the original component as we aren't modifying it in any way... yet.
     return WrappedComponent
 }
 
-export default withStore
+export default withApplicationExtensionStore
