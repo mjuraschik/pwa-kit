@@ -7,11 +7,9 @@
 
 // Third-Party
 import React from 'react'
+
 // Local
 import {useStore} from '../hooks/useApplicationExtensionsStore'
-
-// Types
-import {ApplicationExtension} from '../classes/ApplicationExtension'
 
 // Local Types
 type withStoreOptions = {

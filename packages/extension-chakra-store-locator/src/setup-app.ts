@@ -7,10 +7,11 @@
 
 // Third-Party
 import React from 'react'
+import {unstable_batchedUpdates} from 'react-dom'
 import {RouteProps} from 'react-router-dom'
 
 // Platform Imports
-import {ApplicationExtension, withStore} from '@salesforce/pwa-kit-extension-sdk/react'
+import {ApplicationExtension, withStore, useStore} from '@salesforce/pwa-kit-extension-sdk/react'
 import {applyHOCs} from '@salesforce/pwa-kit-extension-sdk/react/utils'
 
 // Local Imports
@@ -22,6 +23,7 @@ import {Config} from './types'
 import StoreLocatorPage from './pages/store-locator'
 import {logger} from './logger'
 import extensionMeta from '../extension-meta.json'
+
 
 class StoreLocatorExtension extends ApplicationExtension<Config> {
     static readonly id = extensionMeta.id
@@ -107,29 +109,14 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
         ]
     }
 
-    getSliceInitializer(): any {
-        // set: will set the state of the store for this extension slice.
-        // get: will get the state of the store for this extension slice.
-        return (set: any, get: any) => ({
-            counter: 0,
-            incrementCounter: () =>
-                set((state: any) => ({
-                    counter: state.counter + 1
-                })),
-            decrementCounter: () =>
-                set((state: any) => ({
-                    counter: state.counter - 1
-                }))
-        })
-        // return () => ({
-        //     counter: 0,
-        //     incrementCounter: (set: any, get: any) => ({
-        //         counter: get().counter + 1
-        //     }),
-        //     decrementCounter: (state: any) => ({
-        //         counter: get().counter - 1
-        //     })
-        // })
+    incrementCounter() {
+        const nonReactCallback = () => {
+            unstable_batchedUpdates(() => {
+                useStore.getState().getSlice(extensionMeta.id).incrementCounter()
+            })
+        }
+
+        nonReactCallback()
     }
 }
 

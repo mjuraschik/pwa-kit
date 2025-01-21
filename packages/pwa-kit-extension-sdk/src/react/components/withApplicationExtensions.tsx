@@ -56,16 +56,6 @@ const withApplicationExtensions = <C,>(
         .map((extension) => extension.extendApp.bind(extension) as GenericHocType<C>)
         .filter(Boolean)
 
-    // // Inject store slices into the global store.
-    // applicationExtensions.forEach((extension) => {
-    //     const sliceInitializer = extension.getSliceInitializer()
-
-    //     // Because there extensions have unique slice names, we can safely add them to the global store.
-    //     useStore
-    //         .getState()
-    //         .addSlice((extension.constructor as typeof ApplicationExtension).id, sliceInitializer)
-    // })
-
     const withApplicationExtensionsProvider: GenericHocType<any> = (WrappedComponent) => {
         const WithApplicationExtensionsProvider = (props: any) => (
             <ApplicationExtensionsProvider extensions={options.applicationExtensions}>
