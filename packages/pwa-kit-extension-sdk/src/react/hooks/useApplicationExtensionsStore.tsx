@@ -15,11 +15,21 @@ interface BaseStore {
     getSlice: <T>(sliceName: string) => T | undefined
 }
 
+/**
+ * Zustand store for managing application extensions with dynamic slices.
+ * Provides methods to add and retrieve slices of state dynamically.
+ */
 export const useApplicationExtensionsStore = create<BaseStore>()(
     devtools((set, get) => ({
+        /**
+         * The state object containing all slices of the store.
+         * Each slice is keyed by its name and holds its specific state.
+         */
         state: {},
 
-        // Dynamically add a slice
+        /**
+         * Dynamically adds a slice to the store.
+         */
         addSlice: <T,>(sliceName: string, sliceInitializer: SliceInitializer<T>) => {
             set((state) => ({
                 state: {
@@ -44,7 +54,9 @@ export const useApplicationExtensionsStore = create<BaseStore>()(
             }))
         },
 
-        // Retrieve a slice
+        /**
+         * Retrieves a slice of state from the store by its name.
+         */
         getSlice: <T,>(sliceName: string): T | undefined => {
             return get().state[sliceName]
         }
