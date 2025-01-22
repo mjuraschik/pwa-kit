@@ -37,28 +37,21 @@ class Sample extends ApplicationExtension<Config> {
     extendApp<T extends React.ComponentType<T>>(
         App: React.ComponentType<T>
     ): React.ComponentType<T> {
+        const {id} = extensionMeta
+        const sliceInitializer = (set: any, get: any) => ({
+            counter: 0,
+            incrementCounter: () => {
+                set((state: any) => ({
+                    counter: state.counter + 1
+                }))
+            }
+        })
 
         const HOCs = [
+            // Example higher-order component, this can be safely removed.
             sampleHOC,
-            // NOTE: Add state management to the application extension. If your extension does not use state management, you can remove 
-            // the use of `withApplicationExtensionStore`.
-            // Please refer to the "state management" section of the readme for more information on how to use this feature.
-            (component: React.ComponentType<any>) => 
-                withApplicationExtensionStore(
-                    component, 
-                    {
-                        id: extensionMeta.id,
-                        sliceInitializer: (set: any, get: any) => ({
-                            sampleStateValue: 0,
-                            sampleAction: () =>
-                                {
-                                    set((state: any) => ({
-                                        counter: state.sampleStateValue + 1
-                                    }))
-                                }
-                        })
-                    }
-                )
+            // Optionally include state for this extension using `withApplicationExtensionStore`
+            (component: React.ComponentType<any>) => withApplicationExtensionStore(component, {id, sliceInitializer})
         ]
 
         return applyHOCs(App, HOCs)
