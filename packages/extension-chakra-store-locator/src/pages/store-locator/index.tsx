@@ -9,17 +9,10 @@ import React from 'react'
 import {Box, Container} from '@chakra-ui/react'
 
 import {StoreLocatorContent} from '../../components/content'
-import {useExtensionStore} from '../../hooks/use-extension-store'
 
 const StoreLocatorPage = () => {
-    const {incrementCounter, decrementCounter, counter} = useExtensionStore()
-
     return (
         <Box data-testid="store-locator-page" bg="gray.50" py={[8, 16]}>
-            <span>Count: {counter}</span>
-            <br />
-            <button onClick={() => incrementCounter()}>[+]</button>
-            <button onClick={() => decrementCounter()}>[-]</button>
             <Container
                 overflowY="scroll"
                 paddingTop={8}
