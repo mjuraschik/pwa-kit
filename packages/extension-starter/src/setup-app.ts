@@ -10,7 +10,10 @@ import React from 'react'
 import {RouteProps} from 'react-router-dom'
 
 // Platform Imports
-import {ApplicationExtension, withApplicationExtensionStore} from '@salesforce/pwa-kit-extension-sdk/react'
+import {
+    ApplicationExtension,
+    withApplicationExtensionStore
+} from '@salesforce/pwa-kit-extension-sdk/react'
 import {applyHOCs} from '@salesforce/pwa-kit-extension-sdk/react/utils'
 
 // Local Imports
@@ -38,11 +41,12 @@ class Sample extends ApplicationExtension<Config> {
         App: React.ComponentType<T>
     ): React.ComponentType<T> {
         const {id} = extensionMeta
-        const sliceInitializer = (set: any, get: any) => ({
+        const sliceInitializer = (set: any) => ({
             counter: 0,
             incrementCounter: () => {
                 set((state: any) => ({
-                    counter: state.counter + 1
+                    // TODO: Fix this typing, the slicer users generics so we can leverage that here so that count is a known number
+                    counter: (state.counter as number) + 1
                 }))
             }
         })
@@ -51,7 +55,8 @@ class Sample extends ApplicationExtension<Config> {
             // Example higher-order component, this can be safely removed.
             sampleHOC,
             // Optionally include state for this extension using `withApplicationExtensionStore`
-            (component: React.ComponentType<any>) => withApplicationExtensionStore(component, {id, sliceInitializer})
+            (component: React.ComponentType<any>) =>
+                withApplicationExtensionStore(component, {id, sliceInitializer})
         ]
 
         return applyHOCs(App, HOCs)

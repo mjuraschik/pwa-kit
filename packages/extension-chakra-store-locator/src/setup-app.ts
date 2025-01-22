@@ -10,7 +10,10 @@ import React from 'react'
 import {RouteProps} from 'react-router-dom'
 
 // Platform Imports
-import {ApplicationExtension, withApplicationExtensionStore} from '@salesforce/pwa-kit-extension-sdk/react'
+import {
+    ApplicationExtension,
+    withApplicationExtensionStore
+} from '@salesforce/pwa-kit-extension-sdk/react'
 import {applyHOCs} from '@salesforce/pwa-kit-extension-sdk/react/utils'
 
 // Local Imports
@@ -23,13 +26,26 @@ import StoreLocatorPage from './pages/store-locator'
 import {logger} from './logger'
 import extensionMeta from '../extension-meta.json'
 
-
 class StoreLocatorExtension extends ApplicationExtension<Config> {
     static readonly id = extensionMeta.id
 
     extendApp<T extends React.ComponentType<T>>(
         App: React.ComponentType<T>
     ): React.ComponentType<T> {
+        const {id} = extensionMeta
+        const sliceInitializer = (set: any) => ({
+            // TODO: Kevin, this is where you are going to place your initial state and actions. E.g. "modalOpen: false" etc.
+            counter: 0,
+            incrementCounter: () =>
+                set((state: any) => ({
+                    counter: (state.counter as number) + 1
+                })),
+            decrementCounter: () =>
+                set((state: any) => ({
+                    counter: (state.counter as number) - 1
+                }))
+        })
+
         const config = this.getConfig()
 
         if (!config.supportedCountries || config.supportedCountries.length === 0) {
@@ -38,28 +54,13 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
             )
         }
 
-        const withApplicationExtensionStoreOptions = {
-            id: extensionMeta.id,
-            sliceInitializer: (set: any, get: any) => ({
-                // TODO: Kevin, this is where you are going to place your initial state and actions. E.g. "modalOpen: false" etc.
-                counter: 0,
-                incrementCounter: () =>
-                    set((state: any) => ({
-                        counter: state.counter + 1
-                    })),
-                decrementCounter: () =>
-                    set((state: any) => ({
-                        counter: state.counter - 1
-                    }))
-            })
-        }
-
         const HOCs = [
             (component: React.ComponentType<any>) => withStoreLocator(component, config),
             (component: React.ComponentType<any>) =>
                 withOptionalCommerceSdkReactProvider(component, config),
             (component: React.ComponentType<any>) => withOptionalChakra(component),
-            (component: React.ComponentType<any>) => withApplicationExtensionStore(component, withApplicationExtensionStoreOptions)
+            (component: React.ComponentType<any>) =>
+                withApplicationExtensionStore(component, {id, sliceInitializer})
         ]
 
         return applyHOCs(App, HOCs)
