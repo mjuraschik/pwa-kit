@@ -27,20 +27,23 @@ import StoreLocatorPage from './pages/store-locator'
 import {logger} from './logger'
 import extensionMeta from '../extension-meta.json'
 
-// NOTE: Hey Kevin, this is where you are going to define the type of the store slice for your extension. I imagine that you'll
-// have something that manages the modal being open/closed here.
 interface StoreSlice {
-    count: number
-    increment: () => void
-    decrement: () => void
+    isModalOpen: boolean
+    openModal: () => void
+    closeModal: () => void
 }
 
-// This is the store slice definition that we are adding via the `withApplicationExtensionStore` HOC below in the extendApp
-// method.
+// @TODO: I noticed a bug that the initial render on client with have the store state always default to {}.
 const storeSliceInitializer: SliceInitializer<StoreSlice> = (set) => ({
-    count: 0,
-    increment: () => set((state) => ({count: state.count + 1})),
-    decrement: () => set((state) => ({count: state.count - 1}))
+    isModalOpen: false,
+    openModal: () => {
+        console.log('openModal')
+        set((state) => ({...state, isModalOpen: true}))
+    },
+    closeModal: () => {
+        console.log('closeModal')
+        set((state) => ({...state, isModalOpen: false}))
+    }
 })
 class StoreLocatorExtension extends ApplicationExtension<Config> {
     static readonly id = extensionMeta.id
@@ -57,15 +60,16 @@ class StoreLocatorExtension extends ApplicationExtension<Config> {
         }
 
         const HOCs = [
-            (component: React.ComponentType<any>) => withStoreLocator(component, config),
-            (component: React.ComponentType<any>) =>
-                withOptionalCommerceSdkReactProvider(component, config),
-            (component: React.ComponentType<any>) => withOptionalChakra(component),
             (component: React.ComponentType<any>) =>
                 withApplicationExtensionStore(component, {
                     id: extensionMeta.id,
                     initializer: storeSliceInitializer
-                })
+                }),
+            (component: React.ComponentType<any>) => withStoreLocator(component, config),
+            (component: React.ComponentType<any>) =>
+                withOptionalCommerceSdkReactProvider(component, config),
+            (component: React.ComponentType<any>) => withOptionalChakra(component),
+            
         ]
 
         return applyHOCs(App, HOCs)
