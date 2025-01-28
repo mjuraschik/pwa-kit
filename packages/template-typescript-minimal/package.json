@@ -22,6 +22,8 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@loadable/component": "^5.15.3",
+    "@salesforce/extension-chakra-store-locator": "^0.1.0-extensibility-preview.3",
+    "@salesforce/extension-chakra-storefront": "^0.1.0-extensibility-preview.3",
     "@salesforce/pwa-kit-dev": "4.0.0-extensibility-preview.3",
     "@salesforce/pwa-kit-extension-sdk": "4.0.0-extensibility-preview.3",
     "@salesforce/pwa-kit-react-sdk": "4.0.0-extensibility-preview.3",
@@ -47,7 +49,90 @@
   },
   "mobify": {
     "app": {
-      "extensions": []
+      "extensions": [
+        ["@salesforce/extension-chakra-storefront",
+        {
+          "activeDataEnabled": false,
+          "commerceApi": {
+              "proxyPath": "/mobify/proxy/api",
+              "parameters": {
+                "shortCode": "8o7m175y",
+                "clientId": "c9c45bfd-0ed3-4aa2-9971-40f88962b836",
+                "organizationId": "f_ecom_zzrf_001",
+                "siteId": "RefArchGlobal",
+                "locale": "en-GB",
+                "currency": "USD"
+              }
+            },
+          "defaultSite": "RefArchGlobal",
+          "einsteinAPI": {
+              "host": "https://api.cquotient.com",
+              "einsteinId": "1234567890",
+              "siteId": "RefArchGlobal",
+              "isProduction": false
+          },
+          "enabled": true,
+          "pages": {
+              "Account": "/account",
+              "Cart": "/cart",
+              "Checkout": "/checkout",
+              "CheckoutConfirmation": "/checkout/confirmation/:orderNo",
+              "Home": "/",
+              "Login": "/login",
+              "Registration": "/registration",
+              "ResetPassword": "/reset-password",
+              "LoginRedirect": "/callback",
+              "ProductDetail": "/product/:productId",
+              "ProductList": ["/search", "/category/:categoryId"]
+          },
+          "siteAliases": {},
+          "sites": [
+              {
+                  "id": "RefArchGlobal",
+                  "l10n": {
+                      "defaultCurrency": "USD",
+                      "defaultLocale": "en-GB",
+                      "supportedCurrencies": ["USD"],
+                      "supportedLocales": [
+                          {
+                              "id": "en-GB",
+                              "preferredCurrency": "USD"
+                          }
+                      ]
+                  }
+              }
+          ],
+          "url": {
+              "site": "path",
+              "locale": "path",
+              "showDefaults": true,
+              "interpretPlusSignAsSpace": false
+          }
+      }],
+        [
+          "@salesforce/extension-chakra-store-locator",
+          {
+            "enabled": true,
+            "path": "/store-locator",
+            "radius": 100,
+            "radiusUnit": "km",
+            "defaultPageSize": 10,
+            "defaultPostalCode": "10178",
+            "defaultCountry": "Germany",
+            "defaultCountryCode": "DE",
+            "supportedCountries": [
+              {
+                "countryCode": "US",
+                "countryName": "United States"
+              },
+              {
+                "countryCode": "DE",
+                "countryName": "Germany"
+              }
+            ]
+          }
+        ]
+      ]
     },
     "ssrEnabled": true,
     "ssrOnly": [
