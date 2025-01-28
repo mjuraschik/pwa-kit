@@ -37,11 +37,9 @@ interface StoreSlice {
 const storeSliceInitializer: SliceInitializer<StoreSlice> = (set) => ({
     isModalOpen: false,
     openModal: () => {
-        console.log('openModal')
         set((state) => ({...state, isModalOpen: true}))
     },
     closeModal: () => {
-        console.log('closeModal')
         set((state) => ({...state, isModalOpen: false}))
     }
 })
