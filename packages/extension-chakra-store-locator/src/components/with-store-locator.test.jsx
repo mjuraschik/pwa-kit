@@ -8,11 +8,27 @@ import React from 'react'
 import {render, screen} from '@testing-library/react'
 import {withStoreLocator} from './with-store-locator'
 import {useStoreLocator} from './use-store-locator'
+import {useExtensionStore} from '../hooks/use-extension-store'
 import PropTypes from 'prop-types'
 
-// Mock the hook
 jest.mock('./use-store-locator', () => ({
     useStoreLocator: jest.fn()
+}))
+
+jest.mock('../hooks/use-extension-store', () => ({
+    useExtensionStore: jest.fn()
+}))
+
+// Mock the StoreLocatorModal component
+jest.mock('./modal', () => ({
+    StoreLocatorModal: ({isOpen, onClose}) => (
+        isOpen ? (
+            <div data-testid="store-locator-modal">
+                Modal Content
+                <button onClick={onClose}>Close</button>
+            </div>
+        ) : null
+    )
 }))
 
 describe('withStoreLocator', () => {
@@ -25,12 +41,18 @@ describe('withStoreLocator', () => {
         supportedCountries: []
     }
 
+    const mockStore = {
+        isModalOpen: false,
+        closeModal: jest.fn()
+    }
+
     beforeEach(() => {
         useStoreLocator.mockReturnValue({
             searchStoresParams: {},
             setSearchStoresParams: jest.fn(),
             config: mockConfig
         })
+        useExtensionStore.mockReturnValue(mockStore)
     })
 
     it('wraps component with StoreLocatorProvider', () => {
@@ -66,5 +88,31 @@ describe('withStoreLocator', () => {
         const WrappedComponent = withStoreLocator(TestComponent, mockConfig)
 
         expect(WrappedComponent.displayName).toBe('WithStoreLocator(TestComponent)')
+    })
+
+    it('renders modal when isModalOpen is true', () => {
+        const TestComponent = () => <div>Test Component</div>
+        const WrappedComponent = withStoreLocator(TestComponent, mockConfig)
+
+        useExtensionStore.mockReturnValue({
+            ...mockStore,
+            isModalOpen: true
+        })
+
+        render(<WrappedComponent />)
+        expect(screen.getByTestId('store-locator-modal')).toBeTruthy()
+    })
+
+    it('does not render modal when isModalOpen is false', () => {
+        const TestComponent = () => <div>Test Component</div>
+        const WrappedComponent = withStoreLocator(TestComponent, mockConfig)
+
+        useExtensionStore.mockReturnValue({
+            ...mockStore,
+            isModalOpen: false
+        })
+
+        render(<WrappedComponent />)
+        expect(screen.queryByTestId('store-locator-modal')).toBeNull()
     })
 })
