@@ -33,7 +33,6 @@ interface StoreSlice {
     closeModal: () => void
 }
 
-// @TODO: I noticed a bug that the initial render on client with have the store state always default to {}.
 const storeSliceInitializer: SliceInitializer<StoreSlice> = (set) => ({
     isModalOpen: false,
     openModal: () => {
