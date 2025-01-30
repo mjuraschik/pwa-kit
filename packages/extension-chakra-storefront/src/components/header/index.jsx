@@ -28,6 +28,10 @@ import {
     useMediaQuery
 } from '@chakra-ui/react'
 import {AuthHelpers, useAuthHelper, useCustomerType} from '@salesforce/commerce-sdk-react'
+import {
+    useApplicationExtension,
+    useApplicationExtensionsStore
+} from '@salesforce/pwa-kit-extension-sdk/react'
 
 import {useCurrentBasket} from '../../hooks/use-current-basket'
 
@@ -41,7 +45,8 @@ import {
     HamburgerIcon,
     ChevronDownIcon,
     HeartIcon,
-    SignoutIcon
+    SignoutIcon,
+    StoreIcon
 } from '../../components/icons'
 
 import {navLinks, messages} from '../../pages/account/constant'
@@ -123,6 +128,13 @@ const Header = ({
         onOpen: onAccountMenuOpen
     } = useDisclosure()
     const [isDesktop] = useMediaQuery('(min-width: 992px)')
+    const storeLocatorExtension = useApplicationExtension(
+        '@salesforce/extension-chakra-store-locator'
+    )
+    const isStoreLocatorEnabled = !!storeLocatorExtension && storeLocatorExtension.isEnabled
+    const {openModal} = useApplicationExtensionsStore((state) => {
+        return state.state['@salesforce/extension-chakra-store-locator'] || {}
+    })
 
     const [showLoading, setShowLoading] = useState(false)
     // tracking if users enter the popover Content,
@@ -304,6 +316,20 @@ const Header = ({
                         {...styles.wishlistIcon}
                         onClick={onWishlistClick}
                     />
+                    {isStoreLocatorEnabled && (
+                        <IconButton
+                            aria-label={intl.formatMessage({
+                                defaultMessage: 'Store Locator',
+                                id: 'header.button.assistive_msg.store_locator'
+                            })}
+                            icon={<StoreIcon />}
+                            {...styles.icons}
+                            variant="unstyled"
+                            onClick={() => {
+                                openModal()
+                            }}
+                        />
+                    )}
                     <IconButton
                         aria-label={intl.formatMessage(
                             {
