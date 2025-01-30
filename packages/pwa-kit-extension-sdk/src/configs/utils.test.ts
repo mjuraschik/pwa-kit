@@ -6,8 +6,8 @@
  */
 import * as fse from 'fs-extra'
 import * as path from 'path'
-import {buildBabelExtensibilityArgs} from './utils'
-import {ApplicationExtensionEntryTuple} from '../../types'
+import {buildBabelExtensibilityArgs} from './babel/utils'
+import {ApplicationExtensionEntryTuple} from '../types'
 
 jest.mock('fs-extra', () => ({
     ...jest.requireActual('fs-extra'),
@@ -50,7 +50,7 @@ describe('buildBabelExtensibilityArgs', () => {
     })
 
     test('should return the correct Babel arguments string', () => {
-        const expectedArgs = `--ignore "node_modules/does_not_exist" --only "app/**,/absolute/path/to/build-remote-server.js,/absolute/path/to/application-extensions.js,/absolute/path/to/@salesforce/extension-this/src,/absolute/path/to/@salesforce/extension-that/src/**"`
+        const expectedArgs = `--only "app/**,/absolute/path/to/build-remote-server.js,/absolute/path/to/application-extensions.js,/absolute/path/to/@salesforce/extension-this/src/**,/absolute/path/to/@salesforce/extension-that/src/**"`
         const result = buildBabelExtensibilityArgs(CONFIG)
         expect(result).toBe(expectedArgs)
     })
@@ -78,7 +78,7 @@ describe('buildBabelExtensibilityArgs', () => {
     })
 
     test('should handle an empty list of configured extensions', () => {
-        const expectedArgs = `--ignore "node_modules/does_not_exist" --only "app/**,/absolute/path/to/build-remote-server.js,/absolute/path/to/application-extensions.js/**"`
+        const expectedArgs = `--only "app/**,/absolute/path/to/build-remote-server.js,/absolute/path/to/application-extensions.js"`
         const result = buildBabelExtensibilityArgs({app: {extensions: []}})
         expect(result).toBe(expectedArgs)
         const result2 = buildBabelExtensibilityArgs({app: {}})

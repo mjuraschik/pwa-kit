@@ -57,5 +57,21 @@ export default {
             presets: [require('@babel/preset-env'), require('@babel/preset-react')],
             plugins: [require('babel-plugin-dynamic-import-node-babel-7')]
         }
-    }
+    },
+    ignore: [
+        function (filepath) {
+            // Return false if it's an allowed extension package @salesforce/pwa-kit-extension-sdk and extension-*
+            if (/node_modules\/@[^/]+\/(pwa-kit-extension-sdk|extension-)/.test(filepath)) {
+                return false
+            }
+
+            // Return true if it's in node_modules (excluding allowed packages handled above)
+            if (/node_modules/.test(filepath)) {
+                return true
+            }
+
+            // Return false for all other files
+            return false
+        }
+    ]
 }

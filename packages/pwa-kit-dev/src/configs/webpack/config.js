@@ -340,6 +340,8 @@ const ruleForBabelLoader = (babelPlugins) => {
         id: 'babel-loader',
         test: /(\.js(x?)|\.ts(x?))$/,
         // NOTE: Because our extensions are just folders containing source code, we need to ensure that the babel-loader processes them.
+        // This regex exclude everything in node_modules, but node_modules/extensions-*/ folders
+        exclude: /node_modules\/(?!(@?[^/]+\/)?extension-)[^/]+\/.*$/i,
         use: [
             {
                 loader: findDepInStack('babel-loader'),
