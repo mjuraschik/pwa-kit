@@ -8,6 +8,7 @@
 // PWA-Kit Imports
 import {getConfiguredExtensions} from '@salesforce/pwa-kit-extension-sdk/shared/utils'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
+import path from 'path'
 
 export default {
     sourceType: 'unambiguous',
@@ -60,13 +61,19 @@ export default {
     },
     ignore: [
         function (filepath) {
+            const normalizedPath = path.normalize(filepath)
+
+            const extensionRegex = new RegExp(
+                `node_modules\\${path.sep}[^\\${path.sep}]+\\${path.sep}(pwa-kit-extension-sdk|@[^\\${path.sep}]+\\${path.sep}extension-|extension-)`
+            )
+
             // Return false if it's an allowed extension package @salesforce/pwa-kit-extension-sdk and extension-*
-            if (/node_modules\/@[^/]+\/(pwa-kit-extension-sdk|extension-)/.test(filepath)) {
+            if (extensionRegex.test(normalizedPath)) {
                 return false
             }
 
             // Return true if it's in node_modules (excluding allowed packages handled above)
-            if (/node_modules/.test(filepath)) {
+            if (/node_modules/.test(normalizedPath)) {
                 return true
             }
 
