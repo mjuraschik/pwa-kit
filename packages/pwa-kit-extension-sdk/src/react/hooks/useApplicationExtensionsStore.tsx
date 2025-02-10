@@ -53,7 +53,7 @@ export const useApplicationExtensionsStore = create<BaseStore>()(
             )
 
             // TEMPORARY BUG FIX: This fixes the issue where the slices initial state not available immediately after for use after store creation.
-            // We should seek to understand why the slice is not available rather than accessing the state directly. I believe it has to do with the 
+            // We should seek to understand why the slice is not available rather than accessing the state directly. I believe it has to do with the
             // above call to the initialize function.
             currentState.state = {
                 ...currentState.state,
