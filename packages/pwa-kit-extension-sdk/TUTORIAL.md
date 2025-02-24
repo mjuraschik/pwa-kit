@@ -13,7 +13,7 @@ The PWA Kit project generator provides an interactive experience to help you con
 First, open your terminal and run our project generator:
 
 ```
-npx pwa-kit-create-app
+npx @salesforce/pwa-kit-create-app
 ```
 
 During the generation process, you'll be presented with several configuration options, answer the questions as follows:
