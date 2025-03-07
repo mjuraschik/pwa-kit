@@ -30,7 +30,7 @@ type Client = ApiClients['shopperExperience']
 export const usePages = (
     apiOptions: NullableParameters<Argument<Client['getPages']>>,
     queryOptions: ApiQueryOptions<Client['getPages']> = {}
-): UseQueryResult<DataType<Client['getPages']>> => {
+): UseQueryResult<DataType<Client['getPages']>, unknown> => {
     type Options = Argument<Client['getPages']>
     type Data = DataType<Client['getPages']>
     const {shopperExperience: client} = useCommerceApi()
@@ -78,7 +78,7 @@ export const usePages = (
 export const usePage = (
     apiOptions: NullableParameters<Argument<Client['getPage']>>,
     queryOptions: ApiQueryOptions<Client['getPage']> = {}
-): UseQueryResult<DataType<Client['getPage']>> => {
+): UseQueryResult<DataType<Client['getPage']>, unknown> => {
     type Options = Argument<Client['getPage']>
     type Data = DataType<Client['getPage']>
     const {shopperExperience: client} = useCommerceApi()

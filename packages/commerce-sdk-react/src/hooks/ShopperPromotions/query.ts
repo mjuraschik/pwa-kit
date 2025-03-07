@@ -28,7 +28,7 @@ type Client = ApiClients['shopperPromotions']
 export const usePromotions = (
     apiOptions: NullableParameters<Argument<Client['getPromotions']>>,
     queryOptions: ApiQueryOptions<Client['getPromotions']> = {}
-): UseQueryResult<DataType<Client['getPromotions']>> => {
+): UseQueryResult<DataType<Client['getPromotions']>, unknown> => {
     type Options = Argument<Client['getPromotions']>
     type Data = DataType<Client['getPromotions']>
     const {shopperPromotions: client} = useCommerceApi()
@@ -77,7 +77,7 @@ promotions, since the server does not consider promotion qualifiers or schedules
 export const usePromotionsForCampaign = (
     apiOptions: NullableParameters<Argument<Client['getPromotionsForCampaign']>>,
     queryOptions: ApiQueryOptions<Client['getPromotionsForCampaign']> = {}
-): UseQueryResult<DataType<Client['getPromotionsForCampaign']>> => {
+): UseQueryResult<DataType<Client['getPromotionsForCampaign']>, unknown> => {
     type Options = Argument<Client['getPromotionsForCampaign']>
     type Data = DataType<Client['getPromotionsForCampaign']>
     const {shopperPromotions: client} = useCommerceApi()

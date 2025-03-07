@@ -28,7 +28,7 @@ type Client = ApiClients['shopperOrders']
 export const useOrder = (
     apiOptions: NullableParameters<Argument<Client['getOrder']>>,
     queryOptions: ApiQueryOptions<Client['getOrder']> = {}
-): UseQueryResult<DataType<Client['getOrder']>> => {
+): UseQueryResult<DataType<Client['getOrder']>, unknown> => {
     type Options = Argument<Client['getOrder']>
     type Data = DataType<Client['getOrder']>
     const {shopperOrders: client} = useCommerceApi()
@@ -70,7 +70,7 @@ export const useOrder = (
 export const usePaymentMethodsForOrder = (
     apiOptions: NullableParameters<Argument<Client['getPaymentMethodsForOrder']>>,
     queryOptions: ApiQueryOptions<Client['getPaymentMethodsForOrder']> = {}
-): UseQueryResult<DataType<Client['getPaymentMethodsForOrder']>> => {
+): UseQueryResult<DataType<Client['getPaymentMethodsForOrder']>, unknown> => {
     type Options = Argument<Client['getPaymentMethodsForOrder']>
     type Data = DataType<Client['getPaymentMethodsForOrder']>
     const {shopperOrders: client} = useCommerceApi()
@@ -114,7 +114,7 @@ for more information.
 export const useTaxesFromOrder = (
     apiOptions: NullableParameters<Argument<Client['getTaxesFromOrder']>>,
     queryOptions: ApiQueryOptions<Client['getTaxesFromOrder']> = {}
-): UseQueryResult<DataType<Client['getTaxesFromOrder']>> => {
+): UseQueryResult<DataType<Client['getTaxesFromOrder']>, unknown> => {
     type Options = Argument<Client['getTaxesFromOrder']>
     type Data = DataType<Client['getTaxesFromOrder']>
     const {shopperOrders: client} = useCommerceApi()

@@ -19,14 +19,14 @@ export const updateCache = (queryClient: QueryClient, cacheUpdates: CacheUpdate,
     cacheUpdates.invalidate?.forEach((invalidate) => {
         // TODO: Fix floating promises (convert updateCache to async)
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        queryClient.invalidateQueries(invalidate)
+        queryClient.invalidateQueries({queryKey: invalidate.queryKey})
     })
     cacheUpdates.remove?.forEach((remove) => {
-        queryClient.removeQueries(remove)
+        queryClient.removeQueries({queryKey: remove.queryKey})
     })
-    cacheUpdates.update?.forEach(({queryKey, updater}) =>
+    cacheUpdates.update?.forEach((update) =>
         // If an updater isn't given, fall back to just setting the data
-        queryClient.setQueryData(queryKey, updater ?? data)
+        queryClient.setQueryData(update.queryKey, (update.updater ?? data) as any)
     )
 }
 

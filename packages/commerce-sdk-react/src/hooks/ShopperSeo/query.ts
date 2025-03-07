@@ -31,7 +31,7 @@ type Client = ApiClients['shopperSeo']
 export const useUrlMapping = (
     apiOptions: NullableParameters<Argument<Client['getUrlMapping']>>,
     queryOptions: ApiQueryOptions<Client['getUrlMapping']> = {}
-): UseQueryResult<DataType<Client['getUrlMapping']>> => {
+): UseQueryResult<DataType<Client['getUrlMapping']>, unknown> => {
     type Options = Argument<Client['getUrlMapping']>
     type Data = DataType<Client['getUrlMapping']>
     const {shopperSeo: client} = useCommerceApi()

@@ -28,7 +28,7 @@ type Client = ApiClients['shopperContexts']
 export const useShopperContext = (
     apiOptions: NullableParameters<Argument<Client['getShopperContext']>>,
     queryOptions: ApiQueryOptions<Client['getShopperContext']> = {}
-): UseQueryResult<DataType<Client['getShopperContext']>> => {
+): UseQueryResult<DataType<Client['getShopperContext']>, unknown> => {
     type Options = Argument<Client['getShopperContext']>
     type Data = DataType<Client['getShopperContext']>
     const {shopperContexts: client} = useCommerceApi()

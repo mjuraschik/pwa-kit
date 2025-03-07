@@ -65,7 +65,7 @@ type Client = ApiClients['shopperCustomers']
 export const useCustomer = (
     apiOptions: NullableParameters<Argument<Client['getCustomer']>>,
     queryOptions: ApiQueryOptions<Client['getCustomer']> = {}
-): UseQueryResult<DataType<Client['getCustomer']>> => {
+): UseQueryResult<DataType<Client['getCustomer']>, unknown> => {
     type Options = Argument<Client['getCustomer']>
     type Data = DataType<Client['getCustomer']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -108,7 +108,7 @@ export const useCustomer = (
 export const useCustomerAddress = (
     apiOptions: NullableParameters<Argument<Client['getCustomerAddress']>>,
     queryOptions: ApiQueryOptions<Client['getCustomerAddress']> = {}
-): UseQueryResult<DataType<Client['getCustomerAddress']>> => {
+): UseQueryResult<DataType<Client['getCustomerAddress']>, unknown> => {
     type Options = Argument<Client['getCustomerAddress']>
     type Data = DataType<Client['getCustomerAddress']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -153,7 +153,7 @@ export const useCustomerAddress = (
 export const useCustomerBaskets = (
     apiOptions: NullableParameters<Argument<Client['getCustomerBaskets']>>,
     queryOptions: ApiQueryOptions<Client['getCustomerBaskets']> = {}
-): UseQueryResult<DataType<Client['getCustomerBaskets']>> => {
+): UseQueryResult<DataType<Client['getCustomerBaskets']>, unknown> => {
     type Options = Argument<Client['getCustomerBaskets']>
     type Data = DataType<Client['getCustomerBaskets']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -200,7 +200,7 @@ export const useCustomerBaskets = (
 export const useCustomerOrders = (
     apiOptions: NullableParameters<Argument<Client['getCustomerOrders']>>,
     queryOptions: ApiQueryOptions<Client['getCustomerOrders']> = {}
-): UseQueryResult<DataType<Client['getCustomerOrders']>> => {
+): UseQueryResult<DataType<Client['getCustomerOrders']>, unknown> => {
     type Options = Argument<Client['getCustomerOrders']>
     type Data = DataType<Client['getCustomerOrders']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -245,7 +245,7 @@ export const useCustomerOrders = (
 export const useCustomerPaymentInstrument = (
     apiOptions: NullableParameters<Argument<Client['getCustomerPaymentInstrument']>>,
     queryOptions: ApiQueryOptions<Client['getCustomerPaymentInstrument']> = {}
-): UseQueryResult<DataType<Client['getCustomerPaymentInstrument']>> => {
+): UseQueryResult<DataType<Client['getCustomerPaymentInstrument']>, unknown> => {
     type Options = Argument<Client['getCustomerPaymentInstrument']>
     type Data = DataType<Client['getCustomerPaymentInstrument']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -290,7 +290,7 @@ export const useCustomerPaymentInstrument = (
 export const useCustomerProductLists = (
     apiOptions: NullableParameters<Argument<Client['getCustomerProductLists']>>,
     queryOptions: ApiQueryOptions<Client['getCustomerProductLists']> = {}
-): UseQueryResult<DataType<Client['getCustomerProductLists']>> => {
+): UseQueryResult<DataType<Client['getCustomerProductLists']>, unknown> => {
     type Options = Argument<Client['getCustomerProductLists']>
     type Data = DataType<Client['getCustomerProductLists']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -335,7 +335,7 @@ export const useCustomerProductLists = (
 export const useCustomerProductList = (
     apiOptions: NullableParameters<Argument<Client['getCustomerProductList']>>,
     queryOptions: ApiQueryOptions<Client['getCustomerProductList']> = {}
-): UseQueryResult<DataType<Client['getCustomerProductList']>> => {
+): UseQueryResult<DataType<Client['getCustomerProductList']>, unknown> => {
     type Options = Argument<Client['getCustomerProductList']>
     type Data = DataType<Client['getCustomerProductList']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -380,7 +380,7 @@ export const useCustomerProductList = (
 export const useCustomerProductListItem = (
     apiOptions: NullableParameters<Argument<Client['getCustomerProductListItem']>>,
     queryOptions: ApiQueryOptions<Client['getCustomerProductListItem']> = {}
-): UseQueryResult<DataType<Client['getCustomerProductListItem']>> => {
+): UseQueryResult<DataType<Client['getCustomerProductListItem']>, unknown> => {
     type Options = Argument<Client['getCustomerProductListItem']>
     type Data = DataType<Client['getCustomerProductListItem']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -425,7 +425,7 @@ export const useCustomerProductListItem = (
 export const usePublicProductListsBySearchTerm = (
     apiOptions: NullableParameters<Argument<Client['getPublicProductListsBySearchTerm']>>,
     queryOptions: ApiQueryOptions<Client['getPublicProductListsBySearchTerm']> = {}
-): UseQueryResult<DataType<Client['getPublicProductListsBySearchTerm']>> => {
+): UseQueryResult<DataType<Client['getPublicProductListsBySearchTerm']>, unknown> => {
     type Options = Argument<Client['getPublicProductListsBySearchTerm']>
     type Data = DataType<Client['getPublicProductListsBySearchTerm']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -470,7 +470,7 @@ export const usePublicProductListsBySearchTerm = (
 export const usePublicProductList = (
     apiOptions: NullableParameters<Argument<Client['getPublicProductList']>>,
     queryOptions: ApiQueryOptions<Client['getPublicProductList']> = {}
-): UseQueryResult<DataType<Client['getPublicProductList']>> => {
+): UseQueryResult<DataType<Client['getPublicProductList']>, unknown> => {
     type Options = Argument<Client['getPublicProductList']>
     type Data = DataType<Client['getPublicProductList']>
     const {shopperCustomers: client} = useCommerceApi()
@@ -515,7 +515,7 @@ export const usePublicProductList = (
 export const useProductListItem = (
     apiOptions: NullableParameters<Argument<Client['getProductListItem']>>,
     queryOptions: ApiQueryOptions<Client['getProductListItem']> = {}
-): UseQueryResult<DataType<Client['getProductListItem']>> => {
+): UseQueryResult<DataType<Client['getProductListItem']>, unknown> => {
     type Options = Argument<Client['getProductListItem']>
     type Data = DataType<Client['getProductListItem']>
     const {shopperCustomers: client} = useCommerceApi()

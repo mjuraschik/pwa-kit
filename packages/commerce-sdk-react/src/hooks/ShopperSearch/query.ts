@@ -31,7 +31,7 @@ type Client = ApiClients['shopperSearch']
 export const useProductSearch = (
     apiOptions: NullableParameters<Argument<Client['productSearch']>>,
     queryOptions: ApiQueryOptions<Client['productSearch']> = {}
-): UseQueryResult<DataType<Client['productSearch']>> => {
+): UseQueryResult<DataType<Client['productSearch']>, unknown> => {
     type Options = Argument<Client['productSearch']>
     type Data = DataType<Client['productSearch']>
     const {shopperSearch: client} = useCommerceApi()
@@ -75,7 +75,7 @@ export const useProductSearch = (
 export const useSearchSuggestions = (
     apiOptions: NullableParameters<Argument<Client['getSearchSuggestions']>>,
     queryOptions: ApiQueryOptions<Client['getSearchSuggestions']> = {}
-): UseQueryResult<DataType<Client['getSearchSuggestions']>> => {
+): UseQueryResult<DataType<Client['getSearchSuggestions']>, unknown> => {
     type Options = Argument<Client['getSearchSuggestions']>
     type Data = DataType<Client['getSearchSuggestions']>
     const {shopperSearch: client} = useCommerceApi()

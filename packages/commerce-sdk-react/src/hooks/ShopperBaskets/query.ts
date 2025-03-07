@@ -28,7 +28,7 @@ type Client = ApiClients['shopperBaskets']
 export const useBasket = (
     apiOptions: NullableParameters<Argument<Client['getBasket']>>,
     queryOptions: ApiQueryOptions<Client['getBasket']> = {}
-): UseQueryResult<DataType<Client['getBasket']>> => {
+): UseQueryResult<DataType<Client['getBasket']>, unknown> => {
     type Options = Argument<Client['getBasket']>
     type Data = DataType<Client['getBasket']>
     const {shopperBaskets: client} = useCommerceApi()
@@ -70,7 +70,7 @@ export const useBasket = (
 export const usePaymentMethodsForBasket = (
     apiOptions: NullableParameters<Argument<Client['getPaymentMethodsForBasket']>>,
     queryOptions: ApiQueryOptions<Client['getPaymentMethodsForBasket']> = {}
-): UseQueryResult<DataType<Client['getPaymentMethodsForBasket']>> => {
+): UseQueryResult<DataType<Client['getPaymentMethodsForBasket']>, unknown> => {
     type Options = Argument<Client['getPaymentMethodsForBasket']>
     type Data = DataType<Client['getPaymentMethodsForBasket']>
     const {shopperBaskets: client} = useCommerceApi()
@@ -112,7 +112,7 @@ export const usePaymentMethodsForBasket = (
 export const usePriceBooksForBasket = (
     apiOptions: NullableParameters<Argument<Client['getPriceBooksForBasket']>>,
     queryOptions: ApiQueryOptions<Client['getPriceBooksForBasket']> = {}
-): UseQueryResult<DataType<Client['getPriceBooksForBasket']>> => {
+): UseQueryResult<DataType<Client['getPriceBooksForBasket']>, unknown> => {
     type Options = Argument<Client['getPriceBooksForBasket']>
     type Data = DataType<Client['getPriceBooksForBasket']>
     const {shopperBaskets: client} = useCommerceApi()
@@ -154,7 +154,7 @@ export const usePriceBooksForBasket = (
 export const useShippingMethodsForShipment = (
     apiOptions: NullableParameters<Argument<Client['getShippingMethodsForShipment']>>,
     queryOptions: ApiQueryOptions<Client['getShippingMethodsForShipment']> = {}
-): UseQueryResult<DataType<Client['getShippingMethodsForShipment']>> => {
+): UseQueryResult<DataType<Client['getShippingMethodsForShipment']>, unknown> => {
     type Options = Argument<Client['getShippingMethodsForShipment']>
     type Data = DataType<Client['getShippingMethodsForShipment']>
     const {shopperBaskets: client} = useCommerceApi()
@@ -196,7 +196,7 @@ export const useShippingMethodsForShipment = (
 export const useTaxesFromBasket = (
     apiOptions: NullableParameters<Argument<Client['getTaxesFromBasket']>>,
     queryOptions: ApiQueryOptions<Client['getTaxesFromBasket']> = {}
-): UseQueryResult<DataType<Client['getTaxesFromBasket']>> => {
+): UseQueryResult<DataType<Client['getTaxesFromBasket']>, unknown> => {
     type Options = Argument<Client['getTaxesFromBasket']>
     type Data = DataType<Client['getTaxesFromBasket']>
     const {shopperBaskets: client} = useCommerceApi()

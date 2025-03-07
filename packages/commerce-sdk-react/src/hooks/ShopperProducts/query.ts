@@ -28,7 +28,7 @@ type Client = ApiClients['shopperProducts']
 export const useProducts = (
     apiOptions: NullableParameters<Argument<Client['getProducts']>>,
     queryOptions: ApiQueryOptions<Client['getProducts']> = {}
-): UseQueryResult<DataType<Client['getProducts']>> => {
+): UseQueryResult<DataType<Client['getProducts']>, unknown> => {
     type Options = Argument<Client['getProducts']>
     type Data = DataType<Client['getProducts']>
     const {shopperProducts: client} = useCommerceApi()
@@ -70,7 +70,7 @@ export const useProducts = (
 export const useProduct = (
     apiOptions: NullableParameters<Argument<Client['getProduct']>>,
     queryOptions: ApiQueryOptions<Client['getProduct']> = {}
-): UseQueryResult<DataType<Client['getProduct']>> => {
+): UseQueryResult<DataType<Client['getProduct']>, unknown> => {
     type Options = Argument<Client['getProduct']>
     type Data = DataType<Client['getProduct']>
     const {shopperProducts: client} = useCommerceApi()
@@ -112,7 +112,7 @@ export const useProduct = (
 export const useCategories = (
     apiOptions: NullableParameters<Argument<Client['getCategories']>>,
     queryOptions: ApiQueryOptions<Client['getCategories']> = {}
-): UseQueryResult<DataType<Client['getCategories']>> => {
+): UseQueryResult<DataType<Client['getCategories']>, unknown> => {
     type Options = Argument<Client['getCategories']>
     type Data = DataType<Client['getCategories']>
     const {shopperProducts: client} = useCommerceApi()
@@ -156,7 +156,7 @@ parameter. The server only returns online categories.
 export const useCategory = (
     apiOptions: NullableParameters<Argument<Client['getCategory']>>,
     queryOptions: ApiQueryOptions<Client['getCategory']> = {}
-): UseQueryResult<DataType<Client['getCategory']>> => {
+): UseQueryResult<DataType<Client['getCategory']>, unknown> => {
     type Options = Argument<Client['getCategory']>
     type Data = DataType<Client['getCategory']>
     const {shopperProducts: client} = useCommerceApi()

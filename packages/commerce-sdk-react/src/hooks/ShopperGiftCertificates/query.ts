@@ -28,7 +28,7 @@ type Client = ApiClients['shopperGiftCertificates']
 export const useGiftCertificate = (
     apiOptions: NullableParameters<Argument<Client['getGiftCertificate']>>,
     queryOptions: ApiQueryOptions<Client['getGiftCertificate']> = {}
-): UseQueryResult<DataType<Client['getGiftCertificate']>> => {
+): UseQueryResult<DataType<Client['getGiftCertificate']>, unknown> => {
     type Options = Argument<Client['getGiftCertificate']>
     type Data = DataType<Client['getGiftCertificate']>
     const {shopperGiftCertificates: client} = useCommerceApi()
@@ -59,9 +59,9 @@ export const useGiftCertificate = (
         {
             // !!! This is a violation of our design goal of minimal logic in the indivudal endpoint
             // endpoint hooks. This is because this method is a post method, rather than GET,
-            // and its body contains secrets. Setting cacheTime to 0 avoids exposing the secrets in
+            // and its body contains secrets. Setting gcTime to 0 avoids exposing the secrets in
             // the shared cache.
-            cacheTime: 0,
+            gcTime: 0,
             ...queryOptions
         },
         {
