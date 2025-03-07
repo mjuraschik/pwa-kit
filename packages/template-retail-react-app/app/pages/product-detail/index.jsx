@@ -99,7 +99,8 @@ const ProductDetail = () => {
                     'prices',
                     'variations',
                     'set_products',
-                    'bundled_products'
+                    'bundled_products',
+                    'page_meta_tags'
                 ],
                 allImages: true
             }
