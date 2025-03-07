@@ -52,7 +52,8 @@ export class MetricsSender {
                 apiVersion: '2010-08-01',
                 // The AWS_REGION variable is defined by the Lambda
                 // environment.
-                region: process.env.AWS_REGION || 'us-east-1'
+                region: process.env.AWS_REGION || 'us-east-1',
+                maxRetries: 0
             })
         }
         return this._CW
