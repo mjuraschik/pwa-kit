@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React, {useState, ReactElement} from 'react'
-import {CommerceApiProvider, resetDehydratedQueryTimeStamp} from '@salesforce/commerce-sdk-react'
+import {CommerceApiProvider, resetDehydratedStateTimeStamp} from '@salesforce/commerce-sdk-react'
 import {withReactQuery} from '@salesforce/pwa-kit-react-sdk/ssr/universal/components/with-react-query'
 import {useCorrelationId} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
 import {proxyBasePath} from '@salesforce/pwa-kit-runtime/utils/ssr-namespace-paths'
@@ -86,7 +86,7 @@ const options = {
             }
         }
     },
-    beforeHydrate: resetDehydratedQueryTimeStamp
+    beforeHydrate: resetDehydratedStateTimeStamp
 }
 
 export default withReactQuery(AppConfig, options)
