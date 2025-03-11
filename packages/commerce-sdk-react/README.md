@@ -70,6 +70,7 @@ const AppConfig = ({children}) => {
     )
 }
 
+// You can configure the query client options by passing an options object to the withReactQuery HOC second argument.
 export default withReactQuery(AppConfig)
 ```
 
