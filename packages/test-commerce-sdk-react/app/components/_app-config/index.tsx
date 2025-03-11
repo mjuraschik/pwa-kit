@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React, {useState, ReactElement} from 'react'
-import {CommerceApiProvider} from '@salesforce/commerce-sdk-react'
+import {CommerceApiProvider, resetQueryTimeStamp} from '@salesforce/commerce-sdk-react'
 import {withReactQuery} from '@salesforce/pwa-kit-react-sdk/ssr/universal/components/with-react-query'
 import {useCorrelationId} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
 import {proxyBasePath} from '@salesforce/pwa-kit-runtime/utils/ssr-namespace-paths'
@@ -86,21 +86,7 @@ const options = {
             }
         }
     },
-    beforeHydrate: (data: any) => {
-        const now = Date.now()
-
-        // Helper to reset the data timestamp to time of app load.
-        const updateQueryTimeStamp = ({state}: {state: any}) => {
-            state.dataUpdatedAt = now
-        }
-
-        // Update serialized mutations and queries to ensure that the cached data is
-        // considered fresh on first load.
-        data?.mutations?.forEach(updateQueryTimeStamp)
-        data?.queries?.forEach(updateQueryTimeStamp)
-
-        return data
-    }
+    beforeHydrate: resetQueryTimeStamp
 }
 
 export default withReactQuery(AppConfig, options)
