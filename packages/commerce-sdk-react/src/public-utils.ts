@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import {DehydratedState} from '@tanstack/react-query'
+
 /**
  * Resets the dataUpdatedAt timestamp for all mutations and queries in the given data object.
  * This is typically used in conjuction with pwa-kit-react-sdk's`beforeHydrate` to ensure that
@@ -14,7 +16,7 @@
  * @returns The updated data object with reset timestamps.
  * @since 4.0.0
  */
-export const resetQueryTimeStamp = (data: {mutations: any[], queries: any[]}, timestamp: number) => {
+export const resetQueryTimeStamp = (data: DehydratedState, timestamp: number) => {
     const time = timestamp || Date.now()
 
     const updateQueryTimeStamp = (item: any) => ({
