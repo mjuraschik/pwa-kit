@@ -77,8 +77,12 @@ const options = {
     queryClientConfig: {
         defaultOptions: {
             queries: {
+                retry: false,
                 refetchOnWindowFocus: false,
                 staleTime: 10 * 1000
+            },
+            mutations: {
+                retry: false
             }
         }
     },
