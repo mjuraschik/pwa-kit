@@ -257,19 +257,22 @@ jest.mock('../universal/routes', () => {
     }
 
     const UseQueryResolvesObject = () => {
-        const {data, isLoading} = useQuery(['use-query-resolves-object'], async () => ({
-            prop: 'prop-value'
-        }))
+        const {data, isLoading} = useQuery({
+            queryKey: ['use-query-resolves-object'],
+            queryFn: async () => ({
+                prop: 'prop-value'
+            })
+        })
         return <div>{isLoading ? 'loading' : data.prop}</div>
     }
 
     const DisabledUseQueryIsntResolved = () => {
         const {data, isLoading} = useQuery(
-            ['use-query-resolves-object'],
-            async () => ({
-                prop: 'prop-value'
-            }),
             {
+                queryKey: ['use-query-resolves-object'],
+                queryFn: async () => ({
+                    prop: 'prop-value'
+                }),
                 enabled: false
             }
         )
