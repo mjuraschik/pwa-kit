@@ -31,7 +31,7 @@ import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
 import {createUrlTemplate} from '@salesforce/retail-react-app/app/utils/url'
 import createLogger from '@salesforce/pwa-kit-runtime/utils/logger-factory'
 
-import {CommerceApiProvider, resetQueryTimeStamp} from '@salesforce/commerce-sdk-react'
+import {CommerceApiProvider, resetDehydratedQueryTimeStamp} from '@salesforce/commerce-sdk-react'
 import {withReactQuery} from '@salesforce/pwa-kit-react-sdk/ssr/universal/components/with-react-query'
 import {useCorrelationId} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
@@ -130,7 +130,7 @@ const options = {
             }
         }
     },
-    beforeHydrate: resetQueryTimeStamp
+    beforeHydrate: resetDehydratedQueryTimeStamp
 }
 
 export default withReactQuery(AppConfig, options)
