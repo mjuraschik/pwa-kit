@@ -709,7 +709,7 @@ describe('The Node SSR Environment', () => {
                 const html = res.text
                 expect(html).toEqual(expect.stringContaining('<div>loading</div>'))
             }
-        },
+        }
         // {
         //     description: 'Get the server context and set the response status to 404',
         //     req: {url: '/server-context'},
