@@ -7,7 +7,7 @@
 
 import Cookies, {CookieAttributes} from 'js-cookie'
 import {IFRAME_HOST_ALLOW_LIST} from './constant'
-import { DehydratedState } from '@tanstack/react-query'
+import {DehydratedState} from '@tanstack/react-query'
 
 /** Utility to determine if you are on the browser (client) or not. */
 export const onClient = (): boolean => typeof window !== 'undefined'

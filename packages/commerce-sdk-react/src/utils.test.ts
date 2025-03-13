@@ -8,7 +8,7 @@
 import {resetDehydratedStateTimeStamp} from './utils'
 import {DehydratedState} from '@tanstack/react-query'
 describe('resetDehydratedStateTimeStamp', () => {
-    const mockDehydratedState : DehydratedState = {
+    const mockDehydratedState: DehydratedState = {
         mutations: [],
         queries: [
             {
@@ -66,7 +66,7 @@ describe('resetDehydratedStateTimeStamp', () => {
 
         expect(result.queries[0].state.dataUpdatedAt).toBeGreaterThanOrEqual(before)
         expect(result.queries[0].state.dataUpdatedAt).toBeLessThanOrEqual(after)
-        
+
         expect(result.queries[1].state.dataUpdatedAt).toBeGreaterThanOrEqual(before)
         expect(result.queries[1].state.dataUpdatedAt).toBeLessThanOrEqual(after)
     })
@@ -78,7 +78,7 @@ describe('resetDehydratedStateTimeStamp', () => {
 
         expect(result.queries[0].state.data).toBe('query data')
         expect(result.queries[0].queryKey).toEqual(['queries', 'key1'])
-        
+
         expect(result.queries[1].state.data).toBe('query data 2')
         expect(result.queries[1].queryKey).toEqual(['queries', 'key2'])
     })
@@ -90,7 +90,7 @@ describe('resetDehydratedStateTimeStamp', () => {
         }
 
         const result = resetDehydratedStateTimeStamp(emptyState, new Date(2023, 5, 15))
-        
+
         expect(result.mutations).toEqual([])
         expect(result.queries).toEqual([])
     })
