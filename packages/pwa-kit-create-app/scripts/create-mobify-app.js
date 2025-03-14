@@ -329,7 +329,7 @@ const PRESETS = [
             type: TEMPLATE_SOURCE_NPM,
             id: '@salesforce/retail-react-app'
         },
-        questions: [...EXTENSIBILITY_QUESTIONS, ...RETAIL_REACT_APP_QUESTIONS],
+        questions: [...RETAIL_REACT_APP_QUESTIONS],
         answers: {
             ['project.extend']: false, // Intentionally not an extensible project so that the correct logos appear on demo site
             ['project.hybrid']: false,
@@ -418,7 +418,7 @@ const PRESETS = [
             type: TEMPLATE_SOURCE_NPM,
             id: '@salesforce/retail-react-app'
         },
-        questions: [...EXTENSIBILITY_QUESTIONS, ...RETAIL_REACT_APP_QUESTIONS],
+        questions: [...RETAIL_REACT_APP_QUESTIONS],
         answers: {
             ['project.extend']: true,
             ['project.hybrid']: false,
@@ -1202,7 +1202,8 @@ const main = async (opts) => {
     // Set the preset based on presetId if provided
     if (presetId && !context.preset) {
         context.preset = PRESETS.find(({id}) => id === presetId)
-    
+    }
+
     // Add the selected preset to the context object.
     const selectedPreset = PRESETS.find(
         ({id}) => id === (presetId || context.answers.general.presetId)

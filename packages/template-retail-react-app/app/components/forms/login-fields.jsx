@@ -6,7 +6,6 @@
  */
 import React from 'react'
 import PropTypes from 'prop-types'
-import useLoginFields from '@salesforce/retail-react-app/app/components/forms/useLoginFields'
 import {FormattedMessage} from 'react-intl'
 import {Stack, Box, Button} from '@chakra-ui/react'
 import Field from '@salesforce/retail-react-app/app/components/field'
