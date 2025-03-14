@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {UseQueryResult} from '@tanstack/react-query'
 import {ShopperExperience} from 'commerce-sdk-isomorphic'
 import {ApiClients, ApiQueryOptions, Argument, DataType, NullableParameters} from '../types'
@@ -30,7 +31,7 @@ type Client = ApiClients['shopperExperience']
 export const usePages = (
     apiOptions: NullableParameters<Argument<Client['getPages']>>,
     queryOptions: ApiQueryOptions<Client['getPages']> = {}
-): UseQueryResult<DataType<Client['getPages']>> => {
+): UseQueryResult<DataType<Client['getPages']>, Error> => {
     type Options = Argument<Client['getPages']>
     type Data = DataType<Client['getPages']>
     const {shopperExperience: client} = useCommerceApi()
@@ -55,6 +56,7 @@ export const usePages = (
 
     // For some reason, if we don't explicitly set these generic parameters, the inferred type for
     // `Data` sometimes, but not always, includes `Response`, which is incorrect. I don't know why.
+    // @ts-ignore TODO: Fix react query result error generics
     return useQuery<Client, Options, Data>({...netOptions, parameters}, queryOptions, {
         method,
         queryKey,
@@ -78,7 +80,7 @@ export const usePages = (
 export const usePage = (
     apiOptions: NullableParameters<Argument<Client['getPage']>>,
     queryOptions: ApiQueryOptions<Client['getPage']> = {}
-): UseQueryResult<DataType<Client['getPage']>> => {
+): UseQueryResult<DataType<Client['getPage']>, Error> => {
     type Options = Argument<Client['getPage']>
     type Data = DataType<Client['getPage']>
     const {shopperExperience: client} = useCommerceApi()
@@ -103,6 +105,7 @@ export const usePage = (
 
     // For some reason, if we don't explicitly set these generic parameters, the inferred type for
     // `Data` sometimes, but not always, includes `Response`, which is incorrect. I don't know why.
+    // @ts-ignore TODO: Fix react query result error generics
     return useQuery<Client, Options, Data>({...netOptions, parameters}, queryOptions, {
         method,
         queryKey,

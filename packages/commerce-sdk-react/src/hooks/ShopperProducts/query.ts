@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {UseQueryResult} from '@tanstack/react-query'
 import {ApiClients, ApiQueryOptions, Argument, DataType, NullableParameters} from '../types'
 import useCommerceApi from '../useCommerceApi'
@@ -28,7 +29,7 @@ type Client = ApiClients['shopperProducts']
 export const useProducts = (
     apiOptions: NullableParameters<Argument<Client['getProducts']>>,
     queryOptions: ApiQueryOptions<Client['getProducts']> = {}
-): UseQueryResult<DataType<Client['getProducts']>> => {
+): UseQueryResult<DataType<Client['getProducts']>, Error> => {
     type Options = Argument<Client['getProducts']>
     type Data = DataType<Client['getProducts']>
     const {shopperProducts: client} = useCommerceApi()
@@ -50,6 +51,7 @@ export const useProducts = (
 
     // For some reason, if we don't explicitly set these generic parameters, the inferred type for
     // `Data` sometimes, but not always, includes `Response`, which is incorrect. I don't know why.
+    // @ts-ignore TODO: Fix react query result error generics
     return useQuery<Client, Options, Data>({...netOptions, parameters}, queryOptions, {
         method,
         queryKey,
@@ -70,7 +72,7 @@ export const useProducts = (
 export const useProduct = (
     apiOptions: NullableParameters<Argument<Client['getProduct']>>,
     queryOptions: ApiQueryOptions<Client['getProduct']> = {}
-): UseQueryResult<DataType<Client['getProduct']>> => {
+): UseQueryResult<DataType<Client['getProduct']>, Error> => {
     type Options = Argument<Client['getProduct']>
     type Data = DataType<Client['getProduct']>
     const {shopperProducts: client} = useCommerceApi()
@@ -92,6 +94,7 @@ export const useProduct = (
 
     // For some reason, if we don't explicitly set these generic parameters, the inferred type for
     // `Data` sometimes, but not always, includes `Response`, which is incorrect. I don't know why.
+    // @ts-ignore TODO: Fix react query result error generics
     return useQuery<Client, Options, Data>({...netOptions, parameters}, queryOptions, {
         method,
         queryKey,
@@ -112,7 +115,7 @@ export const useProduct = (
 export const useCategories = (
     apiOptions: NullableParameters<Argument<Client['getCategories']>>,
     queryOptions: ApiQueryOptions<Client['getCategories']> = {}
-): UseQueryResult<DataType<Client['getCategories']>> => {
+): UseQueryResult<DataType<Client['getCategories']>, Error> => {
     type Options = Argument<Client['getCategories']>
     type Data = DataType<Client['getCategories']>
     const {shopperProducts: client} = useCommerceApi()
@@ -134,6 +137,7 @@ export const useCategories = (
 
     // For some reason, if we don't explicitly set these generic parameters, the inferred type for
     // `Data` sometimes, but not always, includes `Response`, which is incorrect. I don't know why.
+    // @ts-ignore TODO: Fix react query result error generics
     return useQuery<Client, Options, Data>({...netOptions, parameters}, queryOptions, {
         method,
         queryKey,
@@ -156,7 +160,7 @@ parameter. The server only returns online categories.
 export const useCategory = (
     apiOptions: NullableParameters<Argument<Client['getCategory']>>,
     queryOptions: ApiQueryOptions<Client['getCategory']> = {}
-): UseQueryResult<DataType<Client['getCategory']>> => {
+): UseQueryResult<DataType<Client['getCategory']>, Error> => {
     type Options = Argument<Client['getCategory']>
     type Data = DataType<Client['getCategory']>
     const {shopperProducts: client} = useCommerceApi()
@@ -178,6 +182,7 @@ export const useCategory = (
 
     // For some reason, if we don't explicitly set these generic parameters, the inferred type for
     // `Data` sometimes, but not always, includes `Response`, which is incorrect. I don't know why.
+    // @ts-ignore TODO: Fix react query result error generics
     return useQuery<Client, Options, Data>({...netOptions, parameters}, queryOptions, {
         method,
         queryKey,

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {UseQueryResult} from '@tanstack/react-query'
 import {ApiClients, ApiQueryOptions, Argument, DataType, NullableParameters} from '../types'
 import useCommerceApi from '../useCommerceApi'
@@ -28,7 +29,7 @@ type Client = ApiClients['shopperGiftCertificates']
 export const useGiftCertificate = (
     apiOptions: NullableParameters<Argument<Client['getGiftCertificate']>>,
     queryOptions: ApiQueryOptions<Client['getGiftCertificate']> = {}
-): UseQueryResult<DataType<Client['getGiftCertificate']>> => {
+): UseQueryResult<DataType<Client['getGiftCertificate']>, Error> => {
     type Options = Argument<Client['getGiftCertificate']>
     type Data = DataType<Client['getGiftCertificate']>
     const {shopperGiftCertificates: client} = useCommerceApi()
@@ -54,14 +55,15 @@ export const useGiftCertificate = (
 
     // For some reason, if we don't explicitly set these generic parameters, the inferred type for
     // `Data` sometimes, but not always, includes `Response`, which is incorrect. I don't know why.
+    // @ts-ignore TODO: Fix react query result error generics
     return useQuery<Client, Options, Data>(
         {...netOptions, parameters},
         {
             // !!! This is a violation of our design goal of minimal logic in the indivudal endpoint
             // endpoint hooks. This is because this method is a post method, rather than GET,
-            // and its body contains secrets. Setting cacheTime to 0 avoids exposing the secrets in
+            // and its body contains secrets. Setting gcTime to 0 avoids exposing the secrets in
             // the shared cache.
-            cacheTime: 0,
+            gcTime: 0,
             ...queryOptions
         },
         {
