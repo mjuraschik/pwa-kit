@@ -856,9 +856,12 @@ const processAppExtensions = (
             const appExtensionTmp = p.join(os.tmpdir(), `extract-${appExtensionName}`)
             fs.mkdirSync(appExtensionTmp, {recursive: true})
             const appExtensionTarFile = sh
-                .exec(`npm pack ${appExtensionName}@latest --pack-destination="${appExtensionTmp}"`, {
-                    silent: true
-                })
+                .exec(
+                    `npm pack ${appExtensionName}@latest --pack-destination="${appExtensionTmp}"`,
+                    {
+                        silent: true
+                    }
+                )
                 .stdout.trim()
 
             const appExtensionTarPath = p.join(appExtensionTmp, appExtensionTarFile)
