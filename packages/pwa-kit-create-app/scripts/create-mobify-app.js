@@ -850,42 +850,36 @@ const processAppExtensions = (
     extractAppExtensions = false,
     appExtensionsDir
 ) => {
-    console.log('appExtensions: ', JSON.stringify(appExtensions))
-    console.log('extractAppExtensions: ', extractAppExtensions) 
     if (appExtensions.length > 0 && extractAppExtensions) {
-        console.log('why am I here?')
         appExtensions.forEach((appExtensionName) => {
             // Create the full path for the temporary directory, preserving the namespace
             const appExtensionTmp = p.join(os.tmpdir(), `extract-${appExtensionName}`)
-            console.log('appExtensionTmp: ', appExtensionTmp)
             fs.mkdirSync(appExtensionTmp, {recursive: true})
-            console.log('successfully created appExtensionTmp')
             const appExtensionTarFile = sh
                 .exec(`npm pack ${appExtensionName}@latest --pack-destination="${appExtensionTmp}"`, {
-                    silent: false
+                    silent: true
                 })
                 .stdout.trim()
-            console.log('successfully created appExtensionTarFile: ', appExtensionTarFile)
 
             const appExtensionTarPath = p.join(appExtensionTmp, appExtensionTarFile)
-            console.log('appExtensionTarPath: ', appExtensionTarPath)
+
             // Extract the Application Extension
             tar.x({
                 file: appExtensionTarPath,
                 cwd: appExtensionTmp,
                 sync: true
             })
-            console.log('successfully extracted appExtensionTarPath')
+
             // Copy the extracted Application Extension into the appropriate folder
             const appExtensionTmpPath = p.join(appExtensionTmp, 'package')
             const appExtensionDestDir = p.join(appExtensionsDir, appExtensionName.replace('/', '_'))
             sh.mkdir('-p', appExtensionDestDir)
-            console.log('appExtensionDestDir: ', appExtensionDestDir)
+
             // Copy hidden files
             sh.cp('-rf', p.join(appExtensionTmpPath, '.*'), appExtensionDestDir)
             // Copy regular files
             sh.cp('-rf', p.join(appExtensionTmpPath, '*'), appExtensionDestDir)
-            console.log('successfully copied appExtensionTmpPath')
+
             // Clean up the temporary Application Extension directory
             sh.rm('-rf', appExtensionTmp)
         })
@@ -1055,13 +1049,10 @@ const runGenerator = async (
             projectName: localDevProjectContext.answers.project.name
         })
     } else {
-        console.log('processing app extensions')
         processAppExtensions(selectedAppExtensions, extractAppExtensions, appExtensionsDir)
-        console.log('after process app extensions')
     }
 
     // Prepare updates for package.json
-    console.log('preparing package.json updates')
     const pkgUpdates = {
         name: getSlugifiedProjectName(context.answers.project.name || context.preset.id),
         version: GENERATED_PROJECT_VERSION,
@@ -1090,15 +1081,12 @@ const runGenerator = async (
     }
 
     // Update the root package.json
-    console.log('Updating package.json')
     updatePackageJson(p.resolve(outputDir, 'package.json'), pkgUpdates)
 
     // Clean up the temporary directory
-    console.log('cleaning tmp foler')
     sh.rm('-rf', tmp)
 
     if (installDependencies) {
-        console.log('installing dependencies')
         // Install dependencies for the newly minted project.
         npmInstall(outputDir, {verbose, projectName: context.answers.project.name})
     }
