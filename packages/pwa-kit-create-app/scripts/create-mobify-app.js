@@ -1049,10 +1049,12 @@ const runGenerator = async (
             projectName: localDevProjectContext.answers.project.name
         })
     } else {
+        console.log('processing app extensions')
         processAppExtensions(selectedAppExtensions, extractAppExtensions, appExtensionsDir)
     }
 
     // Prepare updates for package.json
+    console.log('preparing package.json updates')
     const pkgUpdates = {
         name: getSlugifiedProjectName(context.answers.project.name || context.preset.id),
         version: GENERATED_PROJECT_VERSION,
@@ -1081,12 +1083,15 @@ const runGenerator = async (
     }
 
     // Update the root package.json
+    console.log('Updating package.json')
     updatePackageJson(p.resolve(outputDir, 'package.json'), pkgUpdates)
 
     // Clean up the temporary directory
+    console.log('cleaning tmp foler')
     sh.rm('-rf', tmp)
 
     if (installDependencies) {
+        console.log('installing dependencies')
         // Install dependencies for the newly minted project.
         npmInstall(outputDir, {verbose, projectName: context.answers.project.name})
     }
