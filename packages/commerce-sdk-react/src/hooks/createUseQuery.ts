@@ -27,6 +27,18 @@ export type MethodsOf<C> = {
 }[keyof C]
 
 /**
+ * Type definition for a query key helper
+ */
+export type QueryKeyHelper = {
+    /**
+     * Generate a query key from parameters
+     * @param params - The parameters to generate a query key for
+     * @returns A query key for the parameters
+     */
+    queryKey: (params: any) => any;
+}
+
+/**
  * Options for creating a typed query hook for a specific API client
  */
 export interface CreateUseQueryOptions<
@@ -39,6 +51,8 @@ export interface CreateUseQueryOptions<
     methodName: M;
     /** The name to use for the hook in debugging tools */
     displayName: string;
+    /** The query key helper for the specified method */
+    queryKeyHelper: QueryKeyHelper;
 }
 
 /**
@@ -60,19 +74,15 @@ type EnsureApiMethod<T> = T extends ApiMethod<any, any> ? T : never;
  * @template ClientKey - The key of the client in ApiClients
  * @template M - The method name from the specified client
  * @param options - Configuration options for creating the query hook
- * @param queryKeyHelper - The query key helper for the specified method
  * @returns A custom hook that provides access to the specified API method
  */
 export const createUseQuery = <
     ClientKey extends keyof ApiClients,
     M extends MethodsOf<ApiClients[ClientKey]>
 >(
-    options: CreateUseQueryOptions<ClientKey, M>,
-    queryKeyHelper: {
-        queryKey: (params: any) => any;
-    }
+    options: CreateUseQueryOptions<ClientKey, M>
 ): QueryHook<EnsureApiMethod<ApiClients[ClientKey][M]>> => {
-    const { clientKey, methodName, displayName } = options;
+    const { clientKey, methodName, displayName, queryKeyHelper } = options;
     type Client = ApiClients[ClientKey];
     // Ensure method type is a function
     type Method = ApiClients[ClientKey][M] & ApiMethod<any, any>;

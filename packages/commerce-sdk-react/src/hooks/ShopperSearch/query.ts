@@ -131,14 +131,12 @@ interface CreateUseQueryOptions<M extends ClientMethodNames> {
  * @see {@link https://salesforcecommercecloud.github.io/commerce-sdk-isomorphic/classes/shoppersearch.shoppersearch-1.html#productsearch | `commerce-sdk-isomorphic` documentation} for more information on the parameters and returned data type.
  * @see {@link https://tanstack.com/query/latest/docs/react/reference/useQuery | TanStack Query `useQuery` reference} for more information about the return value.
  */
-export const useProductSearch = createUseQuery(
-    {
-        clientKey: 'shopperSearch',
-        methodName: 'productSearch',
-        displayName: 'useProductSearch'
-    },
-    productSearchQueryKeyHelper
-)
+export const useProductSearch = createUseQuery({
+    clientKey: 'shopperSearch',
+    methodName: 'productSearch',
+    displayName: 'useProductSearch',
+    queryKeyHelper: productSearchQueryKeyHelper
+})
 
 /**
  * Provides keyword search functionality for products, categories, and brands suggestions.
@@ -153,11 +151,9 @@ export const useProductSearch = createUseQuery(
  * @see {@link https://salesforcecommercecloud.github.io/commerce-sdk-isomorphic/classes/shoppersearch.shoppersearch-1.html#getsearchsuggestions | `commerce-sdk-isomorphic` documentation} for more information on the parameters and returned data type.
  * @see {@link https://tanstack.com/query/latest/docs/react/reference/useQuery | TanStack Query `useQuery` reference} for more information about the return value.
  */
-export const useSearchSuggestions = createUseQuery(
-    {
-        clientKey: 'shopperSearch',
-        methodName: 'getSearchSuggestions',
-        displayName: 'useSearchSuggestions'
-    },
-    getSearchSuggestionsQueryKeyHelper
-)
+export const useSearchSuggestions = createUseQuery({
+    clientKey: 'shopperSearch',
+    methodName: 'getSearchSuggestions',
+    displayName: 'useSearchSuggestions',
+    queryKeyHelper: getSearchSuggestionsQueryKeyHelper
+})
