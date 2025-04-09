@@ -37,6 +37,15 @@ export type QueryKeyHelper = {
 }
 
 /**
+ * Interface for SDK class constructor that includes the paramKeys property
+ */
+interface SDKClassConstructor {
+    paramKeys: {
+        [key: string]: string[];
+    };
+}
+
+/**
  * Options for creating a typed query hook for a specific API client
  */
 export interface CreateUseQueryOptions<
@@ -100,11 +109,11 @@ export const createUseQuery = <
         const client: Client = commerceApi[clientKey];
         
         // Get the SDK class for parameter keys
-        const SDKClass = client.constructor;
+        const SDKClass = client.constructor as unknown as SDKClassConstructor;
         
         // Get required parameters for this method
         const requiredKey = `${String(methodName)}Required`;
-        const requiredParamArray = (SDKClass.paramKeys as any)[requiredKey] as string[];
+        const requiredParamArray = SDKClass.paramKeys[requiredKey] as string[];
         
         // Convert the string array to a readonly array of parameter keys
         type ParamKeys = keyof NonNullable<Options['parameters']>
@@ -113,7 +122,7 @@ export const createUseQuery = <
         const netOptions = omitNullableParameters(mergeOptions(client, apiOptions));
         
         // Get valid parameter keys for this method
-        const methodParamKeys = (SDKClass.paramKeys as any)[String(methodName)] as string[];
+        const methodParamKeys = SDKClass.paramKeys[String(methodName)] as string[];
         
         // These parameters are valid at runtime
         const parameters = pickValidParams(netOptions.parameters || {}, methodParamKeys as any);
