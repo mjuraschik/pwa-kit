@@ -11,7 +11,9 @@ import {
     ApiQueryOptions,
     Argument,
     DataType,
-    NullableParameters
+    MergedOptions,
+    NullableParameters,
+    OmitNullableParameters
 } from './types'
 import useCommerceApi from './useCommerceApi'
 import {useQuery} from './useQuery'
@@ -139,16 +141,22 @@ export const createUseQuery = <
         }
 
         return useQuery<
-            typeof client,
+            Client,
             Options,
             Data,
             TError,
             Data // We're not transforming the data, so TData = TQueryFnData
-        >({...netOptions, parameters} as any, queryOptions, {
-            method,
-            queryKey,
-            requiredParameters
-        })
+        >(
+            {...netOptions, parameters} as OmitNullableParameters<
+                NullableParameters<MergedOptions<Client, Options>>
+            >,
+            queryOptions,
+            {
+                method,
+                queryKey,
+                requiredParameters
+            }
+        )
     }
 
     return useQueryHook
