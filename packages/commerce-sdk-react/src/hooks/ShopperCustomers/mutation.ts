@@ -4,8 +4,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import {createUseMutation} from '../createUseMutation'
+import {ApiClients, ApiMethod, Argument, CacheUpdateGetter, DataType, MergedOptions} from '../types'
+import {createUseMutation, MethodsOf} from '../createUseMutation'
 import {cacheUpdateMatrix} from './cache'
+
+type Client = ApiClients['shopperCustomers']
 
 /**
  * Mutations available for Shopper Customers.
@@ -105,8 +108,8 @@ export const ShopperCustomersMutations = {
  * @group ShopperCustomers
  * @category Mutation
  */
-export type ShopperCustomersMutation =
-    (typeof ShopperCustomersMutations)[keyof typeof ShopperCustomersMutations]
+export type ShopperCustomersMutation = 
+  MethodsOf<ApiClients['shopperCustomers']>
 
 /**
  * Mutation hook for Shopper Customers.
@@ -118,8 +121,14 @@ export const useShopperCustomersMutation = createUseMutation<
     ShopperCustomersMutation
 >({
     clientKey: 'shopperCustomers',
-    getCacheUpdates: (mutation) => cacheUpdateMatrix[mutation]
+    getCacheUpdates: (mutation) => cacheUpdateMatrix[mutation as keyof typeof cacheUpdateMatrix]
 })
 
-// const a = useShopperCustomersMutation("createCustomerAddress")
+
+const a = useShopperCustomersMutation("createCustomerAddress")
+// this should prompt ts error, but it's not
+// const b = a.mutate({body})
+
+// a.mutate(1)
 // a.mutate()
+
