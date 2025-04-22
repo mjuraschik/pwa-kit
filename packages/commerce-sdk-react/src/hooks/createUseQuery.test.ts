@@ -14,9 +14,6 @@ import {mergeOptions, omitNullableParameters, pickValidParams} from './utils'
 jest.mock('./useCommerceApi')
 jest.mock('./useQuery')
 
-// Import the actual module to test its internals
-import * as createUseQueryImpl from './createUseQuery'
-
 describe('createUseQuery', () => {
     // Define a type for query options to avoid type errors
     type QueryOptions = {
