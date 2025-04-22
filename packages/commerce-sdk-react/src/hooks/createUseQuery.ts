@@ -4,14 +4,16 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import {UseQueryResult} from '@tanstack/react-query'
+import {DefaultError, UseQueryResult} from '@tanstack/react-query'
 import {
     ApiClients,
     ApiMethod,
     ApiQueryOptions,
     Argument,
     DataType,
-    NullableParameters
+    MergedOptions,
+    NullableParameters,
+    OmitNullableParameters
 } from './types'
 import useCommerceApi from './useCommerceApi'
 import {useQuery} from './useQuery'
@@ -65,10 +67,10 @@ export interface CreateUseQueryOptions<
 /**
  * Type definition for a query hook function
  */
-export type QueryHook<M extends ApiMethod<any, any>> = (
+export type QueryHook<M extends ApiMethod<any, any>, TError = DefaultError> = (
     apiOptions: NullableParameters<Argument<M>>,
-    queryOptions?: ApiQueryOptions<M>
-) => UseQueryResult<DataType<M>, Error>
+    queryOptions?: ApiQueryOptions<M, TError>
+) => UseQueryResult<DataType<M>, TError>
 
 /**
  * Helper to ensure a method is an ApiMethod
@@ -85,10 +87,11 @@ type EnsureApiMethod<T> = T extends ApiMethod<any, any> ? T : never
  */
 export const createUseQuery = <
     ClientKey extends keyof ApiClients,
-    M extends MethodsOf<ApiClients[ClientKey]>
+    M extends MethodsOf<ApiClients[ClientKey]>,
+    TError = DefaultError
 >(
     options: CreateUseQueryOptions<ClientKey, M>
-): QueryHook<EnsureApiMethod<ApiClients[ClientKey][M]>> => {
+): QueryHook<EnsureApiMethod<ApiClients[ClientKey][M]>, TError> => {
     const {clientKey, methodName, displayName, queryKeyHelper} = options
     type Client = ApiClients[ClientKey]
     // Ensure method type is a function
@@ -99,8 +102,8 @@ export const createUseQuery = <
      */
     const useQueryHook = (
         apiOptions: NullableParameters<Argument<Method>>,
-        queryOptions: ApiQueryOptions<Method> = {}
-    ): UseQueryResult<DataType<Method>, Error> => {
+        queryOptions: ApiQueryOptions<Method, TError> = {}
+    ): UseQueryResult<DataType<Method>, TError> => {
         type Options = Argument<Method>
         type Data = DataType<Method>
 
@@ -138,16 +141,22 @@ export const createUseQuery = <
         }
 
         return useQuery<
-            typeof client,
+            Client,
             Options,
             Data,
-            Error,
+            TError,
             Data // We're not transforming the data, so TData = TQueryFnData
-        >({...netOptions, parameters} as any, queryOptions as any, {
-            method,
-            queryKey,
-            requiredParameters
-        })
+        >(
+            {...netOptions, parameters} as OmitNullableParameters<
+                NullableParameters<MergedOptions<Client, Options>>
+            >,
+            queryOptions,
+            {
+                method,
+                queryKey,
+                requiredParameters
+            }
+        )
     }
 
     return useQueryHook
