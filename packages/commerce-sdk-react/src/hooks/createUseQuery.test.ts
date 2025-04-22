@@ -17,15 +17,15 @@ jest.mock('./useQuery')
 describe('createUseQuery', () => {
     // Define a type for query options to avoid type errors
     type QueryOptions = {
-        enabled?: boolean;
-        staleTime?: number;
-        cacheTime?: number;
-        retry?: number;
+        enabled?: boolean
+        staleTime?: number
+        cacheTime?: number
+        retry?: number
         meta?: {
-            displayName?: string;
-            existingMeta?: string;
-            [key: string]: unknown;
-        };
+            displayName?: string
+            existingMeta?: string
+            [key: string]: unknown
+        }
     }
 
     // Mock API client and method
@@ -73,19 +73,17 @@ describe('createUseQuery', () => {
         // Test hook that directly calls useQuery to avoid type issues
         return (apiOptions: any, queryOptions: QueryOptions = {}) => {
             const client = mockUseCommerceApi().testClient
-            const netOptions = omitNullableParameters(
-                mergeOptions(client, apiOptions)
-            )
+            const netOptions = omitNullableParameters(mergeOptions(client, apiOptions))
             const parameters = pickValidParams(
                 netOptions.parameters || {},
                 client.constructor.paramKeys.testMethod
             )
             const queryKey = mockQueryKeyHelper.queryKey(netOptions.parameters)
-            
+
             const method = async (options: any) => {
                 return await client.testMethod(options)
             }
-            
+
             return useQueryModule.useQuery(
                 {...netOptions, parameters} as any,
                 {
@@ -104,7 +102,7 @@ describe('createUseQuery', () => {
         }
     }
 
-    it('creates a hook that returns expected data', async () => {
+    it('creates a hook that returns expected data', () => {
         // Create test hook
         const useTestQuery = createTestHook()
 
@@ -124,7 +122,7 @@ describe('createUseQuery', () => {
         expect(mockQueryKeyHelper.queryKey).toHaveBeenCalled()
     })
 
-    it('filters out invalid parameters', async () => {
+    it('filters out invalid parameters', () => {
         // Create test hook
         const useTestQuery = createTestHook()
 
@@ -142,7 +140,7 @@ describe('createUseQuery', () => {
 
         // Get the parameters that were passed to useQuery
         const useQueryCallArgs = mockUseQuery.mock.calls[0]
-        
+
         // Only valid parameters should be included
         expect(useQueryCallArgs[0].parameters).toEqual({
             param1: 'value1',
@@ -151,7 +149,7 @@ describe('createUseQuery', () => {
         })
     })
 
-    it('handles null parameters correctly', async () => {
+    it('handles null parameters correctly', () => {
         // Create test hook
         const useTestQuery = createTestHook()
 
@@ -168,7 +166,7 @@ describe('createUseQuery', () => {
 
         // Get the parameters that were passed to useQuery
         const useQueryCallArgs = mockUseQuery.mock.calls[0]
-        
+
         // Null parameters should be omitted
         expect(useQueryCallArgs[0].parameters).toEqual({
             param1: 'value1',
@@ -177,7 +175,7 @@ describe('createUseQuery', () => {
         })
     })
 
-    it('passes queryOptions to useQuery', async () => {
+    it('passes queryOptions to useQuery', () => {
         // Create test hook
         const useTestQuery = createTestHook()
 
@@ -212,7 +210,7 @@ describe('createUseQuery', () => {
         })
     })
 
-    it('merges meta data with existing meta in queryOptions', async () => {
+    it('merges meta data with existing meta in queryOptions', () => {
         // Create test hook
         const useTestQuery = createTestHook()
 
