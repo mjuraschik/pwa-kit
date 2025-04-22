@@ -44,7 +44,9 @@ export const useMutation = <
     const queryClient = useQueryClient()
     const customerId = useCustomerId()
     const authenticatedMethod = useAuthorizationHeader(hookConfig.method)
-
+    console.log("client")
+    // console.log(hookConfig.client)
+    console.log(hookConfig.client.clientConfig)
     return useReactQueryMutation({
         mutationFn: authenticatedMethod,
         onSuccess(data, options) {
