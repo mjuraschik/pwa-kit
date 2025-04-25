@@ -150,6 +150,7 @@ const baseConfig = (target) => {
         throw Error(`The value "${target}" is not a supported webpack target`)
     }
 
+    const extensions = getConfiguredExtensions(getConfig())
     class Builder {
         constructor() {
             this.config = {
@@ -273,7 +274,12 @@ const baseConfig = (target) => {
                                 target: 'node'
                             }
                         }),
-                        ruleForOverrideResolver({target, projectDir, isMonoRepo})
+                        ruleForOverrideResolver({
+                            extensions,
+                            isMonoRepo,
+                            projectDir,
+                            target
+                        })
                     ].filter(Boolean)
                 }
             }

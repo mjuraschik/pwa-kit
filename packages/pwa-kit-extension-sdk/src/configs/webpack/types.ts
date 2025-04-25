@@ -25,3 +25,10 @@ export type ExtendedCompiler = Compiler & {
         extensions: any[]
     }
 }
+
+export interface OverridesResolverRuleOptions {
+    extensions?: ApplicationExtensionEntry[]
+    projectDir: string
+    target?: string
+    isMonoRepo?: boolean
+}
