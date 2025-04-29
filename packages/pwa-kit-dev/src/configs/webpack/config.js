@@ -219,7 +219,7 @@ const baseConfig = (target) => {
                 },
                 plugins: [
                     new ApplicationExtensionConfigPlugin({
-                        extensions: getConfiguredExtensions(getConfig())
+                        extensions
                     }),
                     new webpack.DefinePlugin({
                         DEBUG,
@@ -264,18 +264,19 @@ const baseConfig = (target) => {
                         },
                         ruleForApplicationExtensibility({
                             loaderOptions: {
-                                configured: getConfiguredExtensions(getConfig()),
+                                configured: extensions,
                                 target: 'web'
                             }
                         }),
                         ruleForApplicationExtensibility({
                             loaderOptions: {
-                                configured: getConfiguredExtensions(getConfig()),
+                                configured: extensions,
                                 target: 'node'
                             }
                         }),
                         ruleForOverrideResolver({
                             extensions,
+                            resolveExtensions: SUPPORTED_FILE_EXTENSIONS,
                             isMonoRepo,
                             projectDir,
                             target

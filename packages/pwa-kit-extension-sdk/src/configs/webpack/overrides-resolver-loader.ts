@@ -5,28 +5,29 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import {LoaderContext} from 'webpack'
-import fse from 'fs-extra'
+
 import os from 'os'
 import path from 'path'
 import resolve from 'resolve'
 
 // Local Imports
 import {buildCandidatePaths, getPackageName, SETUP_FILE_REGEX} from '../../shared/utils'
+import {getForceOverridesFilePaths, getOverridesFromFile} from '../utils'
 
 // Types
 import type {ExtendedCompiler, OverridesResolverRuleOptions} from './types'
 import type {OverrideStatsEntry} from './override-stats-plugin'
 
 // Constants
-const LOCAL_EXTENSIONS_DIR = 'application-extensions'
-const EXTENSION_PACKAGE_PREFIX = 'extension-'
-const EXTENSION_PACKAGE_NAMESPACE = '@salesforce'
-const IMPORT_REGEX = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"](\..*?)['"]/g
-const OVERRIDABLE_FILE_NAME = '.force_overrides'
-const MONO_REPO_WORKSPACE_FOLDER = 'packages'
-const NODE_MODULES_FOLDER = 'node_modules'
-const REQUIRES_REGEX = /require\(['"](\..*?)['"]\)/g
-const SRC = 'src'
+import {
+    EXTENSION_PACKAGE_PREFIX,
+    EXTENSION_PACKAGE_NAMESPACE,
+    IMPORT_REGEX,
+    MONO_REPO_WORKSPACE_FOLDER,
+    NODE_MODULES_FOLDER,
+    REQUIRES_REGEX,
+    SRC_FOLDER
+} from '../constants'
 
 // Cache for processed overrides
 const OVERRIDABLE_CACHE = {
@@ -53,9 +54,10 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
     // use `packageIterator` in the "resolve" function used later on.
     const {resourcePath, _compiler} = this
 
+    // TECH DEPT: Accessing `_compiler` is a bit of a hack, but it works. We should look to work around this.
     const compiler = _compiler as ExtendedCompiler
-    const projectRelPath = resourcePath.split(`${SRC}${path.sep}`)[1].split('.')[0] // File path relative to the project directory without file extension
-    const projectPath = resourcePath.split(SRC)[0]
+    const projectRelPath = resourcePath.split(`${SRC_FOLDER}${path.sep}`)[1].split('.')[0] // File path relative to the project directory without file extension
+    const projectPath = resourcePath.split(SRC_FOLDER)[0]
     const options = this.getOptions()
 
     // Get the package name
@@ -71,14 +73,9 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
     }
 
     // Lets use the compiler configuration to ensure we are resolving the correct file extensions.
-    const compilerOptions = this._compiler?.options
-
-    // const extensions = compilerOptions?.resolve?.extensions || []
-    const extensions = [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
+    const extensions = options?.resolveExtensions
     const basedir = options?.baseDir || process.cwd()
     const applicationExtensions = options?.extensions || compiler?.custom?.extensions || []
-    console.log('extensions: ', extensions)
-
 
     // Get the master list of all possible candidate paths based on your current extension configuration.
     const paths = buildCandidatePaths(projectRelPath, packageName, {
@@ -87,7 +84,6 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
         extensionEntries: applicationExtensions
     })
 
-
     // Also include the base override path and the path from the extension doing the import.
     const resolvedResourcePath = resolve.sync(projectRelPath, {
         basedir,
@@ -95,14 +91,6 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
         packageIterator: () => paths,
         ...options?.resolveOptions
     })
-
-
-    if (projectRelPath.includes('content')) {
-        console.log('Extensions: ', applicationExtensions)
-        console.log('Paths: ', paths)
-        console.log('Resolved Resource Path: ', resolvedResourcePath)
-        console.log('File Extensions: ', extensions)
-    }
 
     // Record override stats if RECORD_OVERRIDES is enabled
     if (this._compilation && 'overrideStats' in this._compilation) {
@@ -220,29 +208,6 @@ export const validateOverrideSource = (source: string, options: any = {}) => {
 }
 
 /**
- * Reads and parses a .force_overrides file into a list of clean override entries.
- * - Skips empty lines
- * - Skips full-line comments (`// comment`)
- * - Supports inline comments (`override // comment`)
- */
-const getOverridesFromFile = (filePath: string): string[] => {
-    try {
-        const content = fse.readFileSync(filePath, 'utf8')
-        return content
-            .split(/\r?\n/)
-            .map((line) => line.trim())
-            .filter((line) => line && !line.startsWith('//'))
-            .map((line) => line.split('//')[0].trim()) // remove inline comments
-            .filter(Boolean)
-    } catch (e: any) {
-        if (e.code !== 'ENOENT') {
-            console.warn(`Error reading override file at ${filePath}:`, e)
-        }
-        return []
-    }
-}
-
-/**
  * Generates a Webpack rule for application extensibility, configuring the loader for
  * handling application extensions based on the target (e.g., 'node' for server-side,
  * 'web' for client-side). Specifically this enables the ability to override the resolution
@@ -252,33 +217,21 @@ const getOverridesFromFile = (filePath: string): string[] => {
  * @returns {Object} A Webpack rule configuration object for handling application extensions.
  */
 export const ruleForOverrideResolver = (options: OverridesResolverRuleOptions): object => {
-    const {extensions = [], projectDir, target = 'web', isMonoRepo = false} = options
+    const {
+        extensions = [],
+        projectDir,
+        resolveExtensions = [],
+        target = 'web',
+        isMonoRepo = false
+    } = options
     const overridablesSet = new Set<string>()
 
     // Determine possible locations for the .force_overrides files in the project. Please note that
     // and extension can't exists as a node_module and a local package, but for simplicity sake we'll use for
     // for candidate locations prioritizing the local package.
-    const forceOverridesFilePaths: string[] = [
-        path.join(projectDir, OVERRIDABLE_FILE_NAME),
-        ...extensions
-            .map((ext) => [
-                path.join(
-                    projectDir,
-                    LOCAL_EXTENSIONS_DIR,
-                    typeof ext === 'string' ? ext : ext[0],
-                    OVERRIDABLE_FILE_NAME
-                ),
-                path.join(
-                    projectDir,
-                    NODE_MODULES_FOLDER,
-                    typeof ext === 'string' ? ext : ext[0],
-                    OVERRIDABLE_FILE_NAME
-                )
-            ])
-            .flat()
-    ]
+    const forceOverridesFilePaths: string[] = getForceOverridesFilePaths(projectDir, extensions)
 
-    // Create a "master" list of all the overrides in the project. 
+    // Create a "master" list of all the overrides in the project.
     // NOTE: That files defined in an extensions .force_overrides file will technically leak outside ot its scope
     // allowing other extensions to now override those extensions as well. This isn't ideal, but fo this initial version
     // we can go with it.
@@ -298,7 +251,8 @@ export const ruleForOverrideResolver = (options: OverridesResolverRuleOptions): 
         use: {
             loader: '@salesforce/pwa-kit-extension-sdk/configs/webpack/overrides-resolver-loader',
             options: {
-                extensions
+                extensions,
+                resolveExtensions
             }
         }
     }
