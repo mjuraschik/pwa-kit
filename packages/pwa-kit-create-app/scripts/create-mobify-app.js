@@ -51,6 +51,7 @@ const Handlebars = require('handlebars')
 
 const program = new Command()
 
+// TODO
 sh.set('-e')
 
 // Handlebars helpers
@@ -879,9 +880,21 @@ const processAppExtensions = (
             sh.mkdir('-p', appExtensionDestDir)
 
             // Copy hidden files
-            sh.cp('-rf', p.join(appExtensionTmpPath, '.*'), appExtensionDestDir)
+            // sh.cp('-rf', p.join(appExtensionTmpPath, '.*'), appExtensionDestDir)
             // Copy regular files
-            sh.cp('-rf', p.join(appExtensionTmpPath, '*'), appExtensionDestDir)
+            // sh.cp('-rf', p.join(appExtensionTmpPath, '*'), appExtensionDestDir)
+
+            // Copy template contents using Node's fs module
+            try {
+                fs.cpSync(appExtensionTmpPath, appExtensionDestDir, {recursive: true, force: true})
+            } catch (err) {
+                console.error(
+                    `Error copying files from ${appExtensionTmpPath} to ${appExtensionDestDir}:`,
+                    err
+                )
+                // Optionally, exit or handle the error appropriately
+                process.exit(1)
+            }
 
             // Clean up the temporary Application Extension directory
             sh.rm('-rf', appExtensionTmp)
@@ -939,7 +952,7 @@ const fetchAvailableAppExtensions = () => {
  * @param {*} answers
  * @param {*} param2
  */
-const runGenerator = async (
+const runGenerator = (
     context,
     {outputDir, templateVersion, verbose, installDependencies = true}
 ) => {
@@ -947,11 +960,14 @@ const runGenerator = async (
     const {templateSource} = preset
     const {selectedAppExtensions = [], extractAppExtensions = false} = answers.project
 
+    console.log('--- runGenerator 1')
+
     // Check if the output directory doesn't already exist.
     checkOutputDir(outputDir)
 
     // Ensure the output directory exists
     fs.mkdirSync(outputDir, {recursive: true})
+    console.log('--- runGenerator 2')
 
     // We need to get some assets from the base template. So extract it after
     // downloading from NPM or copying from the template bundle folder.
@@ -960,6 +976,7 @@ const runGenerator = async (
     const appExtensionsDir = p.join(outputDir, APP_DIR, APP_EXTENSIONS_DIR)
     const {id, type} = templateSource
     let tarPath
+    console.log('--- runGenerator 3', packagePath, p.join(packagePath, '/'))
 
     switch (type) {
         case TEMPLATE_SOURCE_NPM: {
@@ -987,13 +1004,36 @@ const runGenerator = async (
         cwd: tmp,
         sync: true
     })
+    console.log('--- runGenerator 4')
 
     // Copy the base template either from the package or npm.
-    sh.cp('-rf', p.join(packagePath, '{*,.*}'), outputDir)
+    // sh.cp('-rf', p.join(packagePath, '.*'), outputDir)
+    // console.log('--- runGenerator 4a - copied hidden files')
+    // sh.cp('-rf', p.join(packagePath, '*'), outputDir)
+    // console.log('--- runGenerator 4a - copied the remaining files')
+
+    // // Copy template contents using Node's fs module
+    // try {
+    //     console.log('--- runGenerator 4 - Copying files using fs.cpSync ---')
+    //     fs.cpSync(packagePath, outputDir, {recursive: true, force: true})
+    //     console.log('--- runGenerator 4a - fs.cpSync completed ---')
+    // } catch (err) {
+    //     console.error(`Error copying template files from ${packagePath} to ${outputDir}:`, err)
+    //     // Optionally, exit or handle the error appropriately
+    //     process.exit(1)
+    // }
+
+    // Copy hidden files
+    sh.cp('-rf', p.join(packagePath, '.*'), outputDir)
+    // Copy regular files
+    sh.cp('-rf', p.join(packagePath, '*'), outputDir)
+    console.log('--- runGenerator 4a')
 
     // Copy template specific assets over.
     const assetsDir = p.join(ASSETS_TEMPLATES_DIR, id)
+    console.log('--- runGenerator 4b', assetsDir)
     if (sh.test('-e', assetsDir)) {
+        console.log('--- runGenerator 4c')
         getFiles(assetsDir)
             .map((file) => {
                 const relFilePath = file.replace(assetsDir, '')
@@ -1002,8 +1042,11 @@ const runGenerator = async (
             .forEach((relFilePath) => {
                 processTemplate(relFilePath, assetsDir, outputDir, context)
             })
+        console.log('--- runGenerator 4d')
     }
+    console.log('--- runGenerator 4e')
 
+    console.log('--- runGenerator 5')
     // Check project type and handle appropriately
     if (answers.project.type === 'PWAKitAppExtensionProject') {
         const devOutputDir = p.join(outputDir, LOCAL_DEV_PROJECT_DIR)
@@ -1027,7 +1070,7 @@ const runGenerator = async (
             answers: {project: {type: 'PWAKitAppProject', name: 'local-dev-project'}}
         }
 
-        await runGenerator(localDevProjectContext, {
+        runGenerator(localDevProjectContext, {
             outputDir: devOutputDir,
             templateVersion,
             verbose,
@@ -1067,6 +1110,7 @@ const runGenerator = async (
     } else {
         processAppExtensions(selectedAppExtensions, extractAppExtensions, appExtensionsDir)
     }
+    console.log('--- runGenerator 6')
 
     // Prepare updates for package.json
     const pkgUpdates = {
@@ -1102,6 +1146,7 @@ const runGenerator = async (
     // Clean up the temporary directory
     sh.rm('-rf', tmp)
 
+    console.log('--- runGenerator 7')
     if (installDependencies) {
         // Install dependencies for the newly minted project.
         npmInstall(outputDir, {verbose, projectName: context.answers.project.name})
@@ -1141,6 +1186,7 @@ const runGenerator = async (
             'After your project is generated, please review `mobify.app.extensions` in package.json to check the configuration of the extensions and fill out any placeholder values.'
         )
     }
+    console.log('--- runGenerator 8')
 }
 
 const foundNode = process.versions.node
