@@ -4,16 +4,9 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import {ApiClients, ApiMethod, Argument, CacheUpdateGetter, DataType, MergedOptions} from '../types'
-import {useMutation} from '../useMutation'
-import {UseMutationResult} from '@tanstack/react-query'
-import {NotImplementedError} from '../utils'
-import useCommerceApi from '../useCommerceApi'
+import {ApiClients} from '../types'
+import {createUseMutation, MethodsOf} from '../createUseMutation'
 import {cacheUpdateMatrix} from './cache'
-import {MethodsOf} from '../createUseMutation'
-import {createUseMutation} from '../createUseMutation'
-
-type Client = ApiClients['shopperOrders']
 
 /**
  * Mutations available for Shopper Orders
