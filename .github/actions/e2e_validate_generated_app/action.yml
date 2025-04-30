@@ -12,6 +12,11 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Validate generated project based on project-key
-    run: node e2e/scripts/validate-generated-project.js ${{ inputs.PROJECT_KEY }} --templateVersion ${{ inputs.TEMPLATE_VERSION }}
+  - name: Validate generated project
+    run: |
+      COMMAND="node e2e/scripts/validate-generated-project.js ${{ inputs.PROJECT_KEY }}"
+      if [[ -n "${{ inputs.TEMPLATE_VERSION }}" ]]; then
+        COMMAND="$COMMAND --templateVersion ${{ inputs.TEMPLATE_VERSION }}"
+      fi
+      $COMMAND
     shell: bash
