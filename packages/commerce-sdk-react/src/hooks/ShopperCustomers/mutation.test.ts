@@ -589,10 +589,7 @@ describe('ShopperCustomers mutations', () => {
                     return useShopperCustomersMutation(mutationName)
                 })
                 act(() => result.current.mutate(options))
-                await waitAndExpectSuccess(() => {
-                    console.log(result.current)
-                    return result.current
-                })
+                await waitAndExpectSuccess(() => result.current)
                 expect(result.current.data).toEqual(data)
             }
         )

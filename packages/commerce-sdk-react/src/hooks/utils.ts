@@ -66,8 +66,6 @@ export const mergeOptions = <Client extends ApiClient, Options extends ApiOption
     client: Client,
     options: Options
 ): MergedOptions<Client, Options> => {
-    console.log('mergeOptions')
-    console.log(client)
     const merged = {
         // Only include body if it is set
         ...('body' in options
