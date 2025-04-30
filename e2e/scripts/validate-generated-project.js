@@ -12,8 +12,9 @@ const config = require('../config.js')
 const path = require('path')
 
 const validateGeneratedArtifacts = async (project) => {
-    const generatedProjectDirPath = path.join(process.cwd(), config.GENERATED_PROJECTS_DIR, project)
-    const generatedArtifacts = await fs.readdirSync(generatedProjectDirPath)
+    try {
+        const generatedProjectDirPath = path.join(process.cwd(), config.GENERATED_PROJECTS_DIR, project)
+        const generatedArtifacts = fs.readdirSync(generatedProjectDirPath)
 
     return new Promise((resolve, reject) => {
         const missingArtifacts = diffArrays(
@@ -25,9 +26,12 @@ const validateGeneratedArtifacts = async (project) => {
                 `Generated project (${project}) is missing one or more artifacts: ${missingArtifacts}`
             )
         } else {
-            resolve(`Successfully validated generated artifacts for: ${project} `)
-        }
-    })
+                resolve(`Successfully validated generated artifacts for: ${project} `)
+            }
+        })
+    } catch (err) {
+        reject(`Generated project (${project}) is missing one or more artifacts: ${err}`)
+    }
 }
 
 const validateExtensibilityConfig = async (project, templateVersion) => {

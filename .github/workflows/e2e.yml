@@ -109,7 +109,7 @@ jobs:
         
       - name: Get Template Version
         run: |-
-          version=`jq -r ".version" packages/template-retail-react-app/package.json | cut -d "-" -f 1`
+          version=`jq -r ".version" packages/template-retail-react-app/package.json`
           echo "retail_app_template_version=$version" >> "$GITHUB_ENV"
 
       - name: Generate Retail App Without Extensibility
@@ -222,7 +222,7 @@ jobs:
 
       - name: Get Template Version
         run: |-
-          version=`jq -r ".version" packages/template-retail-react-app/package.json | cut -d "-" -f 1`
+          version=`jq -r ".version" packages/template-retail-react-app/package.json`
           echo "retail_app_template_version=$version" >> "$GITHUB_ENV"
 
       - name: Generate Retail App With Extensibility
@@ -332,7 +332,7 @@ jobs:
 
       - name: Get Template Version
         run: |-
-          version=`jq -r ".version" packages/template-retail-react-app/package.json | cut -d "-" -f 1`
+          version=`jq -r ".version" packages/template-retail-react-app/package.json`
           echo "retail_app_template_version=$version" >> "$GITHUB_ENV"
 
       - name: Generate Retail App Private Client
