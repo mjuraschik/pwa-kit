@@ -132,6 +132,7 @@ const runGenerator = () => {
     console.log(`Clearing npx cache at ${pathToNpxCache}`)
     sh.rm('-rf', pathToNpxCache)
 
+    console.log('Running the generator')
     cp.execSync(
         `npx ${flags} @salesforce/pwa-kit-create-app@latest ${process.argv.slice(2).join(' ')}`,
         {

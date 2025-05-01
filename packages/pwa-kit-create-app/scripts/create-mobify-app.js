@@ -51,7 +51,6 @@ const Handlebars = require('handlebars')
 
 const program = new Command()
 
-// TODO
 sh.set('-e')
 
 // Handlebars helpers
@@ -879,22 +878,7 @@ const processAppExtensions = (
             const appExtensionDestDir = p.join(appExtensionsDir, appExtensionName.replace('/', '_'))
             sh.mkdir('-p', appExtensionDestDir)
 
-            // Copy hidden files
-            // sh.cp('-rf', p.join(appExtensionTmpPath, '.*'), appExtensionDestDir)
-            // Copy regular files
-            // sh.cp('-rf', p.join(appExtensionTmpPath, '*'), appExtensionDestDir)
-
-            // Copy template contents using Node's fs module
-            try {
-                fs.cpSync(appExtensionTmpPath, appExtensionDestDir, {recursive: true, force: true})
-            } catch (err) {
-                console.error(
-                    `Error copying files from ${appExtensionTmpPath} to ${appExtensionDestDir}:`,
-                    err
-                )
-                // Optionally, exit or handle the error appropriately
-                process.exit(1)
-            }
+            copyAllFiles(appExtensionTmpPath, appExtensionDestDir)
 
             // Clean up the temporary Application Extension directory
             sh.rm('-rf', appExtensionTmp)
@@ -941,6 +925,18 @@ const fetchAvailableAppExtensions = () => {
     } catch (error) {
         console.error('Failed to fetch Application Extensions:', error.message)
         return []
+    }
+}
+
+/**
+ * Copy all files, including subdirectories and hidden files
+ */
+const copyAllFiles = (fromDirectory, targetDirectory) => {
+    try {
+        fs.cpSync(fromDirectory, targetDirectory, {recursive: true, force: true})
+    } catch (err) {
+        console.error(`Error copying files from ${fromDirectory} to ${targetDirectory}:`, err)
+        process.exit(1)
     }
 }
 
@@ -1007,27 +1003,7 @@ const runGenerator = (
     console.log('--- runGenerator 4')
 
     // Copy the base template either from the package or npm.
-    // sh.cp('-rf', p.join(packagePath, '.*'), outputDir)
-    // console.log('--- runGenerator 4a - copied hidden files')
-    // sh.cp('-rf', p.join(packagePath, '*'), outputDir)
-    // console.log('--- runGenerator 4a - copied the remaining files')
-
-    // // Copy template contents using Node's fs module
-    // try {
-    //     console.log('--- runGenerator 4 - Copying files using fs.cpSync ---')
-    //     fs.cpSync(packagePath, outputDir, {recursive: true, force: true})
-    //     console.log('--- runGenerator 4a - fs.cpSync completed ---')
-    // } catch (err) {
-    //     console.error(`Error copying template files from ${packagePath} to ${outputDir}:`, err)
-    //     // Optionally, exit or handle the error appropriately
-    //     process.exit(1)
-    // }
-
-    // Copy hidden files
-    sh.cp('-rf', p.join(packagePath, '.*'), outputDir)
-    // Copy regular files
-    sh.cp('-rf', p.join(packagePath, '*'), outputDir)
-    console.log('--- runGenerator 4a')
+    copyAllFiles(packagePath, outputDir)
 
     // Copy template specific assets over.
     const assetsDir = p.join(ASSETS_TEMPLATES_DIR, id)
