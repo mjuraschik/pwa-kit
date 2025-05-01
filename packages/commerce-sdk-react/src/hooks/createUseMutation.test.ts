@@ -7,8 +7,7 @@
 import {renderHook} from '@testing-library/react'
 import useCommerceApi from './useCommerceApi'
 import * as useMutationModule from './useMutation'
-import {createUseMutation} from './createUseMutation'
-import {MethodsOf} from './createUseMutation'
+import {createUseMutation, MethodsOf} from './createUseMutation'
 import {ApiClients} from './types'
 
 // Mock dependencies
