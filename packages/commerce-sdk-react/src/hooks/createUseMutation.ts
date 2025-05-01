@@ -52,8 +52,8 @@ export function createUseMutation<
             method,
             getCacheUpdates: (customerId, options, data) => {
                 const updates = getCacheUpdates(mutation)
-                if (!updates) return {update: [], invalidate: [], remove: [], clear: false}
-                return updates(customerId, options, data)
+                const DEFAULT_CACHE_UPDATES = { update: [], invalidate: [], remove: [], clear: false }
+                return updates ? updates(customerId, options, data) : DEFAULT_CACHE_UPDATES
             }
         })
     }
