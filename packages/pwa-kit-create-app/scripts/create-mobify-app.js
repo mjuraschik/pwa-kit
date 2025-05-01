@@ -934,6 +934,8 @@ const fetchAvailableAppExtensions = () => {
 const copyAllFiles = (fromDirectory, targetDirectory) => {
     try {
         fs.cpSync(fromDirectory, targetDirectory, {recursive: true, force: true})
+        // NOTE: we've tried using `sh.cp` but it errors out when copying hidden files on Windows machine.
+        // See: https://github.com/shelljs/shelljs/issues/711
     } catch (err) {
         console.error(`Error copying files from ${fromDirectory} to ${targetDirectory}:`, err)
         process.exit(1)
@@ -956,14 +958,11 @@ const runGenerator = (
     const {templateSource} = preset
     const {selectedAppExtensions = [], extractAppExtensions = false} = answers.project
 
-    console.log('--- runGenerator 1')
-
     // Check if the output directory doesn't already exist.
     checkOutputDir(outputDir)
 
     // Ensure the output directory exists
     fs.mkdirSync(outputDir, {recursive: true})
-    console.log('--- runGenerator 2')
 
     // We need to get some assets from the base template. So extract it after
     // downloading from NPM or copying from the template bundle folder.
@@ -972,7 +971,6 @@ const runGenerator = (
     const appExtensionsDir = p.join(outputDir, APP_DIR, APP_EXTENSIONS_DIR)
     const {id, type} = templateSource
     let tarPath
-    console.log('--- runGenerator 3', packagePath, p.join(packagePath, '/'))
 
     switch (type) {
         case TEMPLATE_SOURCE_NPM: {
@@ -1000,16 +998,13 @@ const runGenerator = (
         cwd: tmp,
         sync: true
     })
-    console.log('--- runGenerator 4')
 
     // Copy the base template either from the package or npm.
     copyAllFiles(packagePath, outputDir)
 
     // Copy template specific assets over.
     const assetsDir = p.join(ASSETS_TEMPLATES_DIR, id)
-    console.log('--- runGenerator 4b', assetsDir)
     if (sh.test('-e', assetsDir)) {
-        console.log('--- runGenerator 4c')
         getFiles(assetsDir)
             .map((file) => {
                 const relFilePath = file.replace(assetsDir, '')
@@ -1018,11 +1013,8 @@ const runGenerator = (
             .forEach((relFilePath) => {
                 processTemplate(relFilePath, assetsDir, outputDir, context)
             })
-        console.log('--- runGenerator 4d')
     }
-    console.log('--- runGenerator 4e')
 
-    console.log('--- runGenerator 5')
     // Check project type and handle appropriately
     if (answers.project.type === 'PWAKitAppExtensionProject') {
         const devOutputDir = p.join(outputDir, LOCAL_DEV_PROJECT_DIR)
@@ -1086,7 +1078,6 @@ const runGenerator = (
     } else {
         processAppExtensions(selectedAppExtensions, extractAppExtensions, appExtensionsDir)
     }
-    console.log('--- runGenerator 6')
 
     // Prepare updates for package.json
     const pkgUpdates = {
@@ -1122,7 +1113,6 @@ const runGenerator = (
     // Clean up the temporary directory
     sh.rm('-rf', tmp)
 
-    console.log('--- runGenerator 7')
     if (installDependencies) {
         // Install dependencies for the newly minted project.
         npmInstall(outputDir, {verbose, projectName: context.answers.project.name})
@@ -1162,7 +1152,6 @@ const runGenerator = (
             'After your project is generated, please review `mobify.app.extensions` in package.json to check the configuration of the extensions and fill out any placeholder values.'
         )
     }
-    console.log('--- runGenerator 8')
 }
 
 const foundNode = process.versions.node
