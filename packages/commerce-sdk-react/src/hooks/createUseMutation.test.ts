@@ -83,4 +83,76 @@ describe('createUseMutation', () => {
         expect(useMutationCallArgs.getCacheUpdates).toBeDefined()
         expect(typeof useMutationCallArgs.getCacheUpdates).toBe('function')
     })
+
+    it('correctly processes cache updates', () => {
+        // Create a mock cache update getter that returns a function
+        const mockCacheUpdateFn = jest.fn().mockReturnValue({
+            update: ['test-update'],
+            invalidate: ['test-invalidate'],
+            remove: ['test-remove'],
+            clear: true
+        });
+        mockCacheUpdateGetter.mockReturnValue(mockCacheUpdateFn);
+        
+        // Create the mutation hook
+        const useTestMutation = createUseMutation<'shopperBaskets', ShopperBasketsMutation>({
+            clientKey: 'shopperBaskets',
+            getCacheUpdates: mockCacheUpdateGetter
+        });
+        
+        // Use the hook
+        renderHook(() => useTestMutation('createBasket'));
+        
+        // Extract the getCacheUpdates function passed to useMutation
+        const getCacheUpdatesFn = mockUseMutation.mock.calls[0][0].getCacheUpdates;
+        
+        // Test with valid update function
+        const customerId = 'test-customer';
+        const options = { param: 'value' };
+        const data = { result: 'success' };
+        
+        const result = getCacheUpdatesFn(customerId, options, data);
+        
+        // Verify mockCacheUpdateGetter was called with the mutation
+        expect(mockCacheUpdateGetter).toHaveBeenCalledWith('createBasket');
+        
+        // Verify the update function was called with the right params
+        expect(mockCacheUpdateFn).toHaveBeenCalledWith(customerId, options, data);
+        
+        // Verify the result matches what the update function returned
+        expect(result).toEqual({
+            update: ['test-update'],
+            invalidate: ['test-invalidate'],
+            remove: ['test-remove'],
+            clear: true
+        });
+    });
+
+    it('returns default cache updates when no update function is provided', () => {
+        // Mock getCacheUpdates to return undefined (no cache updates for this mutation)
+        mockCacheUpdateGetter.mockReturnValue(undefined);
+        
+        // Create the mutation hook
+        const useTestMutation = createUseMutation<'shopperBaskets', ShopperBasketsMutation>({
+            clientKey: 'shopperBaskets',
+            getCacheUpdates: mockCacheUpdateGetter
+        });
+        
+        // Use the hook
+        renderHook(() => useTestMutation('createBasket'));
+        
+        // Extract the getCacheUpdates function passed to useMutation
+        const getCacheUpdatesFn = mockUseMutation.mock.calls[0][0].getCacheUpdates;
+        
+        // Test with undefined update function
+        const result = getCacheUpdatesFn('customer-id', {}, {});
+        
+        // Verify default updates are returned
+        expect(result).toEqual({ 
+            update: [], 
+            invalidate: [], 
+            remove: [], 
+            clear: false 
+        });
+    });
 })
