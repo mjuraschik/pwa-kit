@@ -11,8 +11,13 @@ import path from 'path'
 import resolve from 'resolve'
 
 // Local Imports
-import {buildCandidatePaths, getPackageName, SETUP_FILE_REGEX} from '../../shared/utils'
 import {getForceOverridesFilePaths, getOverridesFromFile} from '../utils'
+import {
+    SETUP_FILE_REGEX,
+    buildCandidatePaths,
+    getPackageName,
+    isExtensionPackage
+} from '../../shared/utils'
 
 // Types
 import type {ExtendedCompiler, OverridesResolverRuleOptions} from './types'
@@ -20,7 +25,6 @@ import type {OverrideStatsEntry} from './override-stats-plugin'
 
 // Constants
 import {
-    EXTENSION_PACKAGE_PREFIX,
     EXTENSION_PACKAGE_NAMESPACE,
     IMPORT_REGEX,
     MONO_REPO_WORKSPACE_FOLDER,
@@ -157,10 +161,34 @@ const OverrideResolverLoader = function (this: LoaderContext<any>) {
  * @returns {boolean} - A boolean indicating if the source file should be processed by the override loader.
  */
 export const validateOverrideSource = (source: string, options: any = {}) => {
-    const {isMonoRepo = false, target = 'node', overridables = []} = options
-    const isExtensionFile = source.includes(`${path.sep}${EXTENSION_PACKAGE_PREFIX}`)
+    const {
+        isMonoRepo = false,
+        target = 'node',
+        overridables = [],
+        projectDir = process.cwd()
+    } = options
     const isSetupFile = SETUP_FILE_REGEX.test(source)
     const targetCache = OVERRIDABLE_CACHE[target as keyof typeof OVERRIDABLE_CACHE]
+
+    // Extract package path from source to check if it's an extension
+    const folderPattern = `${path.sep}${
+        isMonoRepo ? MONO_REPO_WORKSPACE_FOLDER : NODE_MODULES_FOLDER
+    }${path.sep}`
+    const packagePath = source.split(folderPattern)[1]?.split(path.sep)[0]
+
+    if (!packagePath) {
+        return false
+    }
+
+    // Get full package path
+    const fullPackagePath = path.join(
+        projectDir,
+        isMonoRepo ? MONO_REPO_WORKSPACE_FOLDER : NODE_MODULES_FOLDER,
+        packagePath
+    )
+
+    // Check if this package is an extension by looking for extension-meta.json
+    const isExtensionFile = isExtensionPackage(fullPackagePath)
 
     // Exit early if we have:
     // 1. Processed this file already.
