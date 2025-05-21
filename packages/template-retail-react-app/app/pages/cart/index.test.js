@@ -699,7 +699,7 @@ describe('Product bundles', () => {
                                 (bundleChild) => ({
                                     ...bundleChild,
                                     quantity: bundleChild.quantity * 2
-       })
+                                })
                             )
                         }
                     ]
