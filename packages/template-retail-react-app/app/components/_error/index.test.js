@@ -11,6 +11,14 @@ import Error from '@salesforce/retail-react-app/app/components/_error/index'
 // error component is rendered outside provider tree
 // !!! ----------------------------------------------- !!!
 import {screen, render} from '@testing-library/react'
+const originalLocation = window.location
+
+afterEach(() => {
+    // Restore `window.location` to the `jsdom` `Location` object
+    window.location = originalLocation
+
+    jest.resetModules()
+})
 
 test('Error renders without errors', () => {
     expect(render(<Error />)).toBeDefined()
