@@ -317,7 +317,7 @@ test('should filter out refinements in the disallow list', async () => {
     await waitFor(() => {
         // Verify that the disallowed refinement (c_isNew) is not present
         expect(screen.queryByText('New Arrivals')).not.toBeInTheDocument()
-        
+
         // Verify that allowed refinements are still present
         expect(screen.getByText('Color')).toBeInTheDocument()
         expect(screen.getByText('Size')).toBeInTheDocument()
