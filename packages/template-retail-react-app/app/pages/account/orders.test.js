@@ -93,3 +93,116 @@ test('Renders order history place holder when no orders', async () => {
 
     expect(await screen.findByTestId('account-order-history-place-holder')).toBeInTheDocument()
 })
+
+test('Handles order with empty product list gracefully', async () => {
+    // Create a mock order with no products
+    const emptyProductOrder = {
+        ...mockOrderHistory.data[0],
+        productItems: []
+    }
+    const mockOrderHistoryWithEmptyProduct = {
+        ...mockOrderHistory,
+        data: [emptyProductOrder]
+    }
+    global.server.use(
+        rest.get('*/orders/:orderNo', (req, res, ctx) => {
+            return res(ctx.delay(0), ctx.json(emptyProductOrder))
+        }),
+        rest.get('*/customers/:customerId/orders', (req, res, ctx) => {
+            return res(ctx.delay(0), ctx.json(mockOrderHistoryWithEmptyProduct))
+        })
+    )
+    const {user} = renderWithProviders(<MockedComponent history={history} />, {
+        wrapperProps: {siteAlias: 'uk', appConfig: mockConfig.app}
+    })
+    // Order history page should render
+    expect(await screen.findByTestId('account-order-history-page')).toBeInTheDocument()
+    // Click to view details
+    await user.click((await screen.findAllByText(/view details/i))[0])
+    // Order details page should render
+    expect(await screen.findByTestId('account-order-details-page')).toBeInTheDocument()
+    // Should show 0 items
+    expect(await screen.findByText(/0 items/i)).toBeInTheDocument()
+    // Should not render any product images
+    expect(screen.queryByAltText(/Pleated Bib Long Sleeve Shirt/i)).not.toBeInTheDocument()
+})
+
+test('Direct navigation to order details and back to order list', async () => {
+    global.server.use(
+        rest.get('*/orders/:orderNo', (req, res, ctx) => {
+            return res(ctx.delay(0), ctx.json(mockOrderHistory.data[0]))
+        }),
+        rest.get('*/customers/:customerId/orders', (req, res, ctx) => {
+            return res(ctx.delay(0), ctx.json(mockOrderHistory))
+        }),
+        rest.get('*/products', (req, res, ctx) => {
+            return res(ctx.delay(0), ctx.json(mockOrderProducts))
+        })
+    )
+    // Set initial URL to order details
+    const orderNo = mockOrderHistory.data[0].orderNo
+    window.history.pushState(
+        {},
+        'Order Details',
+        createPathWithDefaults(`/account/orders/${orderNo}`)
+    )
+
+    const {user} = renderWithProviders(<MockedComponent history={history} />, {
+        wrapperProps: {siteAlias: 'uk', appConfig: mockConfig.app}
+    })
+    // Assert we are on the order details page
+    expect(await screen.findByTestId('account-order-details-page')).toBeInTheDocument()
+    expect(window.location.pathname).toMatch(new RegExp(`/account/orders/${orderNo}$`))
+
+    // Click the back link
+    await user.click(await screen.findByRole('link', {name: /back to order history/i}))
+    // Assert we are back on the order history page
+    expect(await screen.findByTestId('account-order-history-page')).toBeInTheDocument()
+    expect(window.location.pathname).toMatch(/\/account\/orders$/)
+    expect(await screen.findAllByText(/Ordered: /i)).toHaveLength(3)
+    expect(
+        await screen.findAllByAltText(
+            'Pleated Bib Long Sleeve Shirt, Silver Grey, small',
+            {},
+            {timeout: 15000}
+        )
+    ).toHaveLength(3)
+})
+
+test('Handles order with missing or partial data gracefully', async () => {
+    // Create a mock order with missing fields
+    const partialOrder = {
+        ...mockOrderHistory.data[0],
+        billingAddress: undefined,
+        shipments: undefined,
+        paymentInstruments: undefined,
+        creationDate: undefined
+    }
+    global.server.use(
+        rest.get('*/orders/:orderNo', (req, res, ctx) => {
+            return res(ctx.delay(0), ctx.json(partialOrder))
+        }),
+        rest.get('*/customers/:customerId/orders', (req, res, ctx) => {
+            return res(ctx.delay(0), ctx.json({...mockOrderHistory, data: [partialOrder]}))
+        })
+    )
+    // Set initial URL to order details
+    const orderNo = partialOrder.orderNo
+    window.history.pushState(
+        {},
+        'Order Details',
+        createPathWithDefaults(`/account/orders/${orderNo}`)
+    )
+
+    renderWithProviders(<MockedComponent history={history} />, {
+        wrapperProps: {siteAlias: 'uk', appConfig: mockConfig.app}
+    })
+    // Assert the order details page renders
+    expect(await screen.findByTestId('account-order-details-page')).toBeInTheDocument()
+    // Should show the Order Details header
+    expect(screen.getByRole('heading', {name: /order details/i})).toBeInTheDocument()
+    // Should not throw or crash, and should not render billing address, payment, or shipment sections
+    expect(screen.queryByText(/billing address/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/payment method/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/shipping address/i)).not.toBeInTheDocument()
+})
