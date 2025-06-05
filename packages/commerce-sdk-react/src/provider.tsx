@@ -197,25 +197,23 @@ const CommerceApiProvider = (props: CommerceApiProviderProps): ReactElement => {
         serverAffinityHeader[SERVER_AFFINITY_HEADER_KEY] = dwsid
     }
 
-    let updatedClients: ApiClients
-
-    if (apiClients) {
-        const defaultTransformer: ParameterTransformer<Record<string, any>> = (_, _$, options) => {
-            return {
-                ...options,
-                headers: {
-                    ...options.headers,
-                    ...serverAffinityHeader
-                },
-                throwOnBadResponse: true,
-                fetchOptions: {
-                    ...options.fetchOptions,
-                    ...fetchOptions
-                }
+    const defaultTransformer: ParameterTransformer<Record<string, any>> = (_, _$, options) => {
+        return {
+            ...options,
+            headers: {
+                ...options.headers,
+                ...serverAffinityHeader
+            },
+            throwOnBadResponse: true,
+            fetchOptions: {
+                ...options.fetchOptions,
+                ...fetchOptions
             }
         }
+    }
 
-        updatedClients = useMemo(() => {
+    const updatedClients: ApiClients = useMemo(() => {
+        if (apiClients) {
             const clients: Record<string, any> = {}
 
             Object.entries(apiClients ?? {}).forEach(([key, apiClient]) => {
@@ -229,18 +227,8 @@ const CommerceApiProvider = (props: CommerceApiProviderProps): ReactElement => {
             })
 
             return clients as ApiClients
-        }, [
-            clientId,
-            organizationId,
-            shortCode,
-            siteId,
-            proxy,
-            fetchOptions,
-            locale,
-            currency,
-            headers?.['correlation-id']
-        ])
-    } else {
+        }
+
         const config = {
             proxy,
             headers: {
@@ -262,36 +250,34 @@ const CommerceApiProvider = (props: CommerceApiProviderProps): ReactElement => {
         const baseUrl = config.proxy.split(MOBIFY_PATH)[0]
         const privateClientEndpoint = `${baseUrl}${SLAS_PRIVATE_PROXY_PATH}`
 
-        updatedClients = useMemo(() => {
-            return {
-                shopperBaskets: new ShopperBaskets(config),
-                shopperContexts: new ShopperContexts(config),
-                shopperCustomers: new ShopperCustomers(config),
-                shopperExperience: new ShopperExperience(config),
-                shopperGiftCertificates: new ShopperGiftCertificates(config),
-                shopperLogin: new ShopperLogin({
-                    ...config,
-                    proxy: enablePWAKitPrivateClient ? privateClientEndpoint : config.proxy
-                }),
-                shopperOrders: new ShopperOrders(config),
-                shopperProducts: new ShopperProducts(config),
-                shopperPromotions: new ShopperPromotions(config),
-                shopperSearch: new ShopperSearch(config),
-                shopperSeo: new ShopperSeo(config),
-                shopperStores: new ShopperStores(config)
-            }
-        }, [
-            clientId,
-            organizationId,
-            shortCode,
-            siteId,
-            proxy,
-            fetchOptions,
-            locale,
-            currency,
-            headers?.['correlation-id']
-        ])
-    }
+        return {
+            shopperBaskets: new ShopperBaskets(config),
+            shopperContexts: new ShopperContexts(config),
+            shopperCustomers: new ShopperCustomers(config),
+            shopperExperience: new ShopperExperience(config),
+            shopperGiftCertificates: new ShopperGiftCertificates(config),
+            shopperLogin: new ShopperLogin({
+                ...config,
+                proxy: enablePWAKitPrivateClient ? privateClientEndpoint : config.proxy
+            }),
+            shopperOrders: new ShopperOrders(config),
+            shopperProducts: new ShopperProducts(config),
+            shopperPromotions: new ShopperPromotions(config),
+            shopperSearch: new ShopperSearch(config),
+            shopperSeo: new ShopperSeo(config),
+            shopperStores: new ShopperStores(config)
+        }
+    }, [
+        clientId,
+        organizationId,
+        shortCode,
+        siteId,
+        proxy,
+        fetchOptions,
+        locale,
+        currency,
+        headers?.['correlation-id']
+    ])
 
     // Initialize the session
     useEffect(() => void auth.ready(), [auth])

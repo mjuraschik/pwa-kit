@@ -20,7 +20,7 @@ import {
     ShopperStores
 } from 'commerce-sdk-isomorphic'
 import {helpers} from 'commerce-sdk-isomorphic'
-import { CommerceApiProviderProps } from '../provider'
+import {CommerceApiProviderProps} from '../provider'
 
 // --- GENERAL UTILITIES --- //
 
