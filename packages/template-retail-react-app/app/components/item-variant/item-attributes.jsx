@@ -93,10 +93,10 @@ const ItemAttributes = ({includeQuantity, currency, ...props}) => {
     return (
         <Stack spacing={1.5} flex={1} {...props}>
             {isBonusProduct && (
-                <Text lineHeight={1} color="black.600" fontSize="md">
+                <Text lineHeight={1} color="black.600" fontSize="sm">
                     <FormattedMessage
                         defaultMessage="Bonus Product"
-                        id="item_attributes.label.isBonusProduct"
+                        id="item_attributes.label.is_bonus_product"
                     />
                 </Text>
             )}
