@@ -7,12 +7,9 @@
 import React, {ReactElement, useEffect, useMemo} from 'react'
 import Auth from './auth'
 import {
-    AfterCallCallback,
     ApiClientConfigParams,
     ApiClients,
-    BeforeCallCallback,
-    ParameterTransformer,
-    ErrorCallback
+    SDKClientTransformer,
 } from './hooks/types'
 import {Logger} from './types'
 import {
@@ -36,7 +33,7 @@ import {
     ShopperBasketsTypes,
     ShopperStores
 } from 'commerce-sdk-isomorphic'
-import {withParameterInjection} from './utils'
+import {transformSDKClient} from './utils'
 
 export interface CommerceApiProviderProps extends ApiClientConfigParams {
     children: React.ReactNode
@@ -56,10 +53,6 @@ export interface CommerceApiProviderProps extends ApiClientConfigParams {
     refreshTokenRegisteredCookieTTL?: number
     refreshTokenGuestCookieTTL?: number
     apiClients?: ApiClients
-    transformer?: ParameterTransformer<Record<string, any>>
-    onBeforeCall?: BeforeCallCallback<Record<string, any>>
-    onAfterCall?: AfterCallCallback<Record<string, any>>
-    onError?: ErrorCallback<Record<string, any>>
 }
 
 /**
@@ -144,10 +137,6 @@ const CommerceApiProvider = (props: CommerceApiProviderProps): ReactElement => {
         refreshTokenRegisteredCookieTTL,
         refreshTokenGuestCookieTTL,
         apiClients,
-        transformer,
-        onBeforeCall = () => {},
-        onAfterCall = () => {},
-        onError = () => {}
     } = props
 
     // Set the logger based on provided configuration, or default to the console object if no logger is provided
@@ -197,7 +186,7 @@ const CommerceApiProvider = (props: CommerceApiProviderProps): ReactElement => {
         serverAffinityHeader[SERVER_AFFINITY_HEADER_KEY] = dwsid
     }
 
-    const defaultTransformer: ParameterTransformer<Record<string, any>> = (_, _$, options) => {
+    const _defaultTransformer: SDKClientTransformer<Record<string, any>> = (_, _$, options) => {
         return {
             ...options,
             headers: {
@@ -217,12 +206,10 @@ const CommerceApiProvider = (props: CommerceApiProviderProps): ReactElement => {
             const clients: Record<string, any> = {}
 
             Object.entries(apiClients ?? {}).forEach(([key, apiClient]) => {
-                clients[key] = withParameterInjection(apiClient, {
+                clients[key] = transformSDKClient(apiClient, {
                     props,
-                    transformer: transformer ?? defaultTransformer,
-                    onBeforeCall,
-                    onAfterCall,
-                    onError
+                    transformer: _defaultTransformer,
+                    // onError
                 })
             })
 

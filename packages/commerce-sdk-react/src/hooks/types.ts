@@ -228,24 +228,16 @@ export type TMutationVariables = {
     headers?: {[key: string]: string}
 } | void
 
-export type ParameterFilter<T> = (params: T, methodName: string) => Partial<T>
-export type ParameterTransformer<T> = (
+export type SDKClientTransformer<T> = (
     params: T,
     methodName: string,
     options: any
 ) => any | Promise<any>
-export type BeforeCallCallback<TParams> = (
-    methodName: string,
-    params: TParams,
-    options: any
-) => void
-export type AfterCallCallback<TParams> = (methodName: string, result: any, params: TParams) => void
+
 export type ErrorCallback<TParams> = (methodName: string, error: any, params: TParams) => void
 
-export interface ParameterInjectionConfig<TParams = Record<string, any>> {
+export interface SDKClientTransformConfig<TParams = Record<string, any>> {
     props: CommerceApiProviderProps
-    transformer?: ParameterTransformer<TParams>
-    onBeforeCall?: BeforeCallCallback<TParams>
-    onAfterCall?: AfterCallCallback<TParams>
+    transformer?: SDKClientTransformer<TParams>
     onError?: ErrorCallback<TParams>
 }

@@ -8,7 +8,7 @@
 import Cookies, {CookieAttributes} from 'js-cookie'
 import {IFRAME_HOST_ALLOW_LIST} from './constant'
 import {helpers} from 'commerce-sdk-isomorphic'
-import {ParameterInjectionConfig} from './hooks/types'
+import {SDKClientTransformConfig} from './hooks/types'
 
 /** Utility to determine if you are on the browser (client) or not. */
 export const onClient = (): boolean => typeof window !== 'undefined'
@@ -164,17 +164,17 @@ export const extractCustomParameters = (
 }
 
 /**
- * Implements a proxy around SDK Client instance to modify headers, parameters, and other options.
- * You can pass in a transformer function to modify the parameters, and callbacks to run before and after the method is called.
- * @param client - The SDK Client instance to proxy.
- * @param config - The configuration object for the proxy.
- * @returns The proxied SDK Client instance.
+ * Creates a proxy around SDK Client instance to transform method arguments and modify headers, parameters, and other options.
+ * You can pass in a transformer function to modify the parameters.
+ * @param client - The SDK Client instance to transform.
+ * @param config - The configuration object for the transformation.
+ * @returns The transformed SDK Client instance.
  */
-export const withParameterInjection = <T extends Record<string, (...args: any[]) => Promise<any>>>(
+export const transformSDKClient = <T extends Record<string, (...args: any[]) => Promise<any>>>(
     client: T,
-    config: ParameterInjectionConfig
+    config: SDKClientTransformConfig
 ): T => {
-    const {props, transformer, onBeforeCall, onAfterCall, onError} = config
+    const {props, transformer, onError} = config
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {children, ...params} = props
@@ -193,12 +193,7 @@ export const withParameterInjection = <T extends Record<string, (...args: any[])
                         options = await Promise.resolve(transformer(params, methodName, options))
                     }
 
-                    onBeforeCall?.(methodName, params, options)
-
-                    const result = await originalMethod.call(target, options)
-
-                    onAfterCall?.(methodName, result, options)
-                    return result
+                    return await originalMethod.call(target, options)
                 } catch (error) {
                     onError?.(methodName, error, options)
                     throw error

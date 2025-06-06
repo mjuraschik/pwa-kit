@@ -6,7 +6,7 @@
  */
 import * as utils from './utils'
 import {DEFAULT_TEST_CONFIG} from './test-utils'
-import {ParameterInjectionConfig} from './hooks/types'
+import {SDKClientTransformConfig} from './hooks/types'
 
 describe('Utils', () => {
     test.each([
@@ -34,9 +34,9 @@ describe('Utils', () => {
         })
     })
 
-    describe('withParameterInjection', () => {
+    describe('transformSDKClient', () => {
         let mockClient: any
-        let mockConfig: ParameterInjectionConfig
+        let mockConfig: SDKClientTransformConfig
 
         beforeEach(() => {
             mockClient = {
@@ -51,8 +51,6 @@ describe('Utils', () => {
                     children: null
                 },
                 transformer: jest.fn((params, methodName, options) => options),
-                onBeforeCall: jest.fn(),
-                onAfterCall: jest.fn(),
                 onError: jest.fn()
             }
         })
@@ -62,20 +60,20 @@ describe('Utils', () => {
         })
 
         test('should return a proxy that preserves non-function properties', () => {
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
 
             expect(proxiedClient.nonFunctionProperty).toBe('some value')
         })
 
         test('should wrap function methods with proxy behavior', () => {
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
 
             expect(typeof proxiedClient.getBasket).toBe('function')
             expect(typeof proxiedClient.createBasket).toBe('function')
         })
 
         test('should call original method with provided options', async () => {
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
             const options = {parameters: {basketId: 'test-123'}}
 
             await proxiedClient.getBasket(options)
@@ -84,7 +82,7 @@ describe('Utils', () => {
         })
 
         test('should call original method with empty object if no options provided', async () => {
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
 
             await proxiedClient.getBasket()
 
@@ -98,7 +96,7 @@ describe('Utils', () => {
             }
             ;(mockConfig.transformer as jest.Mock).mockResolvedValue(transformedOptions)
 
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
             const originalOptions = {parameters: {basketId: 'original-123'}}
 
             await proxiedClient.getBasket(originalOptions)
@@ -117,7 +115,7 @@ describe('Utils', () => {
             const transformedOptions = {parameters: {basketId: 'async-transformed'}}
             ;(mockConfig.transformer as jest.Mock).mockResolvedValue(transformedOptions)
 
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
 
             await proxiedClient.getBasket({})
 
@@ -128,50 +126,18 @@ describe('Utils', () => {
             const transformedOptions = {parameters: {basketId: 'sync-transformed'}}
             ;(mockConfig.transformer as jest.Mock).mockReturnValue(transformedOptions)
 
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
 
             await proxiedClient.getBasket({})
 
             expect(mockClient.getBasket).toHaveBeenCalledWith(transformedOptions)
         })
 
-        test('should call onBeforeCall callback before method execution', async () => {
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
-            const options = {parameters: {basketId: 'test'}}
-
-            await proxiedClient.getBasket(options)
-
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {children, ...expectedParams} = mockConfig.props
-            expect(mockConfig.onBeforeCall).toHaveBeenCalledWith(
-                'getBasket',
-                expectedParams,
-                options
-            )
-        })
-
-        test('should call onAfterCall callback after successful method execution', async () => {
-            const expectedResult = {basketId: 'success-basket'}
-            mockClient.getBasket.mockResolvedValue(expectedResult)
-
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
-            const options = {parameters: {basketId: 'test'}}
-
-            const result = await proxiedClient.getBasket(options)
-
-            expect(mockConfig.onAfterCall).toHaveBeenCalledWith(
-                'getBasket',
-                expectedResult,
-                options
-            )
-            expect(result).toBe(expectedResult)
-        })
-
         test('should call onError callback when method throws error', async () => {
             const error = new Error('API Error')
             mockClient.getBasket.mockRejectedValue(error)
 
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
             const options = {parameters: {basketId: 'test'}}
 
             await expect(proxiedClient.getBasket(options)).rejects.toThrow('API Error')
@@ -183,7 +149,7 @@ describe('Utils', () => {
             const error = new Error('API Error')
             mockClient.getBasket.mockRejectedValue(error)
 
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
 
             await expect(proxiedClient.getBasket({})).rejects.toThrow('API Error')
         })
@@ -196,7 +162,7 @@ describe('Utils', () => {
                 }
             }
 
-            const proxiedClient = utils.withParameterInjection(mockClient, configWithoutCallbacks)
+            const proxiedClient = utils.transformSDKClient(mockClient, configWithoutCallbacks)
 
             await expect(proxiedClient.getBasket({})).resolves.toEqual({basketId: 'test-basket'})
         })
@@ -207,12 +173,10 @@ describe('Utils', () => {
                     ...DEFAULT_TEST_CONFIG,
                     children: null
                 },
-                onBeforeCall: jest.fn(),
-                onAfterCall: jest.fn(),
                 onError: jest.fn()
             }
 
-            const proxiedClient = utils.withParameterInjection(mockClient, configWithoutTransformer)
+            const proxiedClient = utils.transformSDKClient(mockClient, configWithoutTransformer)
             const options = {parameters: {basketId: 'test'}}
 
             await proxiedClient.getBasket(options)
@@ -221,15 +185,13 @@ describe('Utils', () => {
         })
 
         test('should handle multiple method calls independently', async () => {
-            const proxiedClient = utils.withParameterInjection(mockClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(mockClient, mockConfig)
 
             await proxiedClient.getBasket({parameters: {basketId: 'basket-1'}})
             await proxiedClient.createBasket({parameters: {currency: 'USD'}})
 
             expect(mockClient.getBasket).toHaveBeenCalledWith({parameters: {basketId: 'basket-1'}})
             expect(mockClient.createBasket).toHaveBeenCalledWith({parameters: {currency: 'USD'}})
-            expect(mockConfig.onBeforeCall).toHaveBeenCalledTimes(2)
-            expect(mockConfig.onAfterCall).toHaveBeenCalledTimes(2)
         })
 
         test('should preserve this context in original method calls', async () => {
@@ -239,7 +201,7 @@ describe('Utils', () => {
                 }
             }
 
-            const proxiedClient = utils.withParameterInjection(contextClient, mockConfig)
+            const proxiedClient = utils.transformSDKClient(contextClient, mockConfig)
 
             const result = await proxiedClient.getData()
 
@@ -262,7 +224,7 @@ describe('Utils', () => {
                 })
             }
 
-            const proxiedClient = utils.withParameterInjection(mockClient, configWithChildren)
+            const proxiedClient = utils.transformSDKClient(mockClient, configWithChildren)
 
             proxiedClient.getBasket({})
 
