@@ -30,9 +30,7 @@ describe('Pagination', () => {
     })
 
     it('Renders Pagination and its elements', () => {
-        const {getAllByRole} = renderWithProviders(
-            <Pagination {...defaultProps} />
-        )
+        const {getAllByRole} = renderWithProviders(<Pagination {...defaultProps} />)
         const [prev, next] = getAllByRole('link')
         const option = getAllByRole('option')
         expect(prev).toBeDefined()
@@ -51,17 +49,13 @@ describe('Pagination', () => {
     })
 
     it('disables disabled previous button on first page of contents', () => {
-        renderWithProviders(
-            <Pagination {...defaultProps} currentURL="/test?offset=0" />
-        )
+        renderWithProviders(<Pagination {...defaultProps} currentURL="/test?offset=0" />)
         const prev = screen.getByLabelText('Previous Page')
         expect(prev).toHaveAttribute('aria-disabled', 'true')
     })
 
     it('disables disabled next button on last page', () => {
-        renderWithProviders(
-            <Pagination {...defaultProps} currentURL="/test?offset=75" />
-        )
+        renderWithProviders(<Pagination {...defaultProps} currentURL="/test?offset=75" />)
         const next = screen.getByLabelText('Next Page')
         expect(next).toHaveAttribute('aria-disabled', 'true')
     })
@@ -84,7 +78,7 @@ describe('Pagination', () => {
     it('renders all page options in select', () => {
         renderWithProviders(<Pagination {...defaultProps} />)
         const select = screen.getByLabelText('Select page number')
-        expect(select.options.length).toBe(mockUrls.length)
+        expect(select.options).toHaveLength(mockUrls.length)
         mockUrls.forEach((url, index) => {
             expect(select.options[index].value).toBe(url)
             expect(select.options[index].text).toBe(String(index + 1))
