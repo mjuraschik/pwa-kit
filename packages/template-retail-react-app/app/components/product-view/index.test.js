@@ -361,7 +361,7 @@ test('renders "Add to Cart" and "Add to Wishlist" buttons in French', async () =
             wrapperProps: {locale: {id: 'fr-FR'}, messages: frMessages}
         }
     )
-    
+
     const titles = await screen.findAllByText(/Black Single Pleat Athletic Fit Wool Suit/i)
     expect(titles.length).toBeGreaterThan(0)
     expect(screen.getByRole('button', {name: /ajouter au panier/i})).toBeInTheDocument()
