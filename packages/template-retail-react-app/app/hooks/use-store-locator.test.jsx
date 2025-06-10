@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import React from 'react'
 import {renderHook, act} from '@testing-library/react'
-import {useStoreLocator} from '@salesforce/retail-react-app/app/components/store-locator/use-store-locator'
+import {useStoreLocator} from '@salesforce/retail-react-app/app/hooks/use-store-locator'
 import {StoreLocatorProvider} from '@salesforce/retail-react-app/app/components/store-locator/provider'
 import {useSearchStores} from '@salesforce/commerce-sdk-react'
-import React from 'react'
 
 // Mock the commerce-sdk-react hook
 jest.mock('@salesforce/commerce-sdk-react', () => ({

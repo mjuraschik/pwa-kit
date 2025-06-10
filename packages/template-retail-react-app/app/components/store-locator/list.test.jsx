@@ -7,10 +7,10 @@
 import React from 'react'
 import {render, screen, fireEvent} from '@testing-library/react'
 import {StoreLocatorList} from '@salesforce/retail-react-app/app/components/store-locator/list'
-import {useStoreLocator} from '@salesforce/retail-react-app/app/components/store-locator/use-store-locator'
+import {useStoreLocator} from '@salesforce/retail-react-app/app/hooks/use-store-locator'
 
 // Mock the useStoreLocator hook
-jest.mock('./use-store-locator')
+jest.mock('@salesforce/retail-react-app/app/hooks/use-store-locator')
 
 // Mock store data
 const mockStores = {

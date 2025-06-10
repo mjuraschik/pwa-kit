@@ -8,4 +8,3 @@
 export {StoreLocator} from './main'
 export {StoreLocatorModal} from './modal'
 export {StoreLocatorProvider} from './provider'
-export {useStoreLocator} from './use-store-locator'
