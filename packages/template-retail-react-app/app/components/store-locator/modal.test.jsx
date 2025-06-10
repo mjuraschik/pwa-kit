@@ -6,7 +6,7 @@
  */
 import React from 'react'
 import {screen} from '@testing-library/react'
-import {renderWithProviders} from '../test-utils'
+import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
 import {StoreLocatorModal} from './modal'
 
 const mockUseBreakpointValue = jest.fn()

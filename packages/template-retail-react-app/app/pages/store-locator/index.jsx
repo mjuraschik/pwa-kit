@@ -7,8 +7,7 @@
 
 import React from 'react'
 import {Box, Container} from '@chakra-ui/react'
-
-import {StoreLocator} from '../../components/store-locator'
+import {StoreLocator} from '@salesforce/retail-react-app/app/components/store-locator'
 
 const StoreLocatorPage = () => {
     return (
