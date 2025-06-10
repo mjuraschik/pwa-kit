@@ -22,7 +22,7 @@ import {useGeolocation} from '@salesforce/retail-react-app/app/hooks/use-geo-loc
 export const StoreLocatorForm = () => {
     const {config, formValues, setFormValues, setDeviceCoordinates} = useStoreLocator()
     const {coordinates, error, refresh} = useGeolocation()
-    const form = useForm<StoreLocatorFormValues>({
+    const form = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: {
