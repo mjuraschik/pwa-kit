@@ -5,6 +5,7 @@
 - Show Bonus Product Label on OrderSummary component [#2524](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2524)
 - [a11y] Implemented a voiceover feature in the email confirmation modal that cover all text including an alert for the close button and resend link button.[#2540](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2540)
 
+
 ## v6.1.0 (May 22, 2025)
 
 - Fix hreflang alternate links [#2269](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2269)
