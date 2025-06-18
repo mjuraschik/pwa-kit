@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import { AddComponentTool } from '../utils/AddComponentTool.js';
@@ -8,6 +8,7 @@ import { InsertExistingComponentTool } from '../utils/InsertExistingComponentToo
 import { CreateNewComponentTool } from '../utils/CreateNewComponentTool.js';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 class PwaStorefrontMCPServerHighLevel {
   constructor() {
@@ -163,9 +164,68 @@ class PwaStorefrontMCPServerHighLevel {
         }   
       );
 
+      this.server.resource(
+        "data-model",
+        new ResourceTemplate("data://data-models/{modelName}", {  }),
+        {
+          title: "Commerce Cloud Data Model",
+          description: "Commerce Cloud Data Model, such as Product, Category, Order, etc."
+        },
+        async (uri, { modelName }) => {
+          return this.getDataModelDocument(modelName, uri.href);
+        }
+      );
+
+      this.server.tool(
+        'get_data_model',
+        'Get the schema of a data model',
+        {
+          modelName: z.string().describe('The name of the data model (e.g., Product, Category, etc.)')
+        },
+        async ({ modelName }) => {
+          const uriHref = `data://data-models/${modelName}`;
+          const result = await this.getDataModelDocument(modelName, uriHref);
+          return {
+            content: result.contents.map(item => ({
+              type: 'text',
+              text: item.text
+            }))
+          };
+        }
+      );
   }
 
-  
+  async getDataModelDocument(modelName, uriHref) {
+    try {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const dataDir = path.join(__dirname, '..', 'data');
+      const filePath = path.join(dataDir, `${modelName}Document.json`);
+      let fileContent;
+      try {
+        fileContent = await fs.readFile(filePath, 'utf8');
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          fileContent = JSON.stringify({ message: `No document found for ${modelName}` });
+        } else {
+          throw err;
+        }
+      }
+      return {
+        contents: [{
+          uri: uriHref,
+          text: fileContent
+        }]
+      };
+    } catch (error) {
+      return {
+        contents: [{
+          uri: uriHref,
+          text: JSON.stringify({ error: error.message }, null, 2)
+        }]
+      };
+    }
+  }
 
   async run() {
     const transport = new StdioServerTransport();
