@@ -7,8 +7,8 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Link as RouteLink} from 'react-router-dom'
 import {useIntl} from 'react-intl'
+import {Link as RouteLink} from 'react-router-dom'
 
 // Components
 import {
@@ -18,6 +18,8 @@ import {
     // Hooks
     useStyleConfig
 } from '@salesforce/retail-react-app/app/components/shared/ui'
+
+import {useDesignMode} from '@salesforce/page-designer-react-sdk'
 
 // Icons
 import {ChevronRightIcon} from '@salesforce/retail-react-app/app/components/icons'
@@ -32,26 +34,30 @@ import {categoryUrlBuilder} from '@salesforce/retail-react-app/app/utils/url'
 const Breadcrumb = ({categories, ...rest}) => {
     const intl = useIntl()
     const styles = useStyleConfig('Breadcrumb')
+    const isDesign = useDesignMode()
 
     return (
-        <ChakraBreadcrumb
-            className="sf-breadcrumb"
-            sx={styles.container}
-            separator={<ChevronRightIcon {...styles.icon} aria-hidden="true" />}
-            {...rest}
-        >
-            {categories.map((category) => (
-                <ChakraBreadcrumbItem key={category.id} data-testid="sf-crumb-item">
-                    <ChakraBreadcrumbLink
-                        as={RouteLink}
-                        to={categoryUrlBuilder(category, intl.locale)}
-                        sx={styles.link}
-                    >
-                        {category.name}
-                    </ChakraBreadcrumbLink>
-                </ChakraBreadcrumbItem>
-            ))}
-        </ChakraBreadcrumb>
+        <>
+            <ChakraBreadcrumb
+                className="sf-breadcrumb"
+                sx={styles.container}
+                separator={<ChevronRightIcon {...styles.icon} aria-hidden="true" />}
+                {...rest}
+            >
+                {categories.map((category) => (
+                    <ChakraBreadcrumbItem key={category.id} data-testid="sf-crumb-item">
+                        <ChakraBreadcrumbLink
+                            as={RouteLink}
+                            to={categoryUrlBuilder(category, intl.locale)}
+                            sx={styles.link}
+                        >
+                            {category.name}
+                        </ChakraBreadcrumbLink>
+                    </ChakraBreadcrumbItem>
+                ))}
+            </ChakraBreadcrumb>
+            <div>{isDesign ? 'Design Mode Active' : 'Design Mode Inactive'}</div>
+        </>
     )
 }
 

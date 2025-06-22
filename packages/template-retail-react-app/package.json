@@ -47,6 +47,7 @@
     "@peculiar/webcrypto": "^1.4.2",
     "@salesforce/cc-datacloud-typescript": "1.1.2",
     "@salesforce/commerce-sdk-react": "3.3.0-dev.1",
+    "@salesforce/page-designer-react-sdk": "1.0.0",
     "@salesforce/pwa-kit-dev": "3.10.0-dev.1",
     "@salesforce/pwa-kit-react-sdk": "3.10.0-dev.1",
     "@salesforce/pwa-kit-runtime": "3.10.0-dev.1",
