@@ -14,7 +14,7 @@ import {CreateNewComponentTool} from '../utils/CreateNewComponentTool.js'
 import fs from 'fs/promises'
 import path from 'path'
 import {fileURLToPath} from 'url'
-import {DevelopmentGuidelinesTool} from '../utils/DevelopmentGuidelinesTool.js'
+import {DeveloperGuidelinesTool} from '../utils/pwa-developer-guideline-tool.js'
 
 class PwaStorefrontMCPServerHighLevel {
     constructor() {
@@ -38,12 +38,12 @@ class PwaStorefrontMCPServerHighLevel {
     }
 
     setupTools() {
-        // Register DevelopmentGuidelinesTool
+        // Register DeveloperGuidelinesTool
         this.server.tool(
-            DevelopmentGuidelinesTool.name,
-            DevelopmentGuidelinesTool.description,
-            DevelopmentGuidelinesTool.inputSchema,
-            DevelopmentGuidelinesTool.fn
+            DeveloperGuidelinesTool.name,
+            DeveloperGuidelinesTool.description,
+            DeveloperGuidelinesTool.inputSchema,
+            DeveloperGuidelinesTool.fn
         )
 
         this.server.tool(
