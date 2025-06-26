@@ -231,13 +231,11 @@ class PwaStorefrontMCPServerHighLevel {
                     case 2:
                         const defaultDir = process.env.PWA_STOREFRONT_APP_PATH ? process.env.PWA_STOREFRONT_APP_PATH + '/components' : '/components';
                         if (answer) {
-                            // If user says yes/y/true/1, use defaultDir
                             if (/^(yes|y|true|1)$/i.test(answer)) {
                                 answers.location = defaultDir;
                             } else {
                                 answers.location = answer;
                             }
-                            // Always create the component here
                             const tool = new CreateNewComponentTool();
                             tool.componentData = {
                                 name: answers.name,
@@ -248,7 +246,6 @@ class PwaStorefrontMCPServerHighLevel {
                             };
                             session.basicComponentResult = await tool.createComponent();
                             session.step = 3;
-                            // Skip test file prompt, go directly to entity type
                             return next('Is this component related to a specific entity (e.g., product, category, basket, customer)? (optional, press enter to skip)');
                         }
                         return next(`Answer yes to use the default components directory (${defaultDir}), or no if you want to specify the full absolute path to use a different directory:`);
@@ -258,32 +255,83 @@ class PwaStorefrontMCPServerHighLevel {
                         } else {
                             answers.entityType = '';
                         }
-                        // Get recommended hooks for the entity
-                        const {HookRecommenderTool} = await import('../utils/HookRecommenderTool.js');
-                        const recommender = new HookRecommenderTool();
-                        const hooks = Array.isArray(recommender.getRecommendations(answers.entityType))
-                            ? recommender.getRecommendations(answers.entityType)
-                            : [];
-                        // Build options list
-                        session.hookOptions = hooks.map(h => h.name);
-                        session.hookDescriptions = hooks.map(h => h.description);
-                        session.hookOptions.push('schema');
-                        session.hookDescriptions.push('Use schema fields directly');
-                        session.hookOptions.push('none');
-                        session.hookDescriptions.push('None of the above (finish component creation now)');
-                        // Build prompt
-                        let prompt = 'Select data fetching details for this component:';
-                        session.hookOptions.forEach((opt, idx) => {
-                            prompt += `\n${idx + 1}. ${opt}`;
-                            if (session.hookDescriptions[idx]) {
-                                prompt += ` (${session.hookDescriptions[idx]})`;
-                            }
-                        });
-                        prompt += '\n\nReply with the number of your choice.';
-                        session.step = 4;
-                        return next(prompt);
+                        // If product, ask for single or list, else continue generic flow
+                        if (answers.entityType && answers.entityType.toLowerCase() === 'product') {
+                            session.step = 4;
+                            return next('Should this component display a single product or a list of products ? Reply with "single" or "list".');
+                        } else {
+                            // Generic flow for other entities
+                            const {HookRecommenderTool} = await import('../utils/HookRecommenderTool.js');
+                            const recommender = new HookRecommenderTool();
+                            const hooks = Array.isArray(recommender.getRecommendations(answers.entityType))
+                                ? recommender.getRecommendations(answers.entityType)
+                                : [];
+                            session.hookOptions = hooks.map(h => h.name);
+                            session.hookDescriptions = hooks.map(h => h.description);
+                            session.hookOptions.push('schema');
+                            session.hookDescriptions.push('Use schema fields directly');
+                            session.hookOptions.push('none');
+                            session.hookDescriptions.push('None of the above (finish component creation now)');
+                            let prompt = 'Select data fetching details for this component:';
+                            session.hookOptions.forEach((opt, idx) => {
+                                prompt += `\n${idx + 1}. ${opt}`;
+                                if (session.hookDescriptions[idx]) {
+                                    prompt += ` (${session.hookDescriptions[idx]})`;
+                                }
+                            });
+                            prompt += '\n\nReply with the number of your choice.';
+                            session.step = 5;
+                            return next(prompt);
+                        }
                     case 4:
-                        // Interpret user selection
+                        // Only for product entity: handle single/list
+                        if (answer && /list/i.test(answer)) {
+                            // List of products
+                            const tool = new CreateNewComponentTool();
+                            tool.componentData = {
+                                name: answers.name,
+                                location: answers.location,
+                                createTestFile: false,
+                                customCode: '',
+                                entityType: 'product'
+                            };
+                            const dataModel = await this.getDataModelDocument('product', `data://data-models/product`);
+                            let schemaObj = dataModel && dataModel.contents && dataModel.contents[0] && JSON.parse(dataModel.contents[0].text);
+                            let presentationalResult = await tool.updateComponentToPresentational(
+                                'product',
+                                answers.name,
+                                answers.location,
+                                schemaObj && schemaObj.properties ? schemaObj.properties : {},
+                                { list: true }
+                            );
+                            session.step = 99;
+                            return done((session.basicComponentResult || '') + `\n\n${presentationalResult}\nComponent creation flow complete.`);
+                        } else if (answer && /single/i.test(answer)) {
+                            // Single product
+                            const tool = new CreateNewComponentTool();
+                            tool.componentData = {
+                                name: answers.name,
+                                location: answers.location,
+                                createTestFile: false,
+                                customCode: '',
+                                entityType: 'product'
+                            };
+                            const dataModel = await this.getDataModelDocument('product', `data://data-models/product`);
+                            let schemaObj = dataModel && dataModel.contents && dataModel.contents[0] && JSON.parse(dataModel.contents[0].text);
+                            let presentationalResult = await tool.updateComponentToPresentational(
+                                'product',
+                                answers.name,
+                                answers.location,
+                                schemaObj && schemaObj.properties ? schemaObj.properties : {},
+                                { list: false }
+                            );
+                            session.step = 99;
+                            return done((session.basicComponentResult || '') + `\n\n${presentationalResult}\nComponent creation flow complete.`);
+                        } else {
+                            return next('Please reply with "single" or "list".');
+                        }
+                    case 5:
+                        // Generic flow for other entities (hook selection, schema, etc.)
                         const selectedIdx = parseInt(answer, 10) - 1;
                         const selectedOption = session.hookOptions && session.hookOptions[selectedIdx];
                         if (!selectedOption) {
@@ -293,7 +341,6 @@ class PwaStorefrontMCPServerHighLevel {
                             session.step = 99;
                             return done((session.basicComponentResult || '') + '\nComponent creation flow complete.');
                         }
-                        // Now add presentational logic if needed
                         const tool = new CreateNewComponentTool();
                         tool.componentData = {
                             name: answers.name,
@@ -305,7 +352,6 @@ class PwaStorefrontMCPServerHighLevel {
                         let result = session.basicComponentResult || '';
                         let dataModel = null;
                         if (selectedOption === 'schema') {
-                            // Use schema-based presentational logic
                             const uriHref = `data://data-models/${answers.entityType}`;
                             dataModel = await this.getDataModelDocument(answers.entityType, uriHref);
                             let schemaObj = dataModel && dataModel.contents && dataModel.contents[0] && JSON.parse(dataModel.contents[0].text);
@@ -319,7 +365,6 @@ class PwaStorefrontMCPServerHighLevel {
                             session.dataModel = dataModel;
                             return next(result + `\n\n${presentationalResult}\nComponent creation flow complete.`);
                         } else {
-                            // Use hook-based presentational logic
                             const uriHref = `data://data-models/${answers.entityType}`;
                             dataModel = await this.getDataModelDocument(answers.entityType, uriHref);
                             let hookResult = await tool.handleHookSelection(selectedOption, answers.entityType, answers.name, answers.location, {[answers.entityType]: dataModel && dataModel.contents && dataModel.contents[0] && JSON.parse(dataModel.contents[0].text)});
@@ -328,6 +373,43 @@ class PwaStorefrontMCPServerHighLevel {
                             return next(result + `\n\n${hookResult}\nComponent creation flow complete.`);
                         }
                     case 99:
+                        if (answer) {
+                            // Completely re-initialize session for new component creation
+                            this.sessions[sessionId] = { step: 2, answers: { name: answer } };
+                            // Immediately process the new step (step 2) with the current answer
+                            const session = this.sessions[sessionId];
+                            const {step, answers} = session;
+                            // Make handleStep async to allow await inside
+                            const handleStep = async (step, answer) => {
+                                switch (step) {
+                                    case 2: {
+                                        const defaultDir = process.env.PWA_STOREFRONT_APP_PATH ? process.env.PWA_STOREFRONT_APP_PATH + '/components' : '/components';
+                                        if (answer) {
+                                            if (/^(yes|y|true|1)$/i.test(answer)) {
+                                                answers.location = defaultDir;
+                                            } else {
+                                                answers.location = answer;
+                                            }
+                                            const tool = new CreateNewComponentTool();
+                                            tool.componentData = {
+                                                name: answers.name,
+                                                location: answers.location,
+                                                createTestFile: false,
+                                                customCode: '',
+                                                entityType: ''
+                                            };
+                                            session.basicComponentResult = await tool.createComponent();
+                                            session.step = 3;
+                                            return next('Is this component related to a specific entity (e.g., product, category, basket, customer)? (optional, press enter to skip)');
+                                        }
+                                        return next(`Answer yes to use the default components directory (${defaultDir}), or no if you want to specify the full absolute path to use a different directory:`);
+                                    }
+                                    default:
+                                        return next('What would you like to name your new React component?');
+                                }
+                            };
+                            return await handleStep(session.step, undefined);
+                        }
                         return done('Component creation flow complete.');
                     default:
                         session.step = 1;

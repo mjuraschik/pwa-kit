@@ -198,53 +198,156 @@ describe('${componentName}', () => {
         const componentFilePath = path.join(componentDir, 'index.jsx')
         const fields = Object.keys(dataModel)
         let code = ''
-        if (options.array) {
-            // For hooks like useProducts or useProductSearch
-            const propName = options.propName || (entityType + 's')
-            const jsxFields = fields
-                .map((field) =>
-                    `                    <div>${field}: {{item.${field}?.toString?.() ?? ''}}</div>`
-                )
-                .join('\n')
-            code = `${getCopyrightHeader()}
+        // Special logic for product entity
+        if (entityType === 'product') {
+            // If options.list is true, generate a list-of-products component
+            if (options.list) {
+                code = `${getCopyrightHeader()}
 import React from 'react';
+import PropTypes from 'prop-types';
 
-// This component expects a '${propName}' prop (array of ${entityType} objects).
-const ${componentName} = ({{ ${propName} }}) => (
+const ${componentName} = ({ products }) => (
     <div>
-        {${propName}?.map((item) => (
-            <div key={item.id} style={{border: '1px solid #ccc', margin: 8, padding: 8}}>
-${jsxFields}
+        {products.map(product => (
+            <div key={product.productId} style={{ border: '1px solid #ccc', margin: 8, padding: 8 }}>
+                <h2>{product.name}</h2>
+                {product.imageGroups && product.imageGroups[0]?.images[0]?.link && (
+                    <img
+                        src={product.imageGroups[0].images[0].link}
+                        alt={product.name}
+                        style={{ maxWidth: 150, marginBottom: 8 }}
+                    />
+                )}
+                <div>assigned_categories: {product.assigned_categories?.toString?.() ?? ''}</div>
+                <div>price: {product.price?.toString?.() ?? ''}</div>
             </div>
         ))}
     </div>
 );
 
+${componentName}.propTypes = {
+    products: PropTypes.arrayOf(PropTypes.shape({
+        productId: PropTypes.string,
+        name: PropTypes.string,
+        assigned_categories: PropTypes.any,
+        price: PropTypes.any,
+        imageGroups: PropTypes.array
+    })).isRequired
+};
+
 export default ${componentName};
 `
-        } else {
-            // For hooks like useProduct
-            const propName = entityType
-            const jsxFields = fields
-                .map((field) =>
-                    `        <div>${field}: {{{propName}.${field}?.toString?.() ?? ''}}</div>`.replace(
-                        /\{propName/g,
-                        propName
-                    )
+            } else {
+                // Single product component (with selectors, image, etc.)
+                code = `${getCopyrightHeader()}
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
+// Helper to filter variants by selected attribute values
+const filterVariants = (variants, selected) => {
+    return variants.filter(variant =>
+        Object.entries(selected).every(
+            ([attr, value]) => !value || variant.variationValues?.[attr] === value
+        )
+    );
+};
+
+// Helper to get the image for the selected color
+const getImageForSelection = (imageGroups, selected) => {
+    if (selected.color) {
+        const group = imageGroups.find(
+            g =>
+                g.variationAttributes &&
+                g.variationAttributes.some(
+                    va =>
+                        va.id === 'color' &&
+                        va.values.some(v => v.value === selected.color)
                 )
-                .join('\n')
-            code = `${getCopyrightHeader()}
-import React from 'react';
+        );
+        if (group && group.images.length > 0) {
+            return group.images[0].link;
+        }
+    }
+    if (imageGroups.length > 0 && imageGroups[0].images.length > 0) {
+        return imageGroups[0].images[0].link;
+    }
+    return null;
+};
 
-// This component expects a '${propName}' prop with the relevant data.
-const ${componentName} = ({{ ${propName} }}) => (
-    <div>
-${jsxFields}
-    </div>
-);
+const ${componentName} = ({ product }) => {
+    const { variationAttributes = [], variants = [], imageGroups = [] } = product;
+    const [selected, setSelected] = useState(() => {
+        const initial = {};
+        variationAttributes.forEach(attr => {
+            initial[attr.id] = '';
+        });
+        return initial;
+    });
+
+    const filteredVariants = filterVariants(variants, selected);
+    const getAvailableValues = (attrId) => {
+        const otherSelected = { ...selected };
+        delete otherSelected[attrId];
+        const possibleVariants = filterVariants(variants, otherSelected);
+        const values = new Set();
+        possibleVariants.forEach(v => {
+            if (v.variationValues?.[attrId]) values.add(v.variationValues[attrId]);
+        });
+        return Array.from(values);
+    };
+
+    const imageUrl = getImageForSelection(imageGroups, selected);
+
+    return (
+        <div>
+            <h2>{product.name}</h2>
+            {imageUrl && (
+                <img src={imageUrl} alt={product.name} style={{ maxWidth: 300, marginBottom: 16 }} />
+            )}
+            <div>assigned_categories: {product.assigned_categories?.toString?.() ?? ''}</div>
+            <div>price: {product.price?.toString?.() ?? ''}</div>
+            {/* Dynamic variant attribute selectors */}
+            {variationAttributes.map(attr => (
+                <div key={attr.id} style={{ margin: '8px 0' }}>
+                    <strong>{attr.name}:</strong>
+                    {getAvailableValues(attr.id).map(val => (
+                        <button
+                            key={val}
+                            onClick={() => setSelected(sel => ({ ...sel, [attr.id]: val }))}
+                            style={{
+                                margin: 4,
+                                border: selected[attr.id] === val ? '2px solid blue' : '1px solid #ccc',
+                                borderRadius: '4px',
+                                padding: '4px 12px',
+                                background: '#fff',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {val}
+                        </button>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+};
+
+${componentName}.propTypes = {
+    product: PropTypes.shape({
+        name: PropTypes.string,
+        assigned_categories: PropTypes.any,
+        price: PropTypes.any,
+        variationAttributes: PropTypes.array,
+        variants: PropTypes.array,
+        imageGroups: PropTypes.array
+    }).isRequired
+};
 
 export default ${componentName};
 `
+            }
+            await fs.writeFile(componentFilePath, code, 'utf-8')
+            return `✅ Updated ${componentFilePath} to presentational component for ${entityType}`
         }
         await fs.writeFile(componentFilePath, code, 'utf-8')
         return `✅ Updated ${componentFilePath} to presentational component for ${entityType}`
