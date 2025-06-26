@@ -530,7 +530,7 @@ const App = ({children}) => (
 )
 ```
 
-> **Note:** The `CommerceApiProvider` will automatically wrap each client in `apiClients` with `transformSDKClient`, using a default transformer that injects headers and fetch options from the provider props. You must use props passed to `CommerceApiProvider` for setting custom headers and fetch options. `transformSDKClient` will merge headers and options passed in as props with the default values.
+> **Note:** The `CommerceApiProvider` will automatically wrap each client in `apiClients` with `transformSDKClient`, using a default transformer that injects headers and fetch options from the provider props. You must use props passed to `CommerceApiProvider` for setting custom headers and fetch options. `transformSDKClient` merges headers and options passed in as props with the default values.
 
 ### API Reference
 
