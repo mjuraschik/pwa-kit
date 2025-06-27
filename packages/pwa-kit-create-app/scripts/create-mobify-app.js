@@ -483,7 +483,6 @@ const main = async (opts) => {
     selectedTemplate = TEMPLATES.find(({id}) => id === answers.general.presetOrTemplateId)
 
     // Give some feedback to the user.
-    console.log(selectedTemplate, answers.general.presetOrTemplateId)
     console.log(`Using template "${selectedTemplate.id}"`)
 
     // Assign the  preset to the context.
@@ -528,7 +527,7 @@ const main = async (opts) => {
     // Inject the packageJSON into the context for extensible projects.
     if (context.answers.project.extend) {
         const pkgJSON = JSON.parse(
-            sh.exec(`npm view ${selectedTemplate.id}@${templateVersion} --json`, {
+            sh.exec(`npm view ${selectedTemplate.source.name}@${templateVersion} --json`, {
                 silent: true
             }).stdout
         )
