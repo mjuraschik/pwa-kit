@@ -460,6 +460,20 @@ const getAnswersFromStdin = async (answers) => {
     }
 }
 
+/**
+ * Prints the contents of program.json in a nicely formatted way and exits the process.
+ */
+const printProgramJsonAndExit = () => {
+    try {
+        const programJson = require('../program.json')
+        console.log('program.json contents:')
+        console.log(JSON.stringify(programJson, null, 2))
+    } catch (err) {
+        console.error('Failed to import program.json:', err.message)
+    }
+    process.exit(1)
+}
+
 const main = async (opts) => {
     if (!isUsingCompatibleNode) {
         console.log('')
@@ -478,10 +492,15 @@ const main = async (opts) => {
     let isPreset = false
     let answers = {}
     let selectedTemplate
-    let {outputDir, verbose, preset, templateVersion, stdio} = opts
+    let {outputDir, verbose, preset, templateVersion, stdio, displayProgram} = opts
     const {prompt} = inquirer
     const OUTPUT_DIR_FLAG_ACTIVE = !!outputDir
     const presetId = preset || process.env.GENERATOR_PRESET
+
+    // Exit if the preset provided is not valid.
+    if (displayProgram) {
+        printProgramJsonAndExit()
+    }
 
     // Exit if the preset provided is not valid.
     if (presetId && !validPreset(presetId)) {

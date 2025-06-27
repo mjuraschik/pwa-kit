@@ -678,7 +678,7 @@
             }, 
             {
                 "name": "--displayProgram",
-                "description": "Display the program.json file"
+                "description": "Display the program.json file detailing the program schema/data and exit"
             }
         ],
         "examples": [
