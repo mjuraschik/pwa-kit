@@ -7,13 +7,8 @@
 import fs from 'fs'
 import path from 'path'
 import pty from 'node-pty'
-import {fileURLToPath} from 'url'
 import {zodToJsonSchema} from 'zod-to-json-schema'
 import {z} from 'zod'
-
-// Emulate __dirname
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 // Private schema used to generate the JSON schema
 const emptySchema = z.object({}).strict()

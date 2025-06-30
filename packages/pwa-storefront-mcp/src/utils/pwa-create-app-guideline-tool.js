@@ -7,7 +7,7 @@
 import path from 'path'
 
 // Project dependencies
-import {EmptyJsonSchema, isMonoRepo, runWithPty} from './utils.js'
+import {EmptyJsonSchema, isMonoRepo, runWithPty} from './utils'
 
 // const CREATE_APP_VERSION = 'latest'
 const CREATE_APP_VERSION = '3.11.0-nightly-20250630080227'
