@@ -27,7 +27,7 @@ let provider = null
 export const initializeServerTracing = (options = {}) => {
     const {
         serviceName = process.env.OTEL_SERVICE_NAME || DEFAULT_SERVICE_NAME,
-        serviceVersion = process.env.npm_package_version,
+        serviceVersion,
         enabled = process.env.OTEL_SDK_ENABLED === 'true'
     } = options
 

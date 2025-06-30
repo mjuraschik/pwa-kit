@@ -118,10 +118,9 @@ describe('OpenTelemetry Server Tracing', () => {
                 spanProcessor: expect.any(Object)
             })
 
-            // Verify Resource was created with correct service name
+            // Verify Resource was created with correct service name only (no version by default)
             expect(mockResource).toHaveBeenCalledWith({
-                'service.name': 'pwa-kit-react-sdk',
-                'service.version': '3.11.0-dev.0'
+                'service.name': 'pwa-kit-react-sdk'
             })
 
             // Verify span processor was created
@@ -148,10 +147,9 @@ describe('OpenTelemetry Server Tracing', () => {
                 serviceName: customServiceName
             })
 
-            // Verify Resource was created with custom service name
+            // Verify Resource was created with custom service name only
             expect(mockResource).toHaveBeenCalledWith({
-                'service.name': customServiceName,
-                'service.version': '3.11.0-dev.0'
+                'service.name': customServiceName
             })
 
             expect(result).toBeDefined()
@@ -290,24 +288,7 @@ describe('OpenTelemetry Server Tracing', () => {
                 const result = initializeServerTracing({enabled: true})
 
                 expect(mockResource).toHaveBeenCalledWith({
-                    'service.name': 'env-service-name',
-                    'service.version': '3.11.0-dev.0'
-                })
-                expect(result).toBeDefined()
-            })
-
-            test('should use npm_package_version environment variable when provided', () => {
-                // Clear previous mock calls
-                mockResource.mockClear()
-                mockNodeTracerProvider.mockClear()
-
-                process.env.npm_package_version = '3.0.0'
-
-                const result = initializeServerTracing({enabled: true})
-
-                expect(mockResource).toHaveBeenCalledWith({
-                    'service.name': 'pwa-kit-react-sdk',
-                    'service.version': '3.0.0'
+                    'service.name': 'env-service-name'
                 })
                 expect(result).toBeDefined()
             })
