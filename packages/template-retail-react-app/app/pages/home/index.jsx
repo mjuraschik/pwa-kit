@@ -119,7 +119,7 @@ const Home = () => {
                     </Stack>
                 }
             />
-
+            <div builder-slot></div>
             <Section
                 background={'gray.50'}
                 marginX="auto"

@@ -1,1 +1,1 @@
-export * from './DesignModeRouter';
+export * from './DesignModeRouter'

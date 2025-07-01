@@ -19,7 +19,7 @@ import {
     useStyleConfig
 } from '@salesforce/retail-react-app/app/components/shared/ui'
 
-import {useDesignMode} from '@salesforce/page-designer-react-sdk'
+import {smartComponent} from '@salesforce/page-designer-react-sdk'
 
 // Icons
 import {ChevronRightIcon} from '@salesforce/retail-react-app/app/components/icons'
@@ -34,7 +34,6 @@ import {categoryUrlBuilder} from '@salesforce/retail-react-app/app/utils/url'
 const Breadcrumb = ({categories, ...rest}) => {
     const intl = useIntl()
     const styles = useStyleConfig('Breadcrumb')
-    const isDesign = useDesignMode()
 
     return (
         <>
@@ -56,7 +55,6 @@ const Breadcrumb = ({categories, ...rest}) => {
                     </ChakraBreadcrumbItem>
                 ))}
             </ChakraBreadcrumb>
-            <div>{isDesign ? 'Design Mode Active' : 'Design Mode Inactive'}</div>
         </>
     )
 }
@@ -70,4 +68,4 @@ Breadcrumb.propTypes = {
     categories: PropTypes.array
 }
 
-export default Breadcrumb
+export default smartComponent(Breadcrumb)
