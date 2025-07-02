@@ -15,6 +15,9 @@ import {
     Image
 } from '@salesforce/retail-react-app/app/components/shared/ui'
 
+
+import {smartComponent} from '@salesforce/page-designer-react-sdk'
+
 const Hero = ({title, img, actions, ...props}) => {
     const {src, alt} = img
 
@@ -87,4 +90,4 @@ Hero.propTypes = {
     actions: PropTypes.element
 }
 
-export default Hero
+export default smartComponent(Hero)

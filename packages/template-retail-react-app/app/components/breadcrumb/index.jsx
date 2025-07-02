@@ -7,8 +7,8 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Link as RouteLink} from 'react-router-dom'
 import {useIntl} from 'react-intl'
+import {Link as RouteLink} from 'react-router-dom'
 
 // Components
 import {
@@ -18,6 +18,8 @@ import {
     // Hooks
     useStyleConfig
 } from '@salesforce/retail-react-app/app/components/shared/ui'
+
+import {smartComponent} from '@salesforce/page-designer-react-sdk'
 
 // Icons
 import {ChevronRightIcon} from '@salesforce/retail-react-app/app/components/icons'
@@ -34,24 +36,26 @@ const Breadcrumb = ({categories, ...rest}) => {
     const styles = useStyleConfig('Breadcrumb')
 
     return (
-        <ChakraBreadcrumb
-            className="sf-breadcrumb"
-            sx={styles.container}
-            separator={<ChevronRightIcon {...styles.icon} aria-hidden="true" />}
-            {...rest}
-        >
-            {categories.map((category) => (
-                <ChakraBreadcrumbItem key={category.id} data-testid="sf-crumb-item">
-                    <ChakraBreadcrumbLink
-                        as={RouteLink}
-                        to={categoryUrlBuilder(category, intl.locale)}
-                        sx={styles.link}
-                    >
-                        {category.name}
-                    </ChakraBreadcrumbLink>
-                </ChakraBreadcrumbItem>
-            ))}
-        </ChakraBreadcrumb>
+        <>
+            <ChakraBreadcrumb
+                className="sf-breadcrumb"
+                sx={styles.container}
+                separator={<ChevronRightIcon {...styles.icon} aria-hidden="true" />}
+                {...rest}
+            >
+                {categories.map((category) => (
+                    <ChakraBreadcrumbItem key={category.id} data-testid="sf-crumb-item">
+                        <ChakraBreadcrumbLink
+                            as={RouteLink}
+                            to={categoryUrlBuilder(category, intl.locale)}
+                            sx={styles.link}
+                        >
+                            {category.name}
+                        </ChakraBreadcrumbLink>
+                    </ChakraBreadcrumbItem>
+                ))}
+            </ChakraBreadcrumb>
+        </>
     )
 }
 
@@ -64,4 +68,4 @@ Breadcrumb.propTypes = {
     categories: PropTypes.array
 }
 
-export default Breadcrumb
+export default smartComponent(Breadcrumb)
