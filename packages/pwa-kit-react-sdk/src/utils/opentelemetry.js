@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Salesforce, Inc.
+ * Copyright (c) 2025, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -10,7 +10,6 @@ import {hrTimeToMilliseconds, hrTimeToTimeStamp} from '@opentelemetry/core'
 import logger from './logger-instance'
 
 const SERVICE_NAME = 'pwa-kit-react-sdk'
-const tracer = trace.getTracer(SERVICE_NAME)
 
 function logSpanData(span, event = 'start', res = null) {
     const spanContext = span.spanContext()
@@ -52,8 +51,11 @@ function logSpanData(span, event = 'start', res = null) {
     }
 
     // Only log if this is an end event or if it's a start event for a new span
-    if (event === 'end' || !span.attributes.hasOwnProperty('event')) {
-        console.info(JSON.stringify(spanData))
+    if (event === 'end' || !Object.prototype.hasOwnProperty.call(span.attributes, 'event')) {
+        logger.info('OpenTelemetry span data', {
+            namespace: 'opentelemetry.logSpanData',
+            additionalProperties: spanData
+        })
     }
 }
 
@@ -65,9 +67,10 @@ function logSpanData(span, event = 'start', res = null) {
  */
 export const createSpan = (name, options = {}) => {
     try {
+        const tracer = trace.getTracer(SERVICE_NAME)
         // Get the current context and active span
         const ctx = context.active()
-        const currentSpan = trace.getSpan(ctx)
+        // Note: currentSpan is not used in this implementation
 
         // Create a new span with the current context
         const span = tracer.startSpan(
@@ -86,7 +89,13 @@ export const createSpan = (name, options = {}) => {
         logSpanData(span, 'start')
         return trace.setSpan(ctx, span)
     } catch (error) {
-        console.warn(`Failed to create span "${name}":`, error.message)
+        logger.error('Failed to create span', {
+            namespace: 'opentelemetry',
+            additionalProperties: {
+                spanName: name,
+                error: error.message
+            }
+        })
         return null
     }
 }
@@ -99,6 +108,7 @@ export const createSpan = (name, options = {}) => {
  */
 export const createChildSpan = (name, attributes = {}) => {
     try {
+        const tracer = trace.getTracer(SERVICE_NAME)
         const ctx = context.active()
         const parentSpan = trace.getSpan(ctx)
 
@@ -132,12 +142,15 @@ export const createChildSpan = (name, attributes = {}) => {
         )
 
         logSpanData(span, 'start')
-        return trace.setSpan(ctx, span)
+        return span
     } catch (error) {
         logger.error('Error creating OpenTelemetry span', {
             namespace: 'opentelemetry',
-            error: error.message,
-            stack: error.stack
+            additionalProperties: {
+                spanName: name,
+                error: error.message,
+                stack: error.stack
+            }
         })
         return null
     }
@@ -154,7 +167,7 @@ export const endSpan = (span) => {
 
     try {
         const ctx = context.active()
-        const parentSpan = trace.getSpan(ctx)
+        // Note: parentSpan is not used in this implementation
 
         span.end()
 
@@ -163,8 +176,10 @@ export const endSpan = (span) => {
     } catch (error) {
         logger.error('Error ending OpenTelemetry span', {
             namespace: 'opentelemetry',
-            error: error.message,
-            stack: error.stack
+            additionalProperties: {
+                error: error.message,
+                stack: error.stack
+            }
         })
     }
 }
@@ -177,6 +192,7 @@ export const endSpan = (span) => {
  * @returns {Promise<any>} The result of the function
  */
 export const tracePerformance = async (name, fn, res = null) => {
+    const tracer = trace.getTracer(SERVICE_NAME)
     // Create the root span
     const rootSpan = tracer.startSpan(name, {
         attributes: {
@@ -228,11 +244,15 @@ export const tracePerformance = async (name, fn, res = null) => {
  */
 export const logPerformanceMetric = (name, duration, attributes = {}) => {
     try {
+        const tracer = trace.getTracer(SERVICE_NAME)
         const ctx = context.active()
         const parentSpan = trace.getSpan(ctx)
 
         if (!parentSpan) {
-            logger.warn('No parent span found in context', {namespace: 'opentelemetry'})
+            logger.warn('No parent span found in context', {
+                namespace: 'opentelemetry',
+                additionalProperties: {metricName: name}
+            })
             return
         }
 
@@ -264,7 +284,6 @@ export const logPerformanceMetric = (name, duration, attributes = {}) => {
             ctx
         )
 
-        const endTime = hrTimeToTimeStamp(process.hrtime())
         span.end()
 
         // Log completion data
@@ -272,8 +291,11 @@ export const logPerformanceMetric = (name, duration, attributes = {}) => {
     } catch (error) {
         logger.error('Error logging performance metric', {
             namespace: 'opentelemetry',
-            error: error.message,
-            stack: error.stack
+            additionalProperties: {
+                metricName: name,
+                error: error.message,
+                stack: error.stack
+            }
         })
     }
 }
