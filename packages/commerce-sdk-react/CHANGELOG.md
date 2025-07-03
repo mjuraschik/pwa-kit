@@ -1,11 +1,13 @@
 ## v4.0.0-dev (Mar 07, 2025)
+- Migrate directory structure from `app/*` to `src/*` [#2693](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2693)
 - Upgrade `@tanstack/react-query` to v5 [#2303](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2303)
 - Refactor all API hooks to use the new `createUseQuery` and `createUseMutation` hook [#2353](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2353)
 
-## v3.3.0-extensibility-preview.5 (May 06, 2025)
-
 ## v3.3.0-extensibility-preview.4 (Feb 12, 2025)
 - Add `ServerContext` type for `useServerContext` hook [#2239](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2239)
+
+## v3.3.0-dev.1 (Apr 30, 2025)
+- Fix inconsistency between dwsid and access token for guest login when hybrid authentication is enabled [#2397](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2397)
 
 ## v3.3.0-dev (Feb 18, 2025)
 - Invalidate cache instead of removing cache when triggering logout [#2323](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2323)

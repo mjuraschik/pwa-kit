@@ -1,12 +1,8 @@
-## 4.0.0-extensibility-preview.4
-- Generating a project now works successfully on Windows machine [#2377](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2377#pullrequestreview-2809224585)
-- Remove the `extension-` prefix requirement for extension package names [#2390](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2390)
-
-## v4.0.0-extensibility-preview.2 (Dec 09, 2024)
-## v4.0.0-extensibility-preview.1 (Dec 09, 2024)
-## v4.0.0-extensibility-preview.0 (Dec 02, 2024)
-- Fix build script execution on windows when spaces exists in users home path. [#2156](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2156)
-- Update assets/templated files after removing "Shared UI" support in Retail App [#2022](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2022)
+## 4.0.0-extensibility-preview.5
+- Migrate directory structure from `app/*` to `src/*` [#2693](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2693)
+- Deprecate V3 Extensibility and experimental V4 Extensibility (#2573)
+- Move extensibility logic to generator (#2573)
+- Apply prettier to trimmed files (#2688)
 
 ## v3.10.0 (Feb 18, 2025)
 - Add Data Cloud API configuration to `default.js`. [#2318] (https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2229)
