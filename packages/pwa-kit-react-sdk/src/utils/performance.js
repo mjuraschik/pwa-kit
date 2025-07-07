@@ -89,7 +89,7 @@ export default class PerformanceTimer {
      * 'end' completes measurement and cleanup.
      *
      * @param {Object} [options={}] - Optional configuration object
-     * @param {string|Object} [options.detail=''] - Additional metadata for the mark 
+     * @param {string|Object} [options.detail=''] - Additional metadata for the mark
      * included in logs and tracing attributes.
      */
     mark(name, type, options = {}) {
