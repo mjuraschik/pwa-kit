@@ -34,10 +34,6 @@ export default class PerformanceTimer {
     }
     constructor(options = {}) {
         this.enabled = options.enabled || false
-        this.marks = {
-            start: new Map(),
-            end: new Map()
-        }
         this.metrics = []
         this.spans = new Map()
     }

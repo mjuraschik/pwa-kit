@@ -1,6 +1,22 @@
 /**
  * @jest-environment node
  */
+
+// Mock OpenTelemetry functions BEFORE any imports
+jest.mock('./opentelemetry', () => ({
+    createChildSpan: jest.fn((name, attributes) => ({
+        spanContext: () => ({
+            traceId: 'test-trace-id',
+            spanId: 'test-span-id'
+        }),
+        name,
+        attributes,
+        end: jest.fn()
+    })),
+    endSpan: jest.fn(),
+    logPerformanceMetric: jest.fn()
+}))
+
 /*
  * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
