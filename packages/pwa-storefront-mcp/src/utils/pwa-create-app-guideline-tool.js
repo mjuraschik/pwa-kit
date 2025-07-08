@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import os from 'os';
-import path from 'path';
-import { exec } from 'child_process';
-import fs from 'fs/promises';
+import os from 'os'
+import path from 'path'
+import { exec } from 'child_process'
+import fs from 'fs/promises'
 
 // Project dependencies
-import {EmptyJsonSchema} from './utils.js';
+import {EmptyJsonSchema} from './utils'
 
 //const CREATE_APP_VERSION = 'latest'
-const CREATE_APP_VERSION = '3.11.0-nightly-20250630080227'
+//const CREATE_APP_VERSION = '3.11.0-nightly-20250630080227'
 const CREATE_APP_COMMAND = '@salesforce/pwa-kit-create-app@3.11.0-nightly-20250630080227'
 const DISPLAY_PROGRAM_COMMAND = '--displayProgram'
 const NPX_COMMAND = 'npx'
@@ -68,24 +68,22 @@ If the user requests a project using a **template**:
 
 export async function runNpxCommand() {
     return new Promise((resolve, reject) => {
-        const tempDir = os.tmpdir();
-        const outputFilePath = path.join(tempDir, 'npx-output.json');
-        const errorFilePath = path.join(tempDir, 'npx-error.log');
-        const command = `${NPX_COMMAND} ${CREATE_APP_COMMAND} ${DISPLAY_PROGRAM_COMMAND} > ${outputFilePath} 2> ${errorFilePath}`;
+        const tempDir = os.tmpdir()
+        const outputFilePath = path.join(tempDir, 'npx-output.json')
+        const errorFilePath = path.join(tempDir, 'npx-error.log')
+        const command = `${NPX_COMMAND} ${CREATE_APP_COMMAND} ${DISPLAY_PROGRAM_COMMAND} > ${outputFilePath} 2> ${errorFilePath}`
 
         exec(command, (error) => {
             if (error) {
-                // console.error('Failed to run npx command:', error);
-                reject(error);
+                reject(error)
                 return;
             }
 
-            // console.log('Command executed successfully. Output written to', outputFilePath);
             fs.readFile(outputFilePath, 'utf-8')
                 .then((data) => resolve(data))
-                .catch((err) => reject(err));
-        });
-    });
+                .catch((err) => reject(err))
+        })
+    })
 }
 
 
