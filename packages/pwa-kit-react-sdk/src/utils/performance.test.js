@@ -73,16 +73,6 @@ describe('PerformanceTimer', () => {
         expect(timer.metrics[0].detail).toBe('end detail')
     })
 
-    test('handles object detail correctly', () => {
-        const timer = new PerformanceTimer({enabled: true})
-        const detailObj = {key: 'value', nested: {data: 123}}
-        timer.mark('test', 'start', {detail: detailObj})
-        timer.mark('test', 'end', {detail: detailObj})
-
-        expect(timer.metrics).toHaveLength(1)
-        expect(timer.metrics[0].detail).toBe(JSON.stringify(detailObj))
-    })
-
     test('buildServerTimingHeader returns empty string for no metrics', () => {
         const timer = new PerformanceTimer({enabled: true})
         expect(timer.buildServerTimingHeader()).toBe('')

@@ -99,11 +99,8 @@ export default class PerformanceTimer {
         }
 
         try {
-            // Format detail as a string if it's an object
-            const formattedDetail = typeof detail === 'object' ? JSON.stringify(detail) : detail
-
             performance.mark(`${name}.${type}`, {
-                detail: formattedDetail
+                detail: detail
             })
 
             // Only create spans for 'start' events and store them for later use
@@ -112,7 +109,7 @@ export default class PerformanceTimer {
                     const span = createChildSpan(name, {
                         performance_mark: name,
                         performance_type: type,
-                        performance_detail: formattedDetail
+                        performance_detail: detail
                     })
                     if (span) {
                         this.spans.set(name, span)
@@ -135,7 +132,7 @@ export default class PerformanceTimer {
                     this.metrics.push({
                         name,
                         duration: measure.duration,
-                        detail: formattedDetail
+                        detail: detail
                     })
 
                     // End the corresponding span if it exists and clear timeout
