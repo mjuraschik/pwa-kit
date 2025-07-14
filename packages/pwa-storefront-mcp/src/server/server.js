@@ -131,7 +131,7 @@ class PwaStorefrontMCPServerHighLevel {
                 session.step = 3
                 return this._next(
                     sessionId,
-                    'Should this component display a single product or a list of products? Reply with "single" or "list".'
+                    'Should this component display a single product, a list of products, or do you want to handle it manually? Reply with "single", "list", or "other".'
                 )
             } else {
                 session.step = 2
@@ -150,7 +150,7 @@ class PwaStorefrontMCPServerHighLevel {
             session.step = 3
             return this._next(
                 sessionId,
-                'Should this component display a single product or a list of products? Reply with "single" or "list".'
+                'Should this component display a single product, a list of products, or do you want to handle it manually? Reply with "single", "list", or "other".'
             )
         }
         return this._next(
@@ -160,13 +160,23 @@ class PwaStorefrontMCPServerHighLevel {
     }
 
     async _handleSingleOrListStep(session, answer, sessionId) {
+        if (answer && /other/i.test(answer)) {
+            session.step = 99
+            return this._done(
+                sessionId,
+                'Manual mode selected. Please proceed with manual code generation.'
+            )
+        }
         let isList = null
         if (answer && /list/i.test(answer)) {
             isList = true
         } else if (answer && /single/i.test(answer)) {
             isList = false
         } else {
-            return this._next(sessionId, 'Please reply with "single" or "list".')
+            return this._next(
+                sessionId,
+                'Please reply with "single", "list", or "other".\nNote: This tool only supports generating single or list "Product" components. For other requirements, select "other".'
+            )
         }
 
         const tool = new CreateNewComponentTool()
