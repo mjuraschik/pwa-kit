@@ -214,16 +214,20 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The unique identifier for the validator."
                     },
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The name of the validator."
                     },
                     "description": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "A brief description of what the validator does."
                     },
                     "message": {
                         "type": "string",
+                        "description": "The error message to display if validation fails.",
                         "_ai": {
                             "instruction": "When validation fails, use this message to inform the user what went wrong.",
                             "expectedUse": "For validation error feedback."
@@ -231,6 +235,7 @@
                     },
                     "regex": {
                         "type": "string",
+                        "description": "The validation logic, often a regular expression or a reference to a function.",
                         "_ai": {
                             "instruction": "Use this regex to validate the user input.",
                             "expectedUse": "For validation of user input."
