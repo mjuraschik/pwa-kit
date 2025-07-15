@@ -111,7 +111,6 @@ const TEMPLATE_SOURCE_BUNDLE = 'bundle'
 
 const BOOTSTRAP_DIR = p.join(__dirname, '..', 'assets', 'bootstrap', 'js')
 const ASSETS_TEMPLATES_DIR = p.join(__dirname, '..', 'assets', 'templates')
-const CURSOR_RULES_FROM_DIR = p.join(__dirname, '..', 'assets', 'cursor-rules')
 const PRIVATE_PRESET_NAMES = PRESETS.filter(({private}) => !!private).map(({id}) => id)
 const PUBLIC_PRESET_NAMES = PRESETS.filter(({private}) => !private).map(({id}) => id)
 const ALL_PRESET_NAMES = PRIVATE_PRESET_NAMES.concat(PUBLIC_PRESET_NAMES)
@@ -391,8 +390,12 @@ const runGenerator = (context, {outputDir, templateVersion, verbose}) => {
         sh.rm('-rf', tmp)
     }
 
-    // Copy the .cursor/rules directory if it exists
-    if (sh.test('-e', CURSOR_RULES_FROM_DIR)) {
+    // Install dependencies for the newly minted project.
+    npmInstall(outputDir, {verbose})
+
+    // Copy the .cursor/rules directory from installed node_modules if it exists
+    const cursorRulesFromDir = p.join(outputDir, 'node_modules', '@salesforce','retail-react-app', '.cursor', 'rules')
+    if (sh.test('-e', cursorRulesFromDir)) {
         const outputCursorRulesDir = p.join(outputDir, '.cursor', 'rules')
 
         // Create the directory if it doesn't exist
@@ -400,15 +403,12 @@ const runGenerator = (context, {outputDir, templateVersion, verbose}) => {
             fs.mkdirSync(outputCursorRulesDir, {recursive: true})
         }
 
-        // Copy the contents of CURSOR_RULES_FROM_DIR to outputCursorRulesDir
-        const files = fs.readdirSync(CURSOR_RULES_FROM_DIR)
+        // Copy the contents of cursorRulesFromDir to outputCursorRulesDir
+        const files = fs.readdirSync(cursorRulesFromDir)
         files.forEach((file) => {
-            sh.cp('-rf', p.join(CURSOR_RULES_FROM_DIR, file), outputCursorRulesDir)
+            sh.cp('-rf', p.join(cursorRulesFromDir, file), outputCursorRulesDir)
         })
     }
-
-    // Install dependencies for the newly minted project.
-    npmInstall(outputDir, {verbose})
 }
 
 const foundNode = process.versions.node
