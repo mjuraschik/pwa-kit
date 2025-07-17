@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import fs from 'fs'
+import fs from 'fs/promises'
 import path from 'path'
 import {spawn} from 'cross-spawn'
 import {zodToJsonSchema} from 'zod-to-json-schema'
@@ -17,16 +17,6 @@ const CREATE_APP_VERSION = 'latest'
 const emptySchema = z.object({}).strict()
 
 export const EmptyJsonSchema = zodToJsonSchema(emptySchema)
-
-/**
- * Converts a string to kebab-case (e.g., ProductCard -> product-card)
- */
-export function toKebabCase(str) {
-    return str
-        .replace(/([a-z])([A-Z])/g, '$1-$2')
-        .replace(/\s+/g, '-')
-        .toLowerCase()
-}
 
 /**
  * Converts a string to PascalCase (e.g., product-card -> ProductCard)
@@ -105,4 +95,49 @@ export const getCreateAppCommand = () => {
               `${process.env.WORKSPACE_FOLDER_PATHS}/packages/pwa-kit-create-app/scripts/create-mobify-app.js`
           )
         : `@salesforce/pwa-kit-create-app@${CREATE_APP_VERSION}`
+}
+
+/**
+ * Returns the copyright header with the current year
+ * @returns {string} The copyright header text
+ */
+export const getCopyrightHeader = () => {
+    const year = new Date().getFullYear()
+    return `/*
+ * Copyright (c) ${year}, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */`
+}
+
+/**
+ * Converts a string to kebab-case (e.g., ProductCard -> product-card)
+ */
+export function toKebabCase(str) {
+    return str
+        .replace(/([a-z])([A-Z])/g, '$1-$2')
+        .replace(/\s+/g, '-')
+        .toLowerCase()
+}
+
+/**
+ * Logs a message to the mcp-debug.log file in the current directory.
+ * @param {string} message - The message to log.
+ */
+export async function logMCPMessage(message) {
+    if (process.env.DEBUG) {  // Check if DEBUG mode is enabled
+        const logFilePath = path.join(__dirname, 'mcp-debug.log');
+        const timestamp = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+        const logMessage = `[${timestamp}] ${message}\n`;
+        try {
+            // Ensure the log file exists, create it if it doesn't
+            await fs.access(logFilePath).catch(async () => {
+                await fs.writeFile(logFilePath, '', 'utf8');
+            });
+            await fs.appendFile(logFilePath, logMessage, 'utf8');
+        } catch (error) {
+            console.error(`Failed to write to log file: ${error.message}`);
+        }
+    }
 }
