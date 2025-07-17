@@ -10,12 +10,90 @@ import {hrTimeToMilliseconds, hrTimeToTimeStamp} from '@opentelemetry/core'
 import logger from './logger-instance'
 import {getOTELConfig, getServiceName} from './opentelemetry-config'
 
-const logSpanData = (span, event = 'start', res = null) => {
+export const logSpanData = (span, event = 'start', res = null) => {
+    // Safety check for valid span
+    if (!span || !span.spanContext || typeof span.spanContext !== 'function') {
+        logger.warn('Invalid span object, skipping span data logging', {
+            namespace: 'opentelemetry.logSpanData',
+            additionalProperties: {
+                spanName: span?.name || 'unknown',
+                event: event
+            }
+        })
+        return
+    }
+
     const spanContext = span.spanContext()
     const startTime = span.startTime
 
+    // Safety check for spanContext
+    if (!spanContext || !spanContext.traceId || !spanContext.spanId) {
+        logger.warn('Invalid span context, skipping span data logging', {
+            namespace: 'opentelemetry.logSpanData',
+            additionalProperties: {
+                spanName: span.name,
+                event: event,
+                spanContext: spanContext
+            }
+        })
+        return
+    }
+
+    // Safety check for startTime
+    if (!startTime || !Array.isArray(startTime) || startTime.length < 2) {
+        logger.warn('Invalid span startTime, skipping span data logging', {
+            namespace: 'opentelemetry.logSpanData',
+            additionalProperties: {
+                spanName: span.name,
+                event: event,
+                startTime: startTime
+            }
+        })
+        return
+    }
+
     const endTime = event === 'start' ? startTime : span.endTime
-    const duration = event === 'start' ? 0 : hrTimeToMilliseconds(span.duration)
+    let duration
+    if (event === 'start') {
+        duration = 0
+    } else {
+        try {
+            duration = hrTimeToMilliseconds(span.duration)
+        } catch (error) {
+            logger.warn('Failed to convert duration to milliseconds, using fallback', {
+                namespace: 'opentelemetry.logSpanData',
+                additionalProperties: {
+                    spanName: span.name,
+                    event: event,
+                    error: error.message,
+                    duration: span.duration
+                }
+            })
+            duration = 0
+        }
+    }
+
+    // Convert startTime to timestamp with additional safety check
+    let timestamp
+    try {
+        // Double-check that startTime is valid before calling hrTimeToTimeStamp
+        if (startTime && Array.isArray(startTime) && startTime.length >= 2) {
+            timestamp = hrTimeToTimeStamp(startTime)
+        } else {
+            throw new Error('startTime is not in the expected format')
+        }
+    } catch (error) {
+        logger.warn('Failed to convert startTime to timestamp, using fallback', {
+            namespace: 'opentelemetry.logSpanData',
+            additionalProperties: {
+                spanName: span.name,
+                event: event,
+                error: error.message,
+                startTime: startTime
+            }
+        })
+        timestamp = Date.now() * 1000000 // Fallback to current time in nanoseconds
+    }
 
     // Create the span data object that matches the expected format
     const spanData = {
@@ -24,11 +102,11 @@ const logSpanData = (span, event = 'start', res = null) => {
         name: span.name,
         id: spanContext.spanId,
         kind: span.kind,
-        timestamp: hrTimeToTimeStamp(startTime),
+        timestamp: timestamp,
         duration: duration,
         attributes: {
             'service.name': getServiceName(),
-            ...span.attributes,
+            ...(span.attributes || {}),
             event: event // Add event type to distinguish start/end
         },
         status: {code: event === 'start' ? SpanStatusCode.UNSET : SpanStatusCode.OK},
@@ -40,18 +118,33 @@ const logSpanData = (span, event = 'start', res = null) => {
     }
 
     // Inject B3 headers into response if available
-    if (res && process.env.DISABLE_B3_TRACING !== 'true' && event === 'start') {
-        res.setHeader('x-b3-traceid', spanContext.traceId)
-        res.setHeader('x-b3-spanid', spanContext.spanId)
-        res.setHeader('x-b3-sampled', '1')
+    if (
+        res &&
+        typeof res.setHeader === 'function' &&
+        process.env.DISABLE_B3_TRACING !== 'true' &&
+        event === 'start'
+    ) {
+        try {
+            res.setHeader('x-b3-traceid', spanContext.traceId)
+            res.setHeader('x-b3-spanid', spanContext.spanId)
+            res.setHeader('x-b3-sampled', '1')
 
-        if (span.parentSpanId) {
-            res.setHeader('x-b3-parentspanid', span.parentSpanId)
+            if (span.parentSpanId) {
+                res.setHeader('x-b3-parentspanid', span.parentSpanId)
+            }
+        } catch (error) {
+            logger.warn('Failed to set B3 headers', {
+                namespace: 'opentelemetry.logSpanData',
+                additionalProperties: {
+                    error: error.message,
+                    spanName: span.name
+                }
+            })
         }
     }
 
     // Only log if this is an end event or if it's a start event for a new span
-    if (event === 'end' || !Object.prototype.hasOwnProperty.call(span.attributes, 'event')) {
+    if (event === 'end' || !Object.prototype.hasOwnProperty.call(span.attributes || {}, 'event')) {
         logger.info('OpenTelemetry span data', {
             namespace: 'opentelemetry.logSpanData',
             additionalProperties: spanData
@@ -82,9 +175,34 @@ export const createSpan = (name, options = {}) => {
             context.active()
         )
 
-        // Set the new span as active
-        logSpanData(span, 'start')
-        return trace.setSpan(context.active(), span)
+        // Validate the created span
+        if (
+            !span ||
+            !span.startTime ||
+            !Array.isArray(span.startTime) ||
+            span.startTime.length < 2
+        ) {
+            logger.warn('OpenTelemetry span not properly initialized, skipping', {
+                namespace: 'opentelemetry',
+                additionalProperties: {spanName: name}
+            })
+            return null
+        }
+
+        // Set the new span as active and log span data
+        try {
+            logSpanData(span, 'start')
+            return trace.setSpan(context.active(), span)
+        } catch (error) {
+            logger.error('Failed to log span data', {
+                namespace: 'opentelemetry',
+                additionalProperties: {
+                    spanName: name,
+                    error: error.message
+                }
+            })
+            return trace.setSpan(context.active(), span)
+        }
     } catch (error) {
         logger.error('Failed to create span', {
             namespace: 'opentelemetry',
@@ -138,7 +256,32 @@ export const createChildSpan = (name, attributes = {}) => {
             parentSpan ? ctx : undefined
         )
 
-        logSpanData(span, 'start')
+        // Validate the created span
+        if (
+            !span ||
+            !span.startTime ||
+            !Array.isArray(span.startTime) ||
+            span.startTime.length < 2
+        ) {
+            logger.warn('OpenTelemetry child span not properly initialized, skipping', {
+                namespace: 'opentelemetry',
+                additionalProperties: {spanName: name}
+            })
+            return null
+        }
+
+        // Log span data with error handling
+        try {
+            logSpanData(span, 'start')
+        } catch (error) {
+            logger.error('Failed to log child span data', {
+                namespace: 'opentelemetry',
+                additionalProperties: {
+                    spanName: name,
+                    error: error.message
+                }
+            })
+        }
         return span
     } catch (error) {
         logger.error('Error creating OpenTelemetry span', {
@@ -159,6 +302,17 @@ export const createChildSpan = (name, attributes = {}) => {
  */
 export const endSpan = (span) => {
     if (!span) {
+        return
+    }
+
+    // Safety check for valid span
+    if (!span.end || typeof span.end !== 'function') {
+        logger.warn('Invalid span object, cannot end span', {
+            namespace: 'opentelemetry',
+            additionalProperties: {
+                spanName: span?.name || 'unknown'
+            }
+        })
         return
     }
 
