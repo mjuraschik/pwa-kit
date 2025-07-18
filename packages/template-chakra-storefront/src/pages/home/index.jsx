@@ -6,41 +6,42 @@
  */
 
 import React, {useEffect} from 'react'
-import {useIntl, FormattedMessage} from 'react-intl'
+import {FormattedMessage, useIntl} from 'react-intl'
 import {useLocation} from 'react-router-dom'
+import homeJson from './home.json'
 
 // Components
 import {
     Box,
     Button,
-    SimpleGrid,
-    HStack,
-    VStack,
-    Text,
-    Flex,
-    Stack,
     Container,
-    Link
+    Flex,
+    HStack,
+    Link,
+    SimpleGrid,
+    Text,
+    VStack
 } from '@chakra-ui/react'
 
 // Project Components
-import Hero from '../../components/hero'
-import Seo from '../../components/seo'
 import Section from '../../components/section'
-import ProductScroller from '../../components/product-scroller'
 
 // Others
-import {getStaticAssetUrl} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
-import {heroFeatures, features} from './data'
+import {features} from './data'
 
 //Hooks
-import useEinstein from '../../hooks/use-einstein'
 import useDataCloud from '../../hooks/use-datacloud'
+import useEinstein from '../../hooks/use-einstein'
 
 // Constants
 import {useServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
-import {useProductSearch} from '@salesforce/commerce-sdk-react'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
+import HeroSmart from '../../components/heroSmart'
+import SearchResults from '../../components/searchResults'
+import Seo from '../../components/seo'
+import Tile from '../../components/tile'
+import {renderPage} from '../../utils/page-utils'
+
 
 /**
  * This is the home page for Chakra Storefront.
@@ -53,13 +54,7 @@ const Home = () => {
     const einstein = useEinstein()
     const dataCloud = useDataCloud()
     const {pathname} = useLocation()
-    const {
-        pages: {
-            home: {productLimit: HOME_PRODUCT_LIMIT, mainCategory: HOME_MAIN_CATEGORY}
-        },
-        maxCacheAge: MAX_CACHE_AGE,
-        staleWhileRevalidate: STALE_WHILE_REVALIDATE
-    } = getConfig()
+    const {maxCacheAge: MAX_CACHE_AGE, staleWhileRevalidate: STALE_WHILE_REVALIDATE} = getConfig()
     const {res} = useServerContext()
     if (res) {
         res.set(
@@ -67,17 +62,6 @@ const Home = () => {
             `s-maxage=${MAX_CACHE_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`
         )
     }
-
-    const {data: productSearchResult, isLoading} = useProductSearch({
-        parameters: {
-            allImages: true,
-            allVariationProperties: true,
-            expand: ['promotions', 'variations', 'prices', 'images', 'custom_properties'],
-            limit: HOME_PRODUCT_LIMIT,
-            perPricebook: true,
-            refine: [`cgid=${HOME_MAIN_CATEGORY}`, 'htype=master']
-        }
-    })
 
     /**************** Einstein ****************/
     useEffect(() => {
@@ -87,141 +71,7 @@ const Home = () => {
 
     return (
         <Box data-testid="home-page" layerStyle="page">
-            <Seo
-                title="Home Page"
-                description="Commerce Cloud Chakra Storefront"
-                keywords="Commerce Cloud, Chakra Storefront, React Storefront"
-            />
-
-            <Hero
-                title={intl.formatMessage({
-                    defaultMessage: 'The React PWA Starter Store for Retail',
-                    id: 'home.title.react_starter_store'
-                })}
-                img={{
-                    src: getStaticAssetUrl('img/hero.png', {
-                        appExtensionPackageName: '@salesforce/template-chakra-storefront'
-                    }),
-                    alt: 'npx pwa-kit-create-app'
-                }}
-                actions={
-                    <Stack spacing={{base: 4, sm: 6}} direction={{base: 'column', sm: 'row'}}>
-                        <Button
-                            as={Link}
-                            href="https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/getting-started.html"
-                            target="_blank"
-                            width={{base: 'full', md: 'inherit'}}
-                            paddingX={7}
-                            _hover={{textDecoration: 'none'}}
-                        >
-                            <FormattedMessage
-                                defaultMessage="Get started"
-                                id="home.link.get_started"
-                            />
-                        </Button>
-                    </Stack>
-                }
-            />
-
-            <Section
-                background={'gray.50'}
-                marginX="auto"
-                paddingY={{base: 8, md: 16}}
-                paddingX={{base: 4, md: 8}}
-                borderRadius="base"
-                width={{base: '100vw', md: 'inherit'}}
-                position={{base: 'relative', md: 'inherit'}}
-                left={{base: '50%', md: 'inherit'}}
-                right={{base: '50%', md: 'inherit'}}
-                marginLeft={{base: '-50vw', md: 'auto'}}
-                marginRight={{base: '-50vw', md: 'auto'}}
-            >
-                <SimpleGrid
-                    columns={{base: 1, md: 1, lg: 3}}
-                    spacingX={{base: 1, md: 4}}
-                    spacingY={{base: 4, md: 14}}
-                >
-                    {heroFeatures.map((feature, index) => {
-                        const featureMessage = feature.message
-                        return (
-                            <Link key={index} target="_blank" href={feature.href}>
-                                <Box
-                                    background={'white'}
-                                    boxShadow="0px 2px 2px rgba(0, 0, 0, 0.1)"
-                                    borderRadius={'4px'}
-                                >
-                                    <HStack>
-                                        <Flex
-                                            paddingLeft={6}
-                                            height={24}
-                                            align={'center'}
-                                            justify={'center'}
-                                        >
-                                            {feature.icon}
-                                        </Flex>
-                                        <Text fontWeight="700">
-                                            {intl.formatMessage(featureMessage.title)}
-                                        </Text>
-                                    </HStack>
-                                </Box>
-                            </Link>
-                        )
-                    })}
-                </SimpleGrid>
-            </Section>
-
-            {productSearchResult && (
-                <Section
-                    padding={4}
-                    paddingTop={16}
-                    title={intl.formatMessage({
-                        defaultMessage: 'Shop Products',
-                        id: 'home.heading.shop_products'
-                    })}
-                    subtitle={intl.formatMessage(
-                        {
-                            defaultMessage:
-                                'This section contains content from the catalog. {docLink} on how to replace it.',
-                            id: 'home.description.shop_products',
-                            description:
-                                '{docLink} is a html button that links the user to https://sfdc.co/business-manager-manage-catalogs'
-                        },
-                        {
-                            docLink: (
-                                <Link
-                                    target="_blank"
-                                    href={'https://sfdc.co/business-manager-manage-catalogs'}
-                                    textDecoration={'none'}
-                                    position={'relative'}
-                                    _after={{
-                                        position: 'absolute',
-                                        content: `""`,
-                                        height: '2px',
-                                        bottom: '-2px',
-                                        margin: '0 auto',
-                                        left: 0,
-                                        right: 0,
-                                        background: 'gray.700'
-                                    }}
-                                    _hover={{textDecoration: 'none'}}
-                                >
-                                    {intl.formatMessage({
-                                        defaultMessage: 'Read docs',
-                                        id: 'home.link.read_docs'
-                                    })}
-                                </Link>
-                            )
-                        }
-                    )}
-                >
-                    <Stack pt={8} spacing={16}>
-                        <ProductScroller
-                            products={productSearchResult?.hits}
-                            isLoading={isLoading}
-                        />
-                    </Stack>
-                </Section>
-            )}
+            {renderPage(homeJson)}
 
             <Section
                 padding={4}

@@ -8,6 +8,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Box, Heading, Stack, Text, Container} from '@chakra-ui/react'
+import SearchResults from '../searchResults'
 
 /**
  * Section component used on content pages like home page.
@@ -41,6 +42,7 @@ const Section = ({title, subtitle, actions, maxWidth, children, ...props}) => {
 }
 
 Section.displayName = 'Section'
+Section.isDesignComponent = true
 
 Section.propTypes = {
     /**
