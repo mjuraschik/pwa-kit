@@ -1,5 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useLocation} from 'react-router-dom'
+import {useDesignMode} from '../context'
+import {usePageDesignerMode} from '../context/usePageDesignerMode'
 import {useParentConnection} from './parentConnection'
 
 const DROP_REGION_CLASS = 'pd-drop-region'
@@ -9,12 +11,10 @@ const DROP_INDICATOR_BELOW = 'pd-drop-indicator--below'
 
 export const smartComponent = (Component: React.ComponentType) => {
     const Wrapped = (props: any) => {
+        const designModeContext = useDesignMode()
+        const isDesign = designModeContext?.isDesignMode
+        const {isDesignMode, isPreviewMode, isAnyModeActive} = usePageDesignerMode()
         const location = useLocation()
-        const isDesignMode = useMemo(() => {
-            const query = new URLSearchParams(location.search)
-            return query.get('design') === 'true'
-        }, [location.search])
-
         const ref = useRef<HTMLDivElement>(null)
 
         const componentId =
@@ -59,6 +59,9 @@ export const smartComponent = (Component: React.ComponentType) => {
         const {sendMessage} = useParentConnection(isDesignMode, handleMessage)
 
         const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+            if (!isDesignMode) return
+
+            // Prevent bubbling if needed
             e.preventDefault()
             e.stopPropagation()
 
