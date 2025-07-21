@@ -239,6 +239,9 @@ export const render = async (req, res, next) => {
         // Here, we use Express's convention to invoke error middleware.
         // Note, we don't have an error handling middleware yet! This is calling the
         // default error handling middleware provided by Express
+        if (res.__performanceTimer) {
+            res.__performanceTimer.cleanup()
+        }
         return next(e)
     }
 
