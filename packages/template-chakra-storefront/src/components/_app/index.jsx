@@ -20,6 +20,8 @@ import {
 import logger from '../../../src/utils/logger-instance'
 import {useAppOrigin} from '../../../src/hooks/use-app-origin'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
+import {DesignModeProvider} from '@salesforce/page-designer-react-sdk/src/context/DesignModeContext'
+import {initDesignerRuntime} from '@salesforce/page-designer-react-sdk/src/core/registry'
 
 // Chakra
 import {Box, Center, Fade, Spinner, useDisclosure, useStyleConfig} from '@chakra-ui/react'
@@ -62,6 +64,7 @@ import {getTargetLocale, fetchTranslations} from '../../../src/utils/locale'
 import Seo from '../../../src/components/seo'
 import {Helmet} from 'react-helmet'
 import {getPathWithLocale} from '../../../src/utils/url'
+import {registerDesignComponents} from '../../page-designer/config/register-components'
 
 const PlaceholderComponent = () => (
     <Center p="2">
@@ -107,6 +110,8 @@ const ListMenuContentWithData = withCommerceSdkReact(
 const App = (props) => {
     const {children} = props
     const appConfig = getConfig()
+
+    initDesignerRuntime(registerDesignComponents);
 
     const {data: categoriesTree} = useCategory({
         parameters: {
@@ -311,6 +316,7 @@ const App = (props) => {
                     defaultLocale={appConfig.defaultAppLocale}
                 >
                     <CurrencyProvider currency={currency}>
+                        <DesignModeProvider>
                         <Seo>
                             <meta name="theme-color" content={colors.blue['600']} />
                             <meta
@@ -435,6 +441,7 @@ const App = (props) => {
                                 <DntNotification {...dntNotification} />
                             </AddToCartModalProvider>
                         </Box>
+                        </DesignModeProvider>
                     </CurrencyProvider>
                 </IntlProvider>
             </StorefrontPreview>

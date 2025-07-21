@@ -1,3 +1,2 @@
-export * from './DesignModeContext';
-export * from './useDesignMode';
-
+export * from './DesignModeContext'
+export * from './useDesignMode'

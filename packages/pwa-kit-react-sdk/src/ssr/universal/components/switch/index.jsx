@@ -8,12 +8,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {Route, Switch as RouterSwitch} from 'react-router-dom'
-import {UIDFork, UIDReset} from 'react-uid'
 import AppErrorBoundary from '../app-error-boundary'
 import {UIDReset, UIDFork} from 'react-uid'
 import {RoutesProvider} from '../../contexts'
 import {useRoutes} from '../../hooks'
-import {DesignModeProvider} from '@salesforce/page-designer-react-sdk/dist'
+import {DesignModeProvider} from '@salesforce/page-designer-react-sdk/src/context/DesignModeContext'
 
 /**
  * The Switch component packages up the bits of rendering that are shared between
@@ -31,11 +30,9 @@ const Switch = (props) => {
             <AppErrorBoundary error={error}>
                 {!error && (
                     <RoutesProvider routes={routes}>
-                        <DesignModeProvider>
                         <App preloadedProps={appState.appProps}>
                             <RoutesConsumer appState={appState} />
                         </App>
-                        </DesignModeProvider>
                     </RoutesProvider>
                 )}
             </AppErrorBoundary>
@@ -55,18 +52,20 @@ const RoutesConsumer = ({appState}) => {
     const {routes} = useRoutes()
 
     return (
-        <RouterSwitch>
-            {routes.map((route, i) => {
-                const {component: Component, ...routeProps} = route
-                return (
-                    <Route key={i} {...routeProps}>
-                        <UIDFork>
-                            <Component preloadedProps={appState.pageProps} />
-                        </UIDFork>
-                    </Route>
-                )
-            })}
-        </RouterSwitch>
+        <DesignModeProvider>
+            <RouterSwitch>
+                {routes.map((route, i) => {
+                    const {component: Component, ...routeProps} = route
+                    return (
+                        <Route key={i} {...routeProps}>
+                            <UIDFork>
+                                <Component preloadedProps={appState.pageProps} />
+                            </UIDFork>
+                        </Route>
+                    )
+                })}
+            </RouterSwitch>
+        </DesignModeProvider>
     )
 }
 

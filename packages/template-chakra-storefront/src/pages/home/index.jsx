@@ -36,10 +36,6 @@ import useEinstein from '../../hooks/use-einstein'
 // Constants
 import {useServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
-import HeroSmart from '../../components/heroSmart'
-import SearchResults from '../../components/searchResults'
-import Seo from '../../components/seo'
-import Tile from '../../components/tile'
 import {renderPage} from '../../utils/page-utils'
 
 

@@ -39,6 +39,7 @@
     "@loadable/server": "^5.15.3",
     "@loadable/webpack-plugin": "^5.15.2",
     "@salesforce/pwa-kit-runtime": "4.0.0-extensibility-preview.5",
+    "@salesforce/page-designer-react-sdk": "1.0.0",
     "cross-env": "^5.2.1",
     "hoist-non-react-statics": "^3.3.2",
     "prop-types": "^15.8.1",
@@ -77,8 +78,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
-    "react-router-dom": "^5.3.4",
-    "@salesforce/page-designer-react-sdk": "1.0.0"
+    "react-router-dom": "^5.3.4"
   },
   "engines": {
     "node": "^16.11.0 || ^18.0.0 || ^20.0.0 || ^22.0.0",

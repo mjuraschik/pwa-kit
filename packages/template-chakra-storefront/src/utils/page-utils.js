@@ -1,23 +1,11 @@
 import React from 'react'
-import Section from '../components/section'
-import HeroSmart from '../components/heroSmart'
-import Seo from '../components/seo'
-import {SimpleGrid} from '@chakra-ui/react'
-import Tile from '../components/tile'
-import SearchResults from '../components/searchResults'
+import {PD} from '@salesforce/page-designer-react-sdk/core/registry'
 
-const componentMap = {
-    section: Section,
-    hero: HeroSmart,
-    seo: Seo,
-    simpleGrid: SimpleGrid,
-    tile: Tile,
-    searchResults: SearchResults
-}
+const componentMap = PD.getRegistry()
 
 
 const renderComponent = (componentJson) => {
-    const {type_id, content_attributes, regions, components, ...rest} = componentJson
+    const {type_id, content_attributes, regions, components, id, ...rest} = componentJson
     const Component = componentMap[type_id]
     if (!Component) {
         return null
@@ -35,7 +23,7 @@ const renderComponent = (componentJson) => {
     }
 
     return (
-        <Component key={type_id + Math.random()} {...(content_attributes?.data || {})}>
+        <Component key={id} componentId={id} {...(content_attributes?.data || {})}>
             {children}
         </Component>
     )
@@ -44,7 +32,7 @@ const renderComponent = (componentJson) => {
 export const renderPage = (page) => {
     return page.regions.map((region, regionIdx) =>
         region.components
-            ? region.components.map((component, compIdx) => renderComponent(component, componentMap))
+            ? region.components.map((component, compIdx) => renderComponent(component))
             : null
     )
 }

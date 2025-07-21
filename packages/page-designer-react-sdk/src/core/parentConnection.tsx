@@ -17,7 +17,7 @@ export function useParentConnection(
 
     useEffect(() => {
         if (!active || !isInIframe) return
-        sendMessage('storefront-ready')
+        sendMessage('live-loaded')
     }, [active, isInIframe, sendMessage])
 
     useEffect(() => {

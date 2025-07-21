@@ -1,4 +1,6 @@
 import React from 'react'
+import {ComponentConfig} from '../context'
+import {smartComponent} from './smartComponents'
 
 export type InputType =
     | 'text'
@@ -50,29 +52,7 @@ export interface ComponentInput {
     helperText?: string
 }
 
-export interface ComponentConfig {
-    /** Component name (e.g. "Breadcrumbs") */
-    name: string
-    /** Optional inputs/props accepted by the component */
-    inputs?: ComponentInput[]
-    /** Whether the component can have children (e.g. slot content) */
-    canHaveChildren?: boolean
-    /** Optional category grouping (e.g. "Navigation", "Media") */
-    category?: string
-    /** Optional icon name or URL */
-    icon?: string
-    /** Optional unique identifier for internal use */
-    id?: string
-    /** Optional description of the component */
-    description?: string
-    /** Optional preview image URL shown in the visual editor */
-    image_url?: string
-    /** Optional list of grouped attribute definitions (e.g. for business logic or CMS integration) */
-    attribute_definition_groups?: AttributeDefinitionGroup[]
-}
-
 type RegisteredComponent = {
-    config: ComponentConfig
     component: React.ComponentType<any>
 }
 
@@ -91,36 +71,35 @@ function isDesignModeActive() {
     }
 }
 
-function broadcastComponentRegister(config: ComponentConfig) {
+function broadcastComponentRegister(name: string) {
     window.postMessage(
         {
             type: 'PD_COMPONENT_REGISTER',
-            payload: config
+            payload: name
         },
         '*'
     )
 }
 
 export const PD = {
-    registerComponent(config: ComponentConfig, component: React.ComponentType<any>) {
-        if (registry.has(config.name)) {
-            console.warn(`[PD] Component "${config.name}" already registered. Skipping.`)
+    registerComponent(name: string, component: React.ComponentType<any>) {
+        if (registry.has(name)) {
+            console.warn(`[PD] Component "${name}" already registered. Skipping.`)
             return
         }
 
-        registry.set(config.name, {
-            config,
-            component
+        registry.set(name, {
+            component: smartComponent(component)
         })
 
-        broadcastComponentRegister(config)
-        console.log(`[PD] Registered component: ${config.name}`)
+        broadcastComponentRegister(name)
+        console.log(`[PD] Registered component: ${name}`)
     },
 
     getRegistry(): Record<string, React.ComponentType<any>> {
         const result: Record<string, React.ComponentType<any>> = {}
-        for (const {config, component} of registry.values()) {
-            result[config.name] = component
+        for (const [key, value] of registry.entries()) {
+            result[key] = value.component
         }
         return result
     },
@@ -128,10 +107,6 @@ export const PD = {
     getComponentByName(name: string): RegisteredComponent | undefined {
         return registry.get(name)
     },
-
-    getComponentConfigList(): ComponentConfig[] {
-        return Array.from(registry.values()).map((r) => r.config)
-    }
 }
 
 // Respond to PD_REQUEST_COMPONENTS with all registered component configs
@@ -142,10 +117,14 @@ export function setupComponentRegistryMessaging() {
             window.parent.postMessage(
                 {
                     type: 'PD_RESPONSE_COMPONENTS',
-                    payload: Array.from(registry.values()).map((r) => r.config)
+                    payload: registry.keys()
                 },
                 '*'
             )
         }
     })
+}
+
+export function initDesignerRuntime(registerFn: any) {
+    registerFn?.()
 }

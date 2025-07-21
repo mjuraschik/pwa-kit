@@ -7,17 +7,18 @@
 
 'use strict'
 
-import crypto from 'crypto'
-import express from 'express'
-import helmet from 'helmet'
-import {createRemoteJWKSet as joseCreateRemoteJWKSet, jwtVerify, decodeJwt} from 'jose'
-import path from 'path'
+import {getAppOrigin} from '@salesforce/pwa-kit-react-sdk/utils/url'
 import {getRuntime} from '@salesforce/pwa-kit-runtime/ssr/server/express'
 import {defaultPwaKitSecurityHeaders} from '@salesforce/pwa-kit-runtime/utils/middleware'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
-import {getAppOrigin} from '@salesforce/pwa-kit-react-sdk/utils/url'
-import {pageTypes} from './metadata/pageTypes'
-import {componentTypes} from './metadata/componentTypes'
+import crypto from 'crypto'
+import express from 'express'
+import helmet from 'helmet'
+import {decodeJwt, createRemoteJWKSet as joseCreateRemoteJWKSet, jwtVerify} from 'jose'
+import path from 'path'
+import * as aspectTypes from '../metadata/aspectTypes'
+import * as componentTypes from '../metadata/componentTypes'
+import * as pageTypes from '../metadata/pageTypes'
 
 const config = getConfig()
 const options = {
@@ -326,11 +327,15 @@ const {handler} = runtime.createHandler(options, (app) => {
     })
 
     app.get('/_internal/page-designer/pageTypes', (req, res) => {
-        res.json(pageTypes)
+        res.json(pageTypes.default)
     })
 
     app.get('/_internal/page-designer/componentTypes', (req, res) => {
-        res.json(componentTypes)
+        res.json(componentTypes.default)
+    })
+
+    app.get('/_internal/page-designer/aspectTypes', (req, res) => {
+        res.json(aspectTypes.default)
     })
 
     // Handles the passwordless login callback route. SLAS makes a POST request to this
