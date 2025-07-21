@@ -14,7 +14,17 @@ const logSpanData = (span, event = 'start', res = null) => {
     const spanContext = span.spanContext()
     const startTime = span.startTime
     const endTime = event === 'start' ? startTime : span.endTime
-    const duration = event === 'start' ? 0 : hrTimeToMilliseconds(span.duration)
+    const duration = event === 'start' ? 0 : span.duration
+
+    // Defensive: Only log if startTime and duration are valid
+    if (
+        !Array.isArray(startTime) ||
+        startTime.length !== 2 ||
+        (duration !== 0 && (!Array.isArray(duration) || duration.length !== 2))
+    ) {
+        // Optionally log a warning here
+        return
+    }
 
     // Create the span data object that matches the expected format
     const spanData = {
@@ -24,7 +34,7 @@ const logSpanData = (span, event = 'start', res = null) => {
         id: spanContext.spanId,
         kind: span.kind,
         timestamp: hrTimeToTimeStamp(startTime),
-        duration: duration,
+        duration: event === 'start' ? 0 : hrTimeToMilliseconds(duration),
         attributes: {
             'service.name': getServiceName(),
             ...span.attributes,

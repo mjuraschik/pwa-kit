@@ -21,6 +21,15 @@ import {isRemote} from '@salesforce/pwa-kit-runtime/utils/ssr-server'
 import {getLocationSearch} from './react-rendering'
 
 import {getAppConfig} from '../universal/compatibility'
+import PerformanceTimer from '../../utils/performance'
+import {initializeServerTracing, shutdownServerTracing} from './opentelemetry-server'
+
+beforeAll(() => {
+    initializeServerTracing()
+})
+afterAll(async () => {
+    await shutdownServerTracing()
+})
 
 const opts = (overrides = {}) => {
     const fixtures = path.join(__dirname, '..', '..', 'ssr', 'server', 'test_fixtures')
@@ -1062,6 +1071,25 @@ describe('Additional branch coverage for react-rendering', () => {
         app.get('/*', render)
         const res = await request(app).get('/unrecoverable-error/')
         expect(res.statusCode).toBe(500)
+    })
+
+    test('calls performance timer cleanup on unrecoverable error', async () => {
+        // Create a test route/component that throws during SSR
+        const ErrorComponent = () => {
+            throw new Error('Test SSR error')
+        }
+        const app = RemoteServerFactory._createApp(opts())
+        // Inject a custom route via res.locals for this test
+        app.get('/error', (req, res, next) => {
+            res.locals = res.locals || {}
+            res.locals.routes = [{path: '/error', component: {getComponent: () => ErrorComponent}}]
+            render(req, res, next)
+        })
+        const cleanupSpy = jest.spyOn(PerformanceTimer.prototype, 'cleanup')
+        await request(app)
+            .get('/error')
+            .catch(() => {})
+        expect(cleanupSpy).toHaveBeenCalled()
     })
 })
 
