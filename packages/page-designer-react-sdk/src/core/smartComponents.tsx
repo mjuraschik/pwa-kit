@@ -18,31 +18,43 @@ export const smartComponent = (Component: React.ComponentType) => {
         const ref = useRef<HTMLDivElement>(null)
 
         const componentId =
-            props.componentId || `${Component.displayName || Component.name || 'Component'}`
+            props.componentid || `${Component.displayName || Component.name || 'Component'}`
 
         const [dragActive, setDragActive] = useState(false)
         const [dropPosition, setDropPosition] = useState<'above' | 'below' | null>(null)
         const [liveProps, setLiveProps] = useState(props)
+        const [isMouseOver, setIsMouseOver] = useState(false)
 
-        const handleMessage = useCallback((event: MessageEvent) => {
-            const {mType, mBody} = event.data || {}
+        const handleMessage = useCallback(
+            (event: MessageEvent) => {
+                let data
+                try {
+                    data = JSON.parse(event.data)
+                } catch (error) {
+                    console.error('Failed to parse message data:', error)
+                    return
+                }
 
-            switch (mType) {
-                case 'builder-drag-state':
-                    setDragActive(!!mBody?.active)
-                    break
-                case 'builder-component-props-updated':
-                    if (mBody?.componentId === componentId) {
-                        setLiveProps((prev: any) => ({
-                            ...prev,
-                            ...mBody.props
-                        }))
-                    }
-                    break
-                default:
-                    break
-            }
-        }, [componentId])
+                const {mType, mBody} = data || {}
+
+                switch (mType) {
+                    case 'builder-drag-state':
+                        setDragActive(!!mBody?.active)
+                        break
+                    case 'builder-component-props-updated':
+                        if (mBody?.componentId === componentId) {
+                            setLiveProps((prev: any) => ({
+                                ...prev,
+                                ...mBody.props
+                            }))
+                        }
+                        break
+                    default:
+                        break
+                }
+            },
+            [componentId]
+        )
 
         const {sendMessage} = useParentConnection(isDesignMode, handleMessage)
 
@@ -50,10 +62,14 @@ export const smartComponent = (Component: React.ComponentType) => {
             e.preventDefault()
             e.stopPropagation()
 
-            document.querySelector('.pd-smart-component.pd-selected')?.classList.remove('pd-selected')
+            document
+                .querySelector('.pd-smart-component.pd-selected')
+                ?.classList.remove('pd-selected')
             e.currentTarget.classList.add('pd-selected')
 
-            sendMessage('builder-component-selected', {id: `${Component.displayName}|${componentId}`})
+            sendMessage('builder-component-selected', {
+                id: `${Component.displayName}|${componentId}`
+            })
         }
 
         const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -63,12 +79,14 @@ export const smartComponent = (Component: React.ComponentType) => {
             setDropPosition(y < rect.height / 2 ? 'above' : 'below')
         }
 
-        const handleMouseLeave = () => {
-            setDropPosition(null)
+        const handleMouseEnter = () => {
+            setIsMouseOver(true)
+            !dragActive && sendMessage('builder-component-highlighted', componentId)
         }
 
-        const handleHover = () => {
-            sendMessage('builder-component-highlighted', componentId)
+        const handleMouseLeave = () => {
+            setIsMouseOver(false)
+            setDropPosition(null)
         }
 
         useEffect(() => {
@@ -85,30 +103,32 @@ export const smartComponent = (Component: React.ComponentType) => {
             return () => document.removeEventListener('click', handleClickOutside)
         }, [isDesignMode])
 
-        const dropLineAbove = dragActive && dropPosition === 'above'
-        const dropLineBelow = dragActive && dropPosition === 'below'
+        const dropLineAbove = dragActive && isMouseOver && dropPosition === 'above'
+        const dropLineBelow = dragActive && isMouseOver && dropPosition === 'below'
 
         const classNames = [
             'pd-smart-component',
-            DROP_REGION_CLASS,
-            dragActive ? DROP_ACTIVE_CLASS : '',
-            dropLineAbove ? DROP_INDICATOR_ABOVE : '',
-            dropLineBelow ? DROP_INDICATOR_BELOW : ''
-        ].filter(Boolean).join(' ')
+            props.canAcceptChildren ? DROP_REGION_CLASS : '',
+            dragActive && isMouseOver && props.canAcceptChildren ? DROP_ACTIVE_CLASS : '',
+            dropLineAbove && props.canAcceptChildren ? DROP_INDICATOR_ABOVE : '',
+            dropLineBelow && props.canAcceptChildren ? DROP_INDICATOR_BELOW : ''
+        ]
+            .filter(Boolean)
+            .join(' ')
 
         return (
             <div
                 ref={ref}
                 className={classNames}
                 onClick={handleClick}
-                onMouseOver={handleHover}
+                onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 onMouseMove={handleMouseMove}
                 data-component-id={componentId}
             >
                 {dropLineAbove && <div className="pd-drop-line pd-drop-line--above" />}
-                {dropLineBelow && <div className="pd-drop-line pd-drop-line--below" />}
                 <Component {...liveProps} />
+                {dropLineBelow && <div className="pd-drop-line pd-drop-line--below" />}
             </div>
         )
     }

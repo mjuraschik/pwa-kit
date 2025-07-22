@@ -31,7 +31,7 @@
                         "data": {
                             "title": "The React PWA Starter Store for Page Designer",
                             "img": {
-                                "src": "img/hero.png",
+                                "path": "/mobify/bundle/development/static/img/hero.png",
                                 "alt": "npx pwa-kit-create-app"
                             },
                             "button": {
@@ -93,6 +93,7 @@
                     },
                     "has_visibility_rules": false,
                     "name": "Section Component",
+                    "type_id": "section",
                     "regions": [
                         {
                             "components": [
@@ -171,14 +172,112 @@
                             "has_visibility_rules": false,
                             "id": "column",
                             "type": "component"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "components": [
+                {
+                    "content_attributes": {
+                        "data": {
+                            "marginX": "auto",
+                            "paddingY": {
+                                "base": 8,
+                                "md": 16
+                            },
+                            "paddingX": {
+                                "base": 4,
+                                "md": 8
+                            },
+                            "borderRadius": "base",
+                            "width": {
+                                "base": "100vw",
+                                "md": "inherit"
+                            },
+                            "position": {
+                                "base": "relative",
+                                "md": "inherit"
+                            },
+                            "left": {
+                                "base": "50%",
+                                "md": "inherit"
+                            },
+                            "right": {
+                                "base": "50%",
+                                "md": "inherit"
+                            },
+                            "marginLeft": {
+                                "base": "-50vw",
+                                "md": "auto"
+                            },
+                            "marginRight": {
+                                "base": "-50vw",
+                                "md": "auto"
+                            }
                         },
+                        "localized": true
+                    },
+                    "has_visibility_rules": false,
+                    "name": "Section Component",
+                    "type_id": "section",
+                    "regions": []
+                }
+            ]
+        },
+        {
+            "components": [
+                {
+                    "content_attributes": {
+                        "data": {
+                            "marginX": "auto",
+                            "paddingY": {
+                                "base": 8,
+                                "md": 16
+                            },
+                            "paddingX": {
+                                "base": 4,
+                                "md": 8
+                            },
+                            "borderRadius": "base",
+                            "width": {
+                                "base": "100vw",
+                                "md": "inherit"
+                            },
+                            "position": {
+                                "base": "relative",
+                                "md": "inherit"
+                            },
+                            "left": {
+                                "base": "50%",
+                                "md": "inherit"
+                            },
+                            "right": {
+                                "base": "50%",
+                                "md": "inherit"
+                            },
+                            "marginLeft": {
+                                "base": "-50vw",
+                                "md": "auto"
+                            },
+                            "marginRight": {
+                                "base": "-50vw",
+                                "md": "auto"
+                            }
+                        },
+                        "localized": true
+                    },
+                    "has_visibility_rules": false,
+                    "name": "Section Component",
+                    "regions": [
                         {
                             "components": [
                                 {
                                     "content_attributes": {
                                         "localized": true,
                                         "data": {
-                                            "title": "Shop Productssss",
+                                            "title": "Shop Products",
                                             "subtitle": "This section contains content from the catalog. {docLink} on how to replace it."
                                         }
                                     },

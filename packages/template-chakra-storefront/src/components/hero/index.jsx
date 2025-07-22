@@ -10,7 +10,7 @@ import PropTypes from 'prop-types'
 import {Box, Flex, Heading, Stack, Image} from '@chakra-ui/react'
 
 const Hero = ({title, img, actions, ...props}) => {
-    const {src, alt} = img
+    const src = img
 
     return (
         <Box
@@ -52,7 +52,6 @@ const Hero = ({title, img, actions, ...props}) => {
                             width={'100%'}
                             height={'100%'}
                             src={src}
-                            alt={alt}
                         />
                     </Box>
                 </Flex>
@@ -67,10 +66,7 @@ Hero.propTypes = {
     /**
      * Hero component image
      */
-    img: PropTypes.shape({
-        src: PropTypes.string,
-        alt: PropTypes.string
-    }),
+    img: PropTypes.string,
     /**
      * Hero component main title
      */

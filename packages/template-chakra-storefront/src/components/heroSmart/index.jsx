@@ -7,22 +7,17 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import {getStaticAssetUrl} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
 import {Box, Flex, Heading, Stack, Image, Button, Link} from '@chakra-ui/react'
 import Hero from '../hero'
-import SearchResults from '../searchResults'
 
 const SmartHero = ({title, img, ...props}) => {
-
+    if (typeof img === 'string') {
+        img = JSON.parse(img)
+    }
     return (
         <Hero
             title={title}
-            img={{
-                src: getStaticAssetUrl(img.src, {
-                    appExtensionPackageName: '@salesforce/template-chakra-storefront'
-                }),
-                alt: img.alt
-            }}
+            img={img.path}
             actions={
                 <Stack spacing={{base: 4, sm: 6}} direction={{base: 'column', sm: 'row'}}>
                     <Button
@@ -49,7 +44,7 @@ SmartHero.propTypes = {
      * Hero component image
      */
     img: PropTypes.shape({
-        src: PropTypes.string,
+        path: PropTypes.string,
         alt: PropTypes.string
     }),
     /**
