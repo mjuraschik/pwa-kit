@@ -1,3 +1,6 @@
+## v7.1.0-dev (July 22, 2025)
+
+
 ## v7.0.0 (July 22, 2025)
 
 - Improved the layout of product tiles in product scroll and product list [#2446](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2446)
