@@ -41,6 +41,8 @@ const Section = ({title, subtitle, actions, maxWidth, children, ...props}) => {
 }
 
 Section.displayName = 'Section'
+Section.isDesignComponent = true
+Section.canAcceptChildren = true
 
 Section.propTypes = {
     /**

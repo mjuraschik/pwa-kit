@@ -23,6 +23,7 @@ const monorepoPackageNames = monorepoPackages.map((pkg) => pkg.name)
 
 const INDEPENDENT_PACKAGES = [
     '@salesforce/commerce-sdk-react',
+    '@salesforce/page-designer-sdk-react',
     '@salesforce/template-chakra-storefront',
     '@salesforce/extension-chakra-store-locator',
     '@salesforce/extension-starter',

@@ -7,15 +7,18 @@
 
 'use strict'
 
-import crypto from 'crypto'
-import express from 'express'
-import helmet from 'helmet'
-import {createRemoteJWKSet as joseCreateRemoteJWKSet, jwtVerify, decodeJwt} from 'jose'
-import path from 'path'
+import {getAppOrigin} from '@salesforce/pwa-kit-react-sdk/utils/url'
 import {getRuntime} from '@salesforce/pwa-kit-runtime/ssr/server/express'
 import {defaultPwaKitSecurityHeaders} from '@salesforce/pwa-kit-runtime/utils/middleware'
 import {getConfig} from '@salesforce/pwa-kit-runtime/utils/ssr-config'
-import {getAppOrigin} from '@salesforce/pwa-kit-react-sdk/utils/url'
+import crypto from 'crypto'
+import express from 'express'
+import helmet from 'helmet'
+import {decodeJwt, createRemoteJWKSet as joseCreateRemoteJWKSet, jwtVerify} from 'jose'
+import path from 'path'
+import * as aspectTypes from '../metadata/aspectTypes'
+import * as componentTypes from '../metadata/componentTypes'
+import * as pageTypes from '../metadata/pageTypes'
 
 const config = getConfig()
 const options = {
@@ -29,7 +32,7 @@ const options = {
     mobify: config.mobify,
 
     // The port that the local dev server listens on
-    port: 3000,
+    port: 5123,
 
     // The protocol on which the development Express app listens.
     // Note that http://localhost is treated as a secure context for development,
@@ -294,7 +297,10 @@ const {handler} = runtime.createHandler(options, (app) => {
                 directives: {
                     'img-src': [
                         // Default source for product images - replace with your CDN
-                        '*.commercecloud.salesforce.com'
+                        '*.commercecloud.salesforce.com',
+                        // Allow localhost for development
+                        'localhost:*',
+                        '127.0.0.1:*'
                     ],
                     'script-src': [
                         // Used by the service worker in /worker/main.js
@@ -321,6 +327,18 @@ const {handler} = runtime.createHandler(options, (app) => {
 
     app.get('/:shortCode/:tenantId/oauth2/jwks', (req, res) => {
         jwksCaching(req, res, {shortCode: req.params.shortCode, tenantId: req.params.tenantId})
+    })
+
+    app.get('/_internal/page-designer/pageTypes', (req, res) => {
+        res.json(pageTypes.default)
+    })
+
+    app.get('/_internal/page-designer/componentTypes', (req, res) => {
+        res.json(componentTypes.default)
+    })
+
+    app.get('/_internal/page-designer/aspectTypes', (req, res) => {
+        res.json(aspectTypes.default)
     })
 
     // Handles the passwordless login callback route. SLAS makes a POST request to this

@@ -4,13 +4,15 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import React from 'react'
+
 import PropTypes from 'prop-types'
-import {Switch as RouterSwitch, Route} from 'react-router-dom'
+import React from 'react'
+import {Route, Switch as RouterSwitch} from 'react-router-dom'
 import AppErrorBoundary from '../app-error-boundary'
 import {UIDReset, UIDFork} from 'react-uid'
 import {RoutesProvider} from '../../contexts'
 import {useRoutes} from '../../hooks'
+import {DesignModeProvider} from '@salesforce/page-designer-react-sdk/src/context/DesignModeContext'
 
 /**
  * The Switch component packages up the bits of rendering that are shared between
@@ -50,18 +52,20 @@ const RoutesConsumer = ({appState}) => {
     const {routes} = useRoutes()
 
     return (
-        <RouterSwitch>
-            {routes.map((route, i) => {
-                const {component: Component, ...routeProps} = route
-                return (
-                    <Route key={i} {...routeProps}>
-                        <UIDFork>
-                            <Component preloadedProps={appState.pageProps} />
-                        </UIDFork>
-                    </Route>
-                )
-            })}
-        </RouterSwitch>
+        <DesignModeProvider>
+            <RouterSwitch>
+                {routes.map((route, i) => {
+                    const {component: Component, ...routeProps} = route
+                    return (
+                        <Route key={i} {...routeProps}>
+                            <UIDFork>
+                                <Component preloadedProps={appState.pageProps} />
+                            </UIDFork>
+                        </Route>
+                    )
+                })}
+            </RouterSwitch>
+        </DesignModeProvider>
     )
 }
 

@@ -1,0 +1,17 @@
+export const category = {
+    "name": "Product list page",
+    "description": "A product list page.",
+    "attribute_definitions": [
+        {
+            "id": "category",
+            "name": "Category",
+            "description": "The category to show the product list page for.",
+            "type": "category",
+            "required": true
+        }
+    ],
+    "supported_object_types": [
+        "category"
+    ],
+    "id": "plp"
+}
