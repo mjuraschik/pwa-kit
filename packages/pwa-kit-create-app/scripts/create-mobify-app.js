@@ -425,7 +425,7 @@ const runGenerator = (context, {initGit, outputDir, templateVersion, verbose}) =
 
         // Clean up
         sh.rm('-rf', tmp)
-        
+
         // Install dependencies for the newly minted project.
         npmInstall(outputDir, {verbose})
     }
