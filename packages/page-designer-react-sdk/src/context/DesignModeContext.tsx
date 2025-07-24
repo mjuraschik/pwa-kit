@@ -1,7 +1,6 @@
 import React, {createContext, useEffect, useMemo, useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {PD, setupComponentRegistryMessaging} from '../core/registry'
-import {DESIGN_MODE_CSS} from './design-mode'
 
 export interface ComponentConfig {
     id: string
@@ -45,11 +44,6 @@ export const DesignModeProvider = ({children, componentConfigs = []}: DesignMode
 
     useEffect(() => {
         if (!isDesignMode) return
-
-        const styleEl = document.createElement('style')
-        styleEl.setAttribute('data-pd-style', 'true')
-        styleEl.textContent = DESIGN_MODE_CSS
-        document.head.appendChild(styleEl)
 
         setupComponentRegistryMessaging()
 
