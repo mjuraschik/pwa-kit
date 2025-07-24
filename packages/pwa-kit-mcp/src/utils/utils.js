@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import fs from 'fs/promises'
+import fs from 'fs'
+import fsPromises from 'fs/promises'
 import path from 'path'
 import {spawn} from 'cross-spawn'
 import {zodToJsonSchema} from 'zod-to-json-schema'
@@ -95,6 +96,32 @@ export const getCreateAppCommand = () => {
               `${process.env.WORKSPACE_FOLDER_PATHS}/packages/pwa-kit-create-app/scripts/create-mobify-app.js`
           )
         : `@salesforce/pwa-kit-create-app@${CREATE_APP_VERSION}`
+}
+
+/**
+ * Runs an NPX command and captures its output.
+ *
+ * @returns {Promise<string>} - Resolves with the command output.
+ */
+export async function runNpxCommand(NPX_COMMAND, CREATE_APP_COMMAND, DISPLAY_PROGRAM_COMMAND) {
+    return new Promise((resolve, reject) => {
+        const tempDir = os.tmpdir()
+        const outputFilePath = path.join(tempDir, 'npx-output.json')
+        const errorFilePath = path.join(tempDir, 'npx-error.log')
+        const command = `${NPX_COMMAND} ${CREATE_APP_COMMAND} ${DISPLAY_PROGRAM_COMMAND} > ${outputFilePath} 2> ${errorFilePath}`
+
+        exec(command, (error) => {
+            if (error) {
+                reject(error)
+                return
+            }
+
+            fsPromises.promises
+                .readFile(outputFilePath, 'utf-8')
+                .then((data) => resolve(data))
+                .catch((err) => reject(err))
+        })
+    })
 }
 
 /**
