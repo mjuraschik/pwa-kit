@@ -16,38 +16,6 @@ const logSpanData = (span, event = 'start', res = null) => {
     const endTime = event === 'start' ? startTime : span.endTime
     const duration = event === 'start' ? 0 : span.duration
 
-    // Enhanced debugging for timing issues
-    logger.warn('span.start_time', {
-        namespace: 'opentelemetry',
-        additionalProperties: {
-            start_time: span.startTime,
-            start_time_type: typeof span.startTime,
-            start_time_is_array: Array.isArray(span.startTime),
-            start_time_length: Array.isArray(span.startTime) ? span.startTime.length : 'N/A',
-            span_name: span.name,
-            event: event,
-            otel_enabled: getOTELConfig().enabled
-        }
-    })
-    logger.warn('start time', {
-        namespace: 'opentelemetry',
-        additionalProperties: {
-            startTime,
-            startTime_type: typeof startTime,
-            startTime_is_array: Array.isArray(startTime),
-            startTime_length: Array.isArray(startTime) ? startTime.length : 'N/A'
-        }
-    })
-    logger.warn('end time', {
-        namespace: 'opentelemetry',
-        additionalProperties: {
-            endTime,
-            endTime_type: typeof endTime,
-            endTime_is_array: Array.isArray(endTime),
-            endTime_length: Array.isArray(endTime) ? endTime.length : 'N/A'
-        }
-    })
-
     // Defensive: Only log if startTime and duration are valid
     if (
         !Array.isArray(startTime) ||
@@ -139,7 +107,6 @@ export const createSpan = (name, options = {}) => {
         )
 
         // Set the new span as active
-        logger.warn('create span/logSpanData')
         logSpanData(span, 'start')
         return trace.setSpan(context.active(), span)
     } catch (error) {
@@ -208,7 +175,6 @@ export const createChildSpan = (name, attributes = {}) => {
             },
             parentSpan ? ctx : undefined
         )
-        logger.warn('create child span/logSpanData')
         logSpanData(span, 'start')
         return span
     } catch (error) {
@@ -237,7 +203,6 @@ export const endSpan = (span) => {
         span.end()
 
         // Log completion data
-        logger.warn('create end span/logSpanData')
         logSpanData(span, 'end')
     } catch (error) {
         logger.error('Error ending OpenTelemetry span', {
@@ -287,7 +252,6 @@ export const tracePerformance = async (name, fn, res = null) => {
     const ctx = trace.setSpan(context.active(), rootSpan)
 
     // Log start event
-    logger.warn('create tracePerformance /logSpanData')
     logSpanData(rootSpan, 'start', res)
 
     try {
@@ -307,7 +271,6 @@ export const tracePerformance = async (name, fn, res = null) => {
         rootSpan.end()
 
         // Log completion data
-        logger.warn('create tracePerformance /logSpanData')
         logSpanData(rootSpan, 'end', res)
 
         return result
@@ -315,7 +278,6 @@ export const tracePerformance = async (name, fn, res = null) => {
         rootSpan.end()
 
         // Log error completion
-        logger.warn('create tracePerformance /logSpanData')
         logSpanData(rootSpan, 'end', res)
 
         throw error
@@ -373,7 +335,6 @@ export const logPerformanceMetric = (name, duration, attributes = {}) => {
         span.end()
 
         // Log completion data
-        logger.warn('create logPerformanceMetric /logSpanData')
         logSpanData(span, 'end')
     } catch (error) {
         logger.error('Error logging performance metric', {

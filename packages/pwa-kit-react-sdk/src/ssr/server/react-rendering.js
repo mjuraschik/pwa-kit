@@ -131,11 +131,9 @@ export const render = async (req, res, next) => {
         process.env.SERVER_TIMING = 'true'
     }
 
-    if (!isServerTracingInitialized() && shouldTrackPerformance) {
+    // Initialize server tracing if needed
+    if (shouldTrackPerformance && !isServerTracingInitialized()) {
         initializeServerTracing()
-        console.warn(
-            '[OpenTelemetry] Server tracing is not initialized but should be. Tracing will be skipped.'
-        )
     }
 
     return tracePerformance(
@@ -143,14 +141,6 @@ export const render = async (req, res, next) => {
         async () => {
             res.__performanceTimer = new PerformanceTimer({enabled: shouldTrackPerformance})
             res.__performanceTimer.mark(PERFORMANCE_MARKS.total, 'start')
-            logger.warn('Performance mark: total start - SSR rendering pipeline begins', {
-                namespace: 'react-rendering',
-                additionalProperties: {
-                    mark: 'total',
-                    event: 'start',
-                    context: 'SSR render function entry point'
-                }
-            })
             const routeMatchingSpan = createChildSpan('Route Matching')
             const AppConfig = getAppConfig()
             const config = getConfig()
@@ -171,18 +161,6 @@ export const render = async (req, res, next) => {
 
             // Step 1 - Find the match.
             res.__performanceTimer.mark(PERFORMANCE_MARKS.routeMatching, 'start')
-            logger.warn(
-                'Performance mark: routeMatching start - Finding matching route for request path',
-                {
-                    namespace: 'react-rendering',
-                    additionalProperties: {
-                        mark: 'routeMatching',
-                        event: 'start',
-                        context: 'Route matching phase',
-                        pathname: req.path
-                    }
-                }
-            )
             let route
             let match
 
@@ -195,43 +173,13 @@ export const render = async (req, res, next) => {
                 return !!match
             })
             res.__performanceTimer.mark(PERFORMANCE_MARKS.routeMatching, 'end')
-            logger.warn('Performance mark: routeMatching end - Route matching completed', {
-                namespace: 'react-rendering',
-                additionalProperties: {
-                    mark: 'routeMatching',
-                    event: 'end',
-                    context: 'Route matching phase',
-                    matchedRoute: route?.path || 'no match'
-                }
-            })
             endSpan(routeMatchingSpan)
 
             // Step 2 - Get the component
             const componentLoadingSpan = createChildSpan('Component Loading')
             res.__performanceTimer.mark(PERFORMANCE_MARKS.loadComponent, 'start')
-            logger.warn(
-                'Performance mark: loadComponent start - Loading route component dynamically',
-                {
-                    namespace: 'react-rendering',
-                    additionalProperties: {
-                        mark: 'loadComponent',
-                        event: 'start',
-                        context: 'Component loading phase',
-                        routePath: route?.path
-                    }
-                }
-            )
             const component = await route.component.getComponent()
             res.__performanceTimer.mark(PERFORMANCE_MARKS.loadComponent, 'end')
-            logger.warn('Performance mark: loadComponent end - Component loading completed', {
-                namespace: 'react-rendering',
-                additionalProperties: {
-                    mark: 'loadComponent',
-                    event: 'end',
-                    context: 'Component loading phase',
-                    componentType: component?.name || 'unknown'
-                }
-            })
             endSpan(componentLoadingSpan)
 
             // Step 3 - Init the app state
@@ -255,18 +203,6 @@ export const render = async (req, res, next) => {
             } else {
                 const fetchStrategiesSpan = createChildSpan('Fetch Strategies')
                 res.__performanceTimer.mark(PERFORMANCE_MARKS.fetchStrategies, 'start')
-                logger.warn(
-                    'Performance mark: fetchStrategies start - Initializing app state and data fetching',
-                    {
-                        namespace: 'react-rendering',
-                        additionalProperties: {
-                            mark: 'fetchStrategies',
-                            event: 'start',
-                            context: 'Data fetching phase',
-                            componentType: component?.name || 'unknown'
-                        }
-                    }
-                )
                 const ret = await AppConfig.initAppState({
                     App: WrappedApp,
                     component,
@@ -283,35 +219,11 @@ export const render = async (req, res, next) => {
                 }
                 appStateError = ret.error
                 res.__performanceTimer.mark(PERFORMANCE_MARKS.fetchStrategies, 'end')
-                logger.warn(
-                    'Performance mark: fetchStrategies end - App state initialization completed',
-                    {
-                        namespace: 'react-rendering',
-                        additionalProperties: {
-                            mark: 'fetchStrategies',
-                            event: 'end',
-                            context: 'Data fetching phase',
-                            hasError: !!appStateError
-                        }
-                    }
-                )
                 endSpan(fetchStrategiesSpan)
             }
 
             const renderToStringSpan = createChildSpan('Render To String')
             res.__performanceTimer.mark(PERFORMANCE_MARKS.renderToString, 'start')
-            logger.warn(
-                'Performance mark: renderToString start - Converting React components to HTML string',
-                {
-                    namespace: 'react-rendering',
-                    additionalProperties: {
-                        mark: 'renderToString',
-                        event: 'start',
-                        context: 'React rendering phase',
-                        hasAppStateError: !!appStateError
-                    }
-                }
-            )
             appJSX = React.cloneElement(appJSX, {error: appStateError, appState})
 
             // Step 4 - Render the App
@@ -336,18 +248,6 @@ export const render = async (req, res, next) => {
             }
 
             res.__performanceTimer.mark(PERFORMANCE_MARKS.renderToString, 'end')
-            logger.warn(
-                'Performance mark: renderToString end - React to HTML conversion completed',
-                {
-                    namespace: 'react-rendering',
-                    additionalProperties: {
-                        mark: 'renderToString',
-                        event: 'end',
-                        context: 'React rendering phase',
-                        hasRenderError: !!renderResult?.error
-                    }
-                }
-            )
             endSpan(renderToStringSpan)
 
             // Step 5 - Determine what is going to happen, redirect, or send html with
@@ -357,26 +257,7 @@ export const render = async (req, res, next) => {
             const status = (error && error.status) || res.statusCode
 
             res.__performanceTimer.mark(PERFORMANCE_MARKS.renderToString, 'end')
-            logger.warn('Performance mark: renderToString end - Final render phase completed', {
-                namespace: 'react-rendering',
-                additionalProperties: {
-                    mark: 'renderToString',
-                    event: 'end',
-                    context: 'Final rendering phase',
-                    status: status
-                }
-            })
             res.__performanceTimer.mark(PERFORMANCE_MARKS.total, 'end')
-            logger.warn('Performance mark: total end - SSR rendering pipeline completed', {
-                namespace: 'react-rendering',
-                additionalProperties: {
-                    mark: 'total',
-                    event: 'end',
-                    context: 'SSR render function exit point',
-                    finalStatus: status,
-                    hasRedirect: !!redirectUrl
-                }
-            })
             res.__performanceTimer.log()
 
             if (includeServerTimingHeader) {
