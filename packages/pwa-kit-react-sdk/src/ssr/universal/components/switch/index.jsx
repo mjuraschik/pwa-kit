@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import React from 'react'
+
 import PropTypes from 'prop-types'
-import {Switch as RouterSwitch, Route} from 'react-router-dom'
+import React from 'react'
+import {Route, Switch as RouterSwitch} from 'react-router-dom'
 import AppErrorBoundary from '../app-error-boundary'
 import {UIDReset, UIDFork} from 'react-uid'
+import {PageDesignerProvider} from '@salesforce/page-designer-react-sdk/src/context'
 
 /**
  * The Switch component packages up the bits of rendering that are shared between
@@ -26,6 +28,7 @@ const Switch = (props) => {
             <AppErrorBoundary error={error}>
                 {!error && (
                     <App preloadedProps={appState.appProps}>
+                        <PageDesignerProvider>
                         <RouterSwitch>
                             {routes.map((route, i) => {
                                 const {component: Component, ...routeProps} = route
@@ -38,6 +41,7 @@ const Switch = (props) => {
                                 )
                             })}
                         </RouterSwitch>
+                        </PageDesignerProvider>
                     </App>
                 )}
             </AppErrorBoundary>

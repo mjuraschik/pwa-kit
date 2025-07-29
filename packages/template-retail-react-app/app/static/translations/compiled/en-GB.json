@@ -1848,15 +1848,7 @@
   "home.description.shop_products": [
     {
       "type": 0,
-      "value": "This section contains content from the catalog. "
-    },
-    {
-      "type": 1,
-      "value": "docLink"
-    },
-    {
-      "type": 0,
-      "value": " on how to replace it."
+      "value": "Shop Products"
     }
   ],
   "home.features.description.cart_checkout": [
@@ -1943,12 +1935,6 @@
       "value": "We're here to help"
     }
   ],
-  "home.heading.shop_products": [
-    {
-      "type": 0,
-      "value": "Shop Products"
-    }
-  ],
   "home.hero_features.link.design_kit": [
     {
       "type": 0,
@@ -1973,22 +1959,10 @@
       "value": "Contact Us"
     }
   ],
-  "home.link.get_started": [
-    {
-      "type": 0,
-      "value": "Get started"
-    }
-  ],
   "home.link.read_docs": [
     {
       "type": 0,
       "value": "Read docs"
-    }
-  ],
-  "home.title.react_starter_store": [
-    {
-      "type": 0,
-      "value": "The React PWA Starter Store for Retail"
     }
   ],
   "icons.assistive_msg.lock": [

@@ -83,6 +83,10 @@ import {
 import Seo from '@salesforce/retail-react-app/app/components/seo'
 import {getPathWithLocale} from '@salesforce/retail-react-app/app/utils/url'
 
+import {DesignModeProvider} from '@salesforce/page-designer-react-sdk/src/context/DesignModeContext'
+import {initDesignerRuntime} from '@salesforce/page-designer-react-sdk/src/core/registry'
+import {registerDesignComponents} from '@salesforce/retail-react-app/app/page-designer/config/register-components'
+
 const PlaceholderComponent = () => (
     <Center p="2">
         <Spinner size="lg" />
@@ -129,6 +133,8 @@ const App = (props) => {
     const {data: categoriesTree} = useCategory({
         parameters: {id: CAT_MENU_DEFAULT_ROOT_CATEGORY, levels: CAT_MENU_DEFAULT_NAV_SSR_DEPTH}
     })
+    initDesignerRuntime(registerDesignComponents);
+
     const categories = flatten(categoriesTree || {}, 'categories')
     const {getTokenWhenReady} = useAccessToken()
     const appOrigin = useAppOrigin()
@@ -314,6 +320,7 @@ const App = (props) => {
                     defaultLocale={DEFAULT_LOCALE}
                 >
                     <CurrencyProvider currency={currency}>
+                        <DesignModeProvider>
                         <Seo>
                             <meta name="theme-color" content={THEME_COLOR} />
                             <meta name="apple-mobile-web-app-title" content={DEFAULT_SITE_TITLE} />
@@ -443,6 +450,7 @@ const App = (props) => {
                                 <DntNotification {...dntNotification} />
                             </AddToCartModalProvider>
                         </Box>
+                        </DesignModeProvider>
                     </CurrencyProvider>
                 </IntlProvider>
             </StorefrontPreview>

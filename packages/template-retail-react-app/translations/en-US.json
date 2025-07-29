@@ -745,7 +745,7 @@
     "defaultMessage": "They will get you to the right place."
   },
   "home.description.shop_products": {
-    "defaultMessage": "This section contains content from the catalog. {docLink} on how to replace it.",
+    "defaultMessage": "Shop Products",
     "description": "{docLink} is a html button that links the user to https://sfdc.co/business-manager-manage-catalogs"
   },
   "home.features.description.cart_checkout": {
@@ -790,9 +790,6 @@
   "home.heading.here_to_help": {
     "defaultMessage": "We're here to help"
   },
-  "home.heading.shop_products": {
-    "defaultMessage": "Shop Products"
-  },
   "home.hero_features.link.design_kit": {
     "defaultMessage": "Create with the Figma PWA Design Kit"
   },
@@ -805,14 +802,8 @@
   "home.link.contact_us": {
     "defaultMessage": "Contact Us"
   },
-  "home.link.get_started": {
-    "defaultMessage": "Get started"
-  },
   "home.link.read_docs": {
     "defaultMessage": "Read docs"
-  },
-  "home.title.react_starter_store": {
-    "defaultMessage": "The React PWA Starter Store for Retail"
   },
   "icons.assistive_msg.lock": {
     "defaultMessage": "Secure"

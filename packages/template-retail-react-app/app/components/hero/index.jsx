@@ -22,7 +22,7 @@ const Hero = ({title, img, actions, ...props}) => {
         align: 'center', // The Chakra `Image`'s non-standard replacement for `objectPosition`
         width: '100%',
         height: '100%',
-        ...img
+        src: img
     }
 
     return (
@@ -73,10 +73,7 @@ Hero.propTypes = {
     /**
      * Hero component image
      */
-    img: PropTypes.shape({
-        src: PropTypes.string,
-        alt: PropTypes.string
-    }),
+    img: PropTypes.string,
     /**
      * Hero component main title
      */

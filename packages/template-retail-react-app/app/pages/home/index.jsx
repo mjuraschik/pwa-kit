@@ -46,7 +46,8 @@ import {
     STALE_WHILE_REVALIDATE
 } from '@salesforce/retail-react-app/app/constants'
 import {useServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
-import {useProductSearch} from '@salesforce/commerce-sdk-react'
+import homeJson from './home.json'
+import {renderPage} from '../../utils/page-utils'
 
 /**
  * This is the home page for Retail React App.
@@ -68,17 +69,6 @@ const Home = () => {
         )
     }
 
-    const {data: productSearchResult, isLoading} = useProductSearch({
-        parameters: {
-            allImages: true,
-            allVariationProperties: true,
-            expand: ['promotions', 'variations', 'prices', 'images', 'custom_properties'],
-            limit: HOME_SHOP_PRODUCTS_LIMIT,
-            perPricebook: true,
-            refine: [`cgid=${HOME_SHOP_PRODUCTS_CATEGORY_ID}`, 'htype=master']
-        }
-    })
-
     /**************** Einstein ****************/
     useEffect(() => {
         einstein.sendViewPage(pathname)
@@ -87,146 +77,7 @@ const Home = () => {
 
     return (
         <Box data-testid="home-page" layerStyle="page">
-            <Seo
-                title="Home Page"
-                description="Commerce Cloud Retail React App"
-                keywords="Commerce Cloud, Retail React App, React Storefront"
-            />
-
-            <Island hydrateOn={'visible'}>
-                <Hero
-                    title={intl.formatMessage({
-                        defaultMessage: 'The React PWA Starter Store for Retail',
-                        id: 'home.title.react_starter_store'
-                    })}
-                    img={{
-                        src: getAssetUrl('static/img/hero.png'),
-                        alt: 'npx pwa-kit-create-app',
-                        fetchPriority: 'high'
-                    }}
-                    actions={
-                        <Stack spacing={{base: 4, sm: 6}} direction={{base: 'column', sm: 'row'}}>
-                            <Button
-                                as={Link}
-                                href="https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/getting-started.html"
-                                target="_blank"
-                                width={{base: 'full', md: 'inherit'}}
-                                paddingX={7}
-                                _hover={{textDecoration: 'none'}}
-                            >
-                                <FormattedMessage
-                                    defaultMessage="Get started"
-                                    id="home.link.get_started"
-                                />
-                            </Button>
-                        </Stack>
-                    }
-                />
-            </Island>
-
-            <Island hydrateOn={'visible'}>
-                <Section
-                    background={'gray.50'}
-                    marginX="auto"
-                    paddingY={{base: 8, md: 16}}
-                    paddingX={{base: 4, md: 8}}
-                    borderRadius="base"
-                    width={{base: '100vw', md: 'inherit'}}
-                    position={{base: 'relative', md: 'inherit'}}
-                    left={{base: '50%', md: 'inherit'}}
-                    right={{base: '50%', md: 'inherit'}}
-                    marginLeft={{base: '-50vw', md: 'auto'}}
-                    marginRight={{base: '-50vw', md: 'auto'}}
-                >
-                    <SimpleGrid
-                        columns={{base: 1, md: 1, lg: 3}}
-                        spacingX={{base: 1, md: 4}}
-                        spacingY={{base: 4, md: 14}}
-                    >
-                        {heroFeatures.map((feature, index) => {
-                            const featureMessage = feature.message
-                            return (
-                                <Link key={index} target="_blank" href={feature.href}>
-                                    <Box
-                                        background={'white'}
-                                        boxShadow="0px 2px 2px rgba(0, 0, 0, 0.1)"
-                                        borderRadius={'4px'}
-                                    >
-                                        <HStack>
-                                            <Flex
-                                                paddingLeft={6}
-                                                height={24}
-                                                align={'center'}
-                                                justify={'center'}
-                                            >
-                                                {feature.icon}
-                                            </Flex>
-                                            <Text fontWeight="700">
-                                                {intl.formatMessage(featureMessage.title)}
-                                            </Text>
-                                        </HStack>
-                                    </Box>
-                                </Link>
-                            )
-                        })}
-                    </SimpleGrid>
-                </Section>
-            </Island>
-
-            {productSearchResult && (
-                <Island hydrateOn={'visible'}>
-                    <Section
-                        padding={4}
-                        paddingTop={16}
-                        title={intl.formatMessage({
-                            defaultMessage: 'Shop Products',
-                            id: 'home.heading.shop_products'
-                        })}
-                        subtitle={intl.formatMessage(
-                            {
-                                defaultMessage:
-                                    'This section contains content from the catalog. {docLink} on how to replace it.',
-                                id: 'home.description.shop_products',
-                                description:
-                                    '{docLink} is a html button that links the user to https://sfdc.co/business-manager-manage-catalogs'
-                            },
-                            {
-                                docLink: (
-                                    <Link
-                                        target="_blank"
-                                        href={'https://sfdc.co/business-manager-manage-catalogs'}
-                                        textDecoration={'none'}
-                                        position={'relative'}
-                                        _after={{
-                                            position: 'absolute',
-                                            content: `""`,
-                                            height: '2px',
-                                            bottom: '-2px',
-                                            margin: '0 auto',
-                                            left: 0,
-                                            right: 0,
-                                            background: 'gray.700'
-                                        }}
-                                        _hover={{textDecoration: 'none'}}
-                                    >
-                                        {intl.formatMessage({
-                                            defaultMessage: 'Read docs',
-                                            id: 'home.link.read_docs'
-                                        })}
-                                    </Link>
-                                )
-                            }
-                        )}
-                    >
-                        <Stack pt={8} spacing={16}>
-                            <ProductScroller
-                                products={productSearchResult?.hits}
-                                isLoading={isLoading}
-                            />
-                        </Stack>
-                    </Section>
-                </Island>
-            )}
+            {renderPage(homeJson)}
 
             <Island hydrateOn={'visible'}>
                 <Section

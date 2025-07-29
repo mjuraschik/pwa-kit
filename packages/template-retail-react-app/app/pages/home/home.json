@@ -1,0 +1,305 @@
+{
+  "content_attributes": {
+    "localized": false
+  },
+  "description": "Sample homepage",
+  "id": "homepage",
+  "name": "homepage",
+  "page_type_id": "homePage",
+  "regions": [
+    {
+      "has_visibility_rules": false,
+      "id": "headerbanner",
+      "owner_id": "homepage",
+      "type": "page",
+      "components": [
+        {
+          "content_attributes": {
+            "localized": true,
+            "data": {
+              "title": "Home Page",
+              "description": "Commerce Cloud Page Designer Storefront",
+              "keywords": "Commerce Cloud, Chakra Storefront, React Storefront"
+            }
+          },
+          "has_visibility_rules": false,
+          "name": "SEO Component",
+          "type_id": "seo"
+        },
+        {
+          "content_attributes": {
+            "data": {
+              "title": "The React PWA Starter Store for Page Designer",
+              "img": {
+                "path": "/mobify/bundle/development/static/img/hero.png",
+                "alt": "npx pwa-kit-create-app"
+              },
+              "button": {
+                "text": "Get Started",
+                "href": "https://github.com/SalesforceCommerceCloud/pwa-kit/tree/develop/packages/pwa-kit-create-app"
+              }
+            },
+            "localized": true
+          },
+          "has_visibility_rules": false,
+          "name": "Hero Component",
+          "type_id": "heroSmart",
+          "id": "1"
+        }
+      ]
+    },
+    {
+      "components": [
+        {
+          "content_attributes": {
+            "data": {
+              "background": "gray.50",
+              "marginX": "auto",
+              "paddingY": {
+                "base": 8,
+                "md": 16
+              },
+              "paddingX": {
+                "base": 4,
+                "md": 8
+              },
+              "borderRadius": "base",
+              "width": {
+                "base": "100vw",
+                "md": "inherit"
+              },
+              "position": {
+                "base": "relative",
+                "md": "inherit"
+              },
+              "left": {
+                "base": "50%",
+                "md": "inherit"
+              },
+              "right": {
+                "base": "50%",
+                "md": "inherit"
+              },
+              "marginLeft": {
+                "base": "-50vw",
+                "md": "auto"
+              },
+              "marginRight": {
+                "base": "-50vw",
+                "md": "auto"
+              }
+            },
+            "localized": true
+          },
+          "has_visibility_rules": false,
+          "name": "Section Component",
+          "type_id": "section",
+          "regions": [
+            {
+              "components": [
+                {
+                  "content_attributes": {
+                    "data": {
+                      "columns": {
+                        "base": 1,
+                        "md": 1,
+                        "lg": 3
+                      },
+                      "spacingX": {
+                        "base": 1,
+                        "md": 4
+                      },
+                      "spacingY": {
+                        "base": 4,
+                        "md": 14
+                      }
+                    },
+                    "localized": false
+                  },
+                  "has_visibility_rules": false,
+                  "name": "Simple Grid Component",
+                  "type_id": "simpleGrid",
+                  "regions": [
+                    {
+                      "components": [
+                        {
+                          "content_attributes": {
+                            "data": {
+                              "title": "The React PWA Starter Store for Retail",
+                              "icon": "github",
+                              "href": "https://github.com/SalesforceCommerceCloud/pwa-kit"
+                            },
+                            "localized": true
+                          },
+                          "has_visibility_rules": false,
+                          "name": "Tile Component",
+                          "type_id": "tile",
+                          "id": "6"
+                        },
+                        {
+                          "content_attributes": {
+                            "data": {
+                              "title": "Deploy on Managed Runtime",
+                              "icon": "managed",
+                              "href": "https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/pushing-and-deploying-bundles.html"
+                            },
+                            "localized": true
+                          },
+                          "has_visibility_rules": false,
+                          "name": "Tile Component",
+                          "type_id": "tile",
+                          "id": "5"
+                        },
+                        {
+                          "content_attributes": {
+                            "data": {
+                              "title": "Create with the Figma PWA Design Kit",
+                              "icon": "figma",
+                              "href": "https://sfdc.co/figma-pwa-design-kit"
+                            },
+                            "localized": true
+                          },
+                          "has_visibility_rules": false,
+                          "name": "Tile Component",
+                          "type_id": "tile",
+                          "id": "4"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "has_visibility_rules": false,
+              "id": "column",
+              "type": "component"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "components": [
+        {
+          "content_attributes": {
+            "data": {
+              "marginX": "auto",
+              "paddingY": {
+                "base": 8,
+                "md": 16
+              },
+              "paddingX": {
+                "base": 4,
+                "md": 8
+              },
+              "borderRadius": "base",
+              "width": {
+                "base": "100vw",
+                "md": "inherit"
+              },
+              "position": {
+                "base": "relative",
+                "md": "inherit"
+              },
+              "left": {
+                "base": "50%",
+                "md": "inherit"
+              },
+              "right": {
+                "base": "50%",
+                "md": "inherit"
+              },
+              "marginLeft": {
+                "base": "-50vw",
+                "md": "auto"
+              },
+              "marginRight": {
+                "base": "-50vw",
+                "md": "auto"
+              }
+            },
+            "localized": true
+          },
+          "has_visibility_rules": false,
+          "name": "Section Component",
+          "type_id": "section",
+          "regions": []
+        }
+      ]
+    },
+    {
+      "components": [
+        {
+          "content_attributes": {
+            "data": {
+              "marginX": "auto",
+              "paddingY": {
+                "base": 8,
+                "md": 16
+              },
+              "paddingX": {
+                "base": 4,
+                "md": 8
+              },
+              "borderRadius": "base",
+              "width": {
+                "base": "100vw",
+                "md": "inherit"
+              },
+              "position": {
+                "base": "relative",
+                "md": "inherit"
+              },
+              "left": {
+                "base": "50%",
+                "md": "inherit"
+              },
+              "right": {
+                "base": "50%",
+                "md": "inherit"
+              },
+              "marginLeft": {
+                "base": "-50vw",
+                "md": "auto"
+              },
+              "marginRight": {
+                "base": "-50vw",
+                "md": "auto"
+              }
+            },
+            "localized": true
+          },
+          "has_visibility_rules": false,
+          "name": "Section Component",
+          "regions": [
+            {
+              "components": [
+                {
+                  "content_attributes": {
+                    "localized": true,
+                    "data": {
+                      "title": "Shop Products",
+                      "subtitle": "This section contains content from the catalog. {docLink} on how to replace it."
+                    }
+                  },
+                  "has_visibility_rules": false,
+                  "name": "Search Results Component",
+                  "type_id": "searchResults",
+                  "id": "3"
+                }
+              ],
+              "has_visibility_rules": false,
+              "id": "column",
+              "type": "component"
+            }
+          ],
+          "type_id": "section"
+        }
+      ],
+      "has_visibility_rules": false,
+      "id": "main",
+      "owner_id": "homepage",
+      "type": "page"
+    }
+  ],
+  "visibility_mode": "visible"
+}
