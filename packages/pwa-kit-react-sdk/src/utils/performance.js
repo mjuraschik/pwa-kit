@@ -187,7 +187,6 @@ export default class PerformanceTimer {
     _cleanupOrphanedSpan(name, reason = 'manual') {
         const span = this.spans.get(name)
         if (span) {
-
             // Don't log warnings in test environments to avoid GitHub check failures
             if (process.env.NODE_ENV !== 'test') {
                 logger.warn('Cleaning up orphaned span', {
