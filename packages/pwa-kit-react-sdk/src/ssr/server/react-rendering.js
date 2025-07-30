@@ -141,7 +141,7 @@ export const render = async (req, res, next) => {
         async () => {
             res.__performanceTimer = new PerformanceTimer({enabled: shouldTrackPerformance})
             res.__performanceTimer.mark(PERFORMANCE_MARKS.total, 'start')
-            const routeMatchingSpan = createChildSpan('Route Matching')
+            const routeMatchingSpan = createChildSpan('ssr.route-matching')
             const AppConfig = getAppConfig()
             const config = getConfig()
 
@@ -176,7 +176,7 @@ export const render = async (req, res, next) => {
             endSpan(routeMatchingSpan)
 
             // Step 2 - Get the component
-            const componentLoadingSpan = createChildSpan('Component Loading')
+            const componentLoadingSpan = createChildSpan('ssr.load-component')
             res.__performanceTimer.mark(PERFORMANCE_MARKS.loadComponent, 'start')
             const component = await route.component.getComponent()
             res.__performanceTimer.mark(PERFORMANCE_MARKS.loadComponent, 'end')
@@ -201,7 +201,7 @@ export const render = async (req, res, next) => {
                 appState = {}
                 appStateError = new errors.HTTPNotFound('Not found')
             } else {
-                const fetchStrategiesSpan = createChildSpan('Fetch Strategies')
+                const fetchStrategiesSpan = createChildSpan('ssr.fetch-strategies')
                 res.__performanceTimer.mark(PERFORMANCE_MARKS.fetchStrategies, 'start')
                 const ret = await AppConfig.initAppState({
                     App: WrappedApp,
@@ -222,7 +222,7 @@ export const render = async (req, res, next) => {
                 endSpan(fetchStrategiesSpan)
             }
 
-            const renderToStringSpan = createChildSpan('Render To String')
+            const renderToStringSpan = createChildSpan('ssr.render-to-string')
             res.__performanceTimer.mark(PERFORMANCE_MARKS.renderToString, 'start')
             appJSX = React.cloneElement(appJSX, {error: appStateError, appState})
 
