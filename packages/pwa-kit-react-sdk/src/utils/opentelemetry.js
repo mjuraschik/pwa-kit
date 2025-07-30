@@ -79,8 +79,7 @@ const logSpanData = (span, event = 'start', res = null) => {
 
     // Only log if this is an end event or if it's a start event for a new span
     if (event === 'end' || !Object.prototype.hasOwnProperty.call(span.attributes, 'event')) {
-        // Log raw span data for MRT forwarder compatibility
-        console.log(JSON.stringify(spanData))
+        console.info(JSON.stringify(spanData))
     }
 }
 
