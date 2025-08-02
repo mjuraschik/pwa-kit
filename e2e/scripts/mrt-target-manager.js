@@ -1,5 +1,6 @@
 const SecureS3Client = require('./aws-s3-client')
 const {Command} = require('commander')
+const fs = require('fs')
 
 class MRTTargetManager {
     constructor(options = {}) {
@@ -340,9 +341,12 @@ async function main() {
                 console.log(`URL: ${result.environment.envURL}`)
 
                 // Output for GitHub Actions
-                console.log(`::set-output name=mrt_env_id::${result.environment.mrtEnvId}`)
-                console.log(`::set-output name=mrt_env_url::${result.environment.envURL}`)
-                console.log(`::set-output name=status::success`)
+                const githubOutput = process.env.GITHUB_OUTPUT
+                if (githubOutput) {
+                    fs.appendFileSync(githubOutput, `mrt_env_id=${result.environment.mrtEnvId}\n`)
+                    fs.appendFileSync(githubOutput, `mrt_env_url=${result.environment.envURL}\n`)
+                    fs.appendFileSync(githubOutput, `status=success\n`)
+                }
             } catch (error) {
                 console.error('❌ Error:', error.message)
                 process.exit(1)
