@@ -13,7 +13,7 @@ class SecureS3Client {
         this.roleArn = options.roleArn
         this.roleSessionName = options.roleSessionName || 'LocalDev'
         this.region = options.region || 'us-east-1'
-        this.readOnly = options.readOnly || true
+        this.readOnly = options.readOnly
         this.credentials = null
     }
 
@@ -28,7 +28,6 @@ class SecureS3Client {
             credentials: this.credentials
         })
 
-        console.log("Read only ?", this.readOnly, process.env.CI)
         console.log(`🔐 Using ${this.readOnly ? 'READ-ONLY' : 'READ-WRITE'} access`)
     }
 
