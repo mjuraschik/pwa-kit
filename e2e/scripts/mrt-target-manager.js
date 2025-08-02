@@ -9,7 +9,7 @@ class MRTTargetManager {
         this.retryDelay = options.retryDelay || 10000 // 10 seconds
         this.prNumber = options.prNumber || process.env.GITHUB_PR_NUMBER || null
         this.branch = options.branch || null
-        this.actionId = options.actionId || null
+        this.runId = options.runId || null
         this.s3Client = new SecureS3Client({
             roleArn: options.roleArn,
             roleSessionName: options.roleSessionName || 'LocalDev',
@@ -89,12 +89,12 @@ class MRTTargetManager {
                         // Add PR, branch, and action info when marking as in-use
                         if (this.prNumber) updatedEnv.prNumber = this.prNumber
                         if (this.branch) updatedEnv.branch = this.branch
-                        if (this.actionId) updatedEnv.actionId = this.actionId
+                        if (this.runId) updatedEnv.runId = this.runId
                     } else if (status === 'available') {
                         // Remove PR, branch, and action info when marking as available
                         delete updatedEnv.prNumber
                         delete updatedEnv.branch
-                        delete updatedEnv.actionId
+                        delete updatedEnv.runId
                         delete updatedEnv.acquiredAt
                     }
 
@@ -280,7 +280,7 @@ async function main() {
         .description('Acquire and manage MRT environments with optimistic locking')
         .option('--pr-number <pr-number>', 'PR number')
         .option('--branch <branch>', 'Branch name')
-        .option('--action-id <actionId>', 'Action ID')
+        .option('--run-id <runId>', 'Run ID')
         .option('--max-retries <number>', 'Maximum retry attempts', '3')
         .option('--retry-delay <ms>', 'Delay between retries in milliseconds', '10000')
 
@@ -318,7 +318,7 @@ async function main() {
                 region: process.env.AWS_REGION || 'us-east-2',
                 prNumber: globalOpts.prNumber,
                 branch: globalOpts.branch,
-                actionId: globalOpts.actionId,
+                runId: globalOpts.runId,
                 maxRetries: parseInt(globalOpts.maxRetries),
                 retryDelay: parseInt(globalOpts.retryDelay)
             })

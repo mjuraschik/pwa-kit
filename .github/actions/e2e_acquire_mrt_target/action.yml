@@ -1,0 +1,30 @@
+name: e2e_acquire_mrt_target
+description: Acquire MRT Target from pool of available targets in the MRT staging org.
+inputs:
+    BRANCH:
+        description: 'GitHub branch name from workflow invoking this action'
+        required: false
+    RUN_ID:
+        description: 'GitHub workflow run ID from workflow invoking this action'
+        required: true
+    PR_NUMBER:
+        description: 'GitHub PR number from workflow invoking this action'
+        required: false
+
+runs:
+    using: composite
+    steps:
+        - name: Acquire MRT Target
+          id: acquire_mrt_target
+          shell: bash
+          run: |-
+              set -e
+              node e2e/scripts/mrt-target-manager.js acquire --branch ${{inputs.BRANCH}} --run-id ${{inputs.RUN_ID}} --pr-number ${{inputs.PR_NUMBER}}
+
+        - name: Show Github Output
+          shell: bash
+          run: |-
+              set -e
+              echo $GITHUB_OUTPUT
+              echo "::set-output name=mrt_env_id::${{steps.acquire_mrt_target.outputs.mrt_env_id}}"
+              echo "::set-output name=mrt_env_name::${{steps.acquire_mrt_target.outputs.mrt_env_name}}"

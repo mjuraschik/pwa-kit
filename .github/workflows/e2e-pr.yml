@@ -12,11 +12,6 @@ jobs:
     test_e2e_private:
         runs-on: ubuntu-latest
         steps:
-           # Skipping the entire workflow for now until all steps are implemented.
-            - name: Skip Check
-              run: | 
-                echo "SKIP_WORKFLOW=true" >> "$GITHUB_ENV"
-
             - name: Checkout
               uses: actions/checkout@v4
 
@@ -27,7 +22,6 @@ jobs:
 
             # TODO: Skip the entire workflow since we don't have e2e tests for PWA Kit v2.x
             - name: Skip if PWA Kit version older than v3.x
-              if: ${{ env.SKIP_WORKFLOW != 'true' }}
               run: |
                   major_version=$(echo "${{ env.pwa_kit_version }}" | cut -d. -f1)
                    if [ "$major_version" -lt 3 ]; then
@@ -37,7 +31,6 @@ jobs:
 
             # Only test for latest Node version supported by MRT
             - name: Setup Node
-              if: ${{ env.SKIP_WORKFLOW != 'true' }}
               uses: actions/setup-node@v4
               with:
                   node-version: 22
@@ -46,10 +39,12 @@ jobs:
             # Check central resource allocation on AWS and get a lock on an available environment from the pool.
             # Returns the MRT target ID if lock is acquired, otherwise returns an error state.
             - name: Get MRT Target lock
-              if: ${{ env.SKIP_WORKFLOW != 'true' }}
               id: get_mrt_target_lock
-              run: |
-                  echo "TODO: Implement .github/actions/get_mrt_target_lock"
+              uses: ./.github/actions/e2e_acquire_mrt_target
+              with:
+                  BRANCH: ${{ github.ref_name }}
+                  RUN_ID: ${{ github.run_id }}
+                  PR_NUMBER: ${{ github.event.pull_request.number }}
 
             - name: Create MRT target
               id: create_mrt_target
