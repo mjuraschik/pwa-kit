@@ -33,4 +33,4 @@ runs:
           shell: bash
           run: |-
               set -e
-              cat "$GITHUB_OUTPUT"
+              cat $GITHUB_OUTPUT
