@@ -8,7 +8,7 @@ class MRTTargetManager {
         this.maxRetries = options.maxRetries || 3
         this.retryDelay = options.retryDelay || 10000 // 10 seconds
         this.prNumber = options.prNumber || process.env.GITHUB_PR_NUMBER || null
-        this.gitBranch = options.gitBranch || null
+        this.branch = options.branch || null
         this.actionId = options.actionId || null
         this.s3Client = new SecureS3Client({
             roleArn: options.roleArn,
@@ -73,20 +73,32 @@ class MRTTargetManager {
     /**
      * Mark environment as in-use by current PR
      */
-    markEnvironmentInUse(poolData, environment) {
+    updateMRTTargetStatus(poolData, environment, status) {
         const updatedPoolData = {
             ...poolData,
             environments: poolData.environments.map((env) => {
                 if (env.mrtEnvId === environment.mrtEnvId) {
-                    return {
+                    const updatedEnv = {
                         ...env,
-                        status: 'in-use',
-                        ...(this.prNumber && {prNumber: this.prNumber}),
-                        ...(this.gitBranch && {branch: this.gitBranch}),
-                        ...(this.actionId && {actionId: this.actionId}),
+                        status,
                         acquiredAt: new Date().toISOString(),
                         lastUsed: new Date().toISOString()
                     }
+
+                    if (status === 'in-use') {
+                        // Add PR, branch, and action info when marking as in-use
+                        if (this.prNumber) updatedEnv.prNumber = this.prNumber
+                        if (this.branch) updatedEnv.branch = this.branch
+                        if (this.actionId) updatedEnv.actionId = this.actionId
+                    } else if (status === 'available') {
+                        // Remove PR, branch, and action info when marking as available
+                        delete updatedEnv.prNumber
+                        delete updatedEnv.branch
+                        delete updatedEnv.actionId
+                        delete updatedEnv.acquiredAt
+                    }
+
+                    return updatedEnv
                 }
                 return env
             })
@@ -147,9 +159,10 @@ class MRTTargetManager {
                 }
 
                 // Step 3: Mark environment as in-use
-                const updatedPoolData = this.markEnvironmentInUse(
+                const updatedPoolData = this.updateMRTTargetStatus(
                     downloadResponse.poolData,
-                    availableEnv
+                    availableEnv,
+                    'in-use'
                 )
 
                 // Step 4: Try to upload with ETag precondition
@@ -194,30 +207,31 @@ class MRTTargetManager {
     /**
      * Release an environment back to the pool
      */
-    async releaseEnvironment(environmentName) {
-        console.log(`🔓 Releasing environment: ${environmentName}`)
+    async releaseEnvironment(mrtEnvId) {
+        console.log(`🔓 Releasing environment: ${mrtEnvId}`)
 
         let retryCount = 0
 
         while (retryCount < this.maxRetries) {
             try {
-                const poolData = await this.downloadPoolFile()
+                // Step 1: Download pool file and get ETag
+                const downloadResponse = await this.downloadPoolFile()
+                const poolData = downloadResponse.poolData
 
-                const updatedPoolData = {
-                    ...poolData,
-                    environments: poolData.environments.map((env) => {
-                        if (env.name === environmentName) {
-                            return {
-                                ...env,
-                                status: 'available',
-                                inUseBy: null,
-                                acquiredAt: null,
-                                lastUsed: new Date().toISOString()
-                            }
-                        }
-                        return env
-                    })
+                const envToRelease = poolData.environments.find(
+                    (env) => env.mrtEnvId === mrtEnvId
+                )
+
+                if (!envToRelease) {
+                    throw new Error(`❌ Environment ${mrtEnvId} not found`)
                 }
+
+                // Step 3: Mark environment as in-use
+                const updatedPoolData = this.updateMRTTargetStatus(
+                    downloadResponse.poolData,
+                    envToRelease,
+                    'available'
+                )
 
                 await this.s3Client.upload(
                     this.bucket,
@@ -226,7 +240,7 @@ class MRTTargetManager {
                     poolData.etag
                 )
 
-                console.log(`✅ Successfully released environment: ${environmentName}`)
+                console.log(`✅ Successfully released environment: ${mrtEnvId}`)
                 return true
             } catch (error) {
                 retryCount++
@@ -264,9 +278,9 @@ async function main() {
 
     program
         .description('Acquire and manage MRT environments with optimistic locking')
-        .option('--pr-number <number>', 'PR number')
-        .option('--branch <string>', 'Branch name')
-        .option('--action-id <string>', 'Action ID')
+        .option('--pr-number <pr-number>', 'PR number')
+        .option('--branch <branch>', 'Branch name')
+        .option('--action-id <actionId>', 'Action ID')
         .option('--max-retries <number>', 'Maximum retry attempts', '3')
         .option('--retry-delay <ms>', 'Delay between retries in milliseconds', '10000')
 
@@ -303,7 +317,7 @@ async function main() {
                 roleArn: process.env.AWS_ROLE_ARN,
                 region: process.env.AWS_REGION || 'us-east-2',
                 prNumber: globalOpts.prNumber,
-                gitBranch: globalOpts.branch,
+                branch: globalOpts.branch,
                 actionId: globalOpts.actionId,
                 maxRetries: parseInt(globalOpts.maxRetries),
                 retryDelay: parseInt(globalOpts.retryDelay)
@@ -314,7 +328,6 @@ async function main() {
             try {
                 const result = await mrtTargetManager.acquireEnvironment()
 
-                console.log('\n🎉 Environment acquired successfully!')
                 console.log(`Environment: ${result.environment.mrtEnvId}`)
                 console.log(`URL: ${result.environment.envURL}`)
 
@@ -332,15 +345,16 @@ async function main() {
     program
         .command('release')
         .description('Release an MRT environment')
-        .argument('<name>', 'Environment name to release')
-        .action(async (name) => {
+        .argument('<mrtEnvId>', 'Environment Id to release')
+        .option('--max-retries <number>', 'Maximum retry attempts', '3')
+        .option('--retry-delay <ms>', 'Delay between retries in milliseconds', '10000')
+        .action(async (mrtEnvId) => {
             const globalOpts = program.opts()
 
             const mrtTargetManager = new MRTTargetManager({
-                bucket: process.env.MRT_POOL_BUCKET || 'mrt-env-pool',
+                bucket: process.env.AWS_S3_BUCKET || 'cc-pwa-kit',
                 roleArn: process.env.AWS_ROLE_ARN,
-                region: process.env.AWS_REGION || 'us-east-1',
-                prNumber: globalOpts.prNumber,
+                region: process.env.AWS_REGION || 'us-east-2',
                 maxRetries: parseInt(globalOpts.maxRetries),
                 retryDelay: parseInt(globalOpts.retryDelay)
             })
@@ -348,8 +362,7 @@ async function main() {
             await mrtTargetManager.initialize()
 
             try {
-                await mrtTargetManager.releaseEnvironment(name)
-                console.log(`✅ Environment ${name} released successfully`)
+                await mrtTargetManager.releaseEnvironment(mrtEnvId)
             } catch (error) {
                 console.error('❌ Error:', error.message)
                 process.exit(1)
