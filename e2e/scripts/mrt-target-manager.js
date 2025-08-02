@@ -151,9 +151,9 @@ class MRTTargetManager {
                     return {
                         ...env,
                         status: 'in-use',
-                        ...(this.prNumber && { prNumber: this.prNumber }),
-                        ...(this.gitBranch && { branch: this.gitBranch }),
-                        ...(this.actionId && { actionId: this.actionId }),
+                        ...(this.prNumber && {prNumber: this.prNumber}),
+                        ...(this.gitBranch && {branch: this.gitBranch}),
+                        ...(this.actionId && {actionId: this.actionId}),
                         acquiredAt: new Date().toISOString(),
                         lastUsed: new Date().toISOString()
                     }
@@ -230,19 +230,14 @@ class MRTTargetManager {
      */
     async getPoolStatus() {
         try {
-            const poolData = await this.downloadPoolFile()
+            // Step 1: Download pool file and get ETag
+            const downloadResponse = await this.downloadPoolFile()
 
             const status = {
-                total: poolData.environments.length,
-                available: poolData.environments.filter((env) => env.status === 'available').length,
-                inUse: poolData.environments.filter((env) => env.status === 'in-use').length,
-                environments: poolData.environments.map((env) => ({
-                    name: env.name,
-                    type: env.type,
-                    status: env.status,
-                    inUseBy: env.inUseBy,
-                    lastUsed: env.lastUsed
-                }))
+                total: downloadResponse.poolData.environments.length,
+                available: downloadResponse.poolData.environments.filter((env) => env.status === 'available').length,
+                inUse: downloadResponse.poolData.environments.filter((env) => env.status === 'in-use').length,
+                environments: downloadResponse.poolData.environments
             }
 
             return status
@@ -313,7 +308,7 @@ async function main() {
         .command('release')
         .description('Release an MRT environment')
         .argument('<name>', 'Environment name to release')
-        .action(async (name, options) => {
+        .action(async (name) => {
             const globalOpts = program.opts()
 
             const mrtTargetManager = new MRTTargetManager({
@@ -340,14 +335,11 @@ async function main() {
     program
         .command('status')
         .description('Show pool status')
-        .action(async (options) => {
-            const globalOpts = program.opts()
-
+        .action(async () => {
             const mrtTargetManager = new MRTTargetManager({
-                bucket: process.env.MRT_POOL_BUCKET || 'mrt-env-pool',
+                bucket: process.env.AWS_S3_BUCKET || 'cc-pwa-kit',
                 roleArn: process.env.AWS_ROLE_ARN,
-                region: process.env.AWS_REGION || 'us-east-1',
-                prNumber: globalOpts.prNumber
+                region: process.env.AWS_REGION || 'us-east-2'
             })
 
             await mrtTargetManager.initialize()
@@ -355,23 +347,7 @@ async function main() {
             try {
                 const status = await mrtTargetManager.getPoolStatus()
 
-                if (options.output === 'json') {
-                    console.log(JSON.stringify(status, null, 2))
-                } else {
-                    console.log('\n📊 Pool Status:')
-                    console.log(`Total environments: ${status.total}`)
-                    console.log(`Available: ${status.available}`)
-                    console.log(`In use: ${status.inUse}`)
-                    console.log('\nEnvironments:')
-
-                    status.environments.forEach((env) => {
-                        const statusIcon = env.status === 'available' ? '🟢' : '🔴'
-                        const inUseBy = env.inUseBy ? ` (PR: ${env.inUseBy})` : ''
-                        console.log(
-                            `${statusIcon} ${env.name} (${env.type}) - ${env.status}${inUseBy}`
-                        )
-                    })
-                }
+                console.log('Pool status:', JSON.stringify(status, null, 2))
             } catch (error) {
                 console.error('❌ Error:', error.message)
                 process.exit(1)
