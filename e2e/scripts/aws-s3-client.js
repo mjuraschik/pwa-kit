@@ -28,6 +28,7 @@ class SecureS3Client {
             credentials: this.credentials
         })
 
+        console.log("Read only ?", this.readOnly, process.env.CI)
         console.log(`🔐 Using ${this.readOnly ? 'READ-ONLY' : 'READ-WRITE'} access`)
     }
 
