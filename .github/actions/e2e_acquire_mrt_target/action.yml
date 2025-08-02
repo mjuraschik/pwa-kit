@@ -34,25 +34,10 @@ runs:
           run: |-
               set -e
               node e2e/scripts/mrt-target-manager.js acquire --branch ${{inputs.BRANCH}} --run-id ${{inputs.RUN_ID}} --pr-number ${{inputs.PR_NUMBER}} --max-retries ${{inputs.MAX_RETRIES}} --retry-delay ${{inputs.RETRY_DELAY}}
-        - name: Set Action Outputs
-          shell: bash
-          run: |
-              # Read the outputs that were written by the script and set them as action outputs
-              if [ -f "$GITHUB_OUTPUT" ]; then
-                  if grep -q "mrt_env_id=" "$GITHUB_OUTPUT"; then
-                      echo "mrt_env_id=$(grep "mrt_env_id=" "$GITHUB_OUTPUT" | tail -1 | cut -d'=' -f2-)" >> $GITHUB_OUTPUT
-                  fi
-                  if grep -q "mrt_env_url=" "$GITHUB_OUTPUT"; then
-                      echo "mrt_env_url=$(grep "mrt_env_url=" "$GITHUB_OUTPUT" | tail -1 | cut -d'=' -f2-)" >> $GITHUB_OUTPUT
-                  fi
-                  if grep -q "status=" "$GITHUB_OUTPUT"; then
-                      echo "status=$(grep "status=" "$GITHUB_OUTPUT" | tail -1 | cut -d'=' -f2-)" >> $GITHUB_OUTPUT
-                  fi
-              fi
 
-        - name: Echo MRT Target Outputs
+        - name: Return MRT Target Outputs
           shell: bash
           run: |
-              echo "MRT Environment ID: ${{ steps.acquire_mrt_target.outputs.mrt_env_id }}"
-              echo "MRT Environment URL: ${{ steps.acquire_mrt_target.outputs.mrt_env_url }}"
-              echo "Status: ${{ steps.acquire_mrt_target.outputs.status }}"
+              echo "mrt_env_id=${{ steps.acquire_mrt_target.outputs.mrt_env_id }}" >> $GITHUB_OUTPUT
+              echo "mrt_env_url=${{ steps.acquire_mrt_target.outputs.mrt_env_url }}" >> $GITHUB_OUTPUT
+              echo "status=${{ steps.acquire_mrt_target.outputs.status }}" >> $GITHUB_OUTPUT
