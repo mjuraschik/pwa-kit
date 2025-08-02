@@ -345,7 +345,7 @@ async function main() {
                 if (githubOutput) {
                     fs.appendFileSync(githubOutput, `mrt_env_id=${result.environment.mrtEnvId}\n`)
                     fs.appendFileSync(githubOutput, `mrt_env_url=${result.environment.envURL}\n`)
-                    fs.appendFileSync(githubOutput, `status=success\n`)
+                    fs.appendFileSync(githubOutput, `status=SUCCESS\n`)
                 }
             } catch (error) {
                 console.error('❌ Error:', error.message)

@@ -36,3 +36,4 @@ runs:
           run: |-
               set -e
               node e2e/scripts/mrt-target-manager.js acquire --branch ${{inputs.BRANCH}} --run-id ${{inputs.RUN_ID}} --pr-number ${{inputs.PR_NUMBER}} --max-retries ${{inputs.MAX_RETRIES}} --retry-delay ${{inputs.RETRY_DELAY}}
+              echo "$GITHUB_OUTPUT"
