@@ -59,7 +59,7 @@ jobs:
               with:
                   role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
                   aws-region: ${{ vars.AWS_REGION }}
-                  role-session-name: 'GithubActions E2E CI'
+                  role-session-name: 'GithubActions-E2E-CI'
 
             - name: Get MRT Target lock
               id: get_mrt_target_lock
