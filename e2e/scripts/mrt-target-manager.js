@@ -10,12 +10,18 @@ class MRTTargetManager {
         this.prNumber = options.prNumber || process.env.GITHUB_PR_NUMBER || null
         this.branch = options.branch || null
         this.runId = options.runId || null
-        this.s3Client = new SecureS3Client({
-            roleArn: options.roleArn,
-            roleSessionName: options.roleSessionName || 'LocalDev',
-            region: options.region || 'us-east-2',
-            readOnly: false
-        })
+
+        const clientOptions = {
+            readOnly: false,
+            region: options.region || 'us-east-2'
+        }
+
+        if (!process.env.CI) {
+            clientOptions.roleArn = options.roleArn
+            clientOptions.roleSessionName = options.roleSessionName || 'LocalDev'
+        }
+        console.log('clientOptions', clientOptions)
+        this.s3Client = new SecureS3Client(clientOptions)
     }
 
     async initialize() {
@@ -218,9 +224,7 @@ class MRTTargetManager {
                 const downloadResponse = await this.downloadPoolFile()
                 const poolData = downloadResponse.poolData
 
-                const envToRelease = poolData.environments.find(
-                    (env) => env.mrtEnvId === mrtEnvId
-                )
+                const envToRelease = poolData.environments.find((env) => env.mrtEnvId === mrtEnvId)
 
                 if (!envToRelease) {
                     throw new Error(`❌ Environment ${mrtEnvId} not found`)

@@ -11,7 +11,7 @@ const {STSClient, AssumeRoleCommand} = require('@aws-sdk/client-sts')
 class SecureS3Client {
     constructor(options = {}) {
         this.roleArn = options.roleArn
-        this.roleSessionName = options.roleSessionName || 'S3Session'
+        this.roleSessionName = options.roleSessionName || 'LocalDev'
         this.region = options.region || 'us-east-1'
         this.isReadOnly = options.readOnly || false
         this.credentials = null

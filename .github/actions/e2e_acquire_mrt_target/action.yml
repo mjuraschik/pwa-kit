@@ -10,6 +10,14 @@ inputs:
     PR_NUMBER:
         description: 'GitHub PR number from workflow invoking this action'
         required: false
+    MAX_RETRIES:
+        description: 'Maximum retry attempts'
+        required: false
+        default: '3'
+    RETRY_DELAY:
+        description: 'Delay between retries in milliseconds'
+        required: false
+        default: '10000'
 
 runs:
     using: composite
@@ -19,7 +27,7 @@ runs:
           shell: bash
           run: |-
               set -e
-              node e2e/scripts/mrt-target-manager.js acquire --branch ${{inputs.BRANCH}} --run-id ${{inputs.RUN_ID}} --pr-number ${{inputs.PR_NUMBER}}
+              node e2e/scripts/mrt-target-manager.js acquire --branch ${{inputs.BRANCH}} --run-id ${{inputs.RUN_ID}} --pr-number ${{inputs.PR_NUMBER}} --max-retries ${{inputs.MAX_RETRIES}} --retry-delay ${{inputs.RETRY_DELAY}}
 
         - name: Show Github Output
           shell: bash
