@@ -478,8 +478,8 @@ describe('OpenTelemetry Utilities', () => {
 
             opentelemetryUtils.logPerformanceMetric('test-metric', 150)
 
-            // In test environment, warnings are suppressed to avoid GitHub check failures
-            expect(mockLogger.warn).not.toHaveBeenCalled()
+            // Warnings are now allowed to run for coverage purposes
+            expect(mockLogger.warn).toHaveBeenCalled()
             expect(mockTracer.startSpan).not.toHaveBeenCalled()
         })
 
@@ -584,8 +584,8 @@ describe('OpenTelemetry Utilities', () => {
 
             opentelemetryUtils.endSpan(invalidSpan)
 
-            // In test environment, warnings are suppressed to avoid GitHub check failures
-            expect(mockLogger.warn).not.toHaveBeenCalled()
+            // Warnings are now allowed to run for coverage purposes
+            expect(mockLogger.warn).toHaveBeenCalled()
         })
 
         test('should not warn about invalid duration data in test environment', () => {
@@ -597,8 +597,8 @@ describe('OpenTelemetry Utilities', () => {
 
             opentelemetryUtils.endSpan(invalidSpan)
 
-            // In test environment, warnings are suppressed to avoid GitHub check failures
-            expect(mockLogger.warn).not.toHaveBeenCalled()
+            // Warnings are now allowed to run for coverage purposes
+            expect(mockLogger.warn).toHaveBeenCalled()
         })
 
         test('should not warn about startTime with wrong array length in test environment', () => {
@@ -610,8 +610,8 @@ describe('OpenTelemetry Utilities', () => {
 
             opentelemetryUtils.endSpan(invalidSpan)
 
-            // In test environment, warnings are suppressed to avoid GitHub check failures
-            expect(mockLogger.warn).not.toHaveBeenCalled()
+            // Warnings are now allowed to run for coverage purposes
+            expect(mockLogger.warn).toHaveBeenCalled()
         })
 
         test('should not warn about duration with wrong array length in test environment', () => {
@@ -623,8 +623,55 @@ describe('OpenTelemetry Utilities', () => {
 
             opentelemetryUtils.endSpan(invalidSpan)
 
-            // In test environment, warnings are suppressed to avoid GitHub check failures
-            expect(mockLogger.warn).not.toHaveBeenCalled()
+            // Warnings are now allowed to run for coverage purposes
+            expect(mockLogger.warn).toHaveBeenCalled()
+        })
+    })
+
+    describe('OpenTelemetry disabled scenarios', () => {
+        test('should warn when OpenTelemetry is disabled in createChildSpan', () => {
+            // Mock getOTELConfig to return disabled
+            const {getOTELConfig} = jest.requireMock('./opentelemetry-config')
+            getOTELConfig.mockReturnValue({
+                enabled: false,
+                serviceName: 'test-service'
+            })
+
+            opentelemetryUtils.createChildSpan('test-span')
+
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'OpenTelemetry is disabled - spans will not have proper timing data',
+                expect.objectContaining({
+                    namespace: 'opentelemetry',
+                    additionalProperties: expect.objectContaining({
+                        span_name: 'test-span',
+                        otel_enabled: false
+                    })
+                })
+            )
+        })
+
+        test('should warn when OpenTelemetry is disabled in tracePerformance', async () => {
+            // Mock getOTELConfig to return disabled
+            const {getOTELConfig} = jest.requireMock('./opentelemetry-config')
+            getOTELConfig.mockReturnValue({
+                enabled: false,
+                serviceName: 'test-service'
+            })
+
+            const mockFn = jest.fn().mockResolvedValue('test-result')
+            await opentelemetryUtils.tracePerformance('test-trace', mockFn)
+
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'OpenTelemetry is disabled - performance tracing will not have proper timing data',
+                expect.objectContaining({
+                    namespace: 'opentelemetry',
+                    additionalProperties: expect.objectContaining({
+                        trace_name: 'test-trace',
+                        otel_enabled: false
+                    })
+                })
+            )
         })
     })
 

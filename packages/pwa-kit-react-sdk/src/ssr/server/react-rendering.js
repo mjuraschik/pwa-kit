@@ -141,8 +141,7 @@ export const render = async (req, res, next) => {
         async () => {
             res.__performanceTimer = new PerformanceTimer({enabled: shouldTrackPerformance})
             res.__performanceTimer.mark(PERFORMANCE_MARKS.total, 'start')
-            const totalSpan = createChildSpan('ssr.total')
-            const routeMatchingSpan = createChildSpan('ssr.route-matching')
+
             const AppConfig = getAppConfig()
             const config = getConfig()
 
@@ -174,14 +173,12 @@ export const render = async (req, res, next) => {
                 return !!match
             })
             res.__performanceTimer.mark(PERFORMANCE_MARKS.routeMatching, 'end')
-            endSpan(routeMatchingSpan)
 
             // Step 2 - Get the component
-            const componentLoadingSpan = createChildSpan('ssr.load-component')
+
             res.__performanceTimer.mark(PERFORMANCE_MARKS.loadComponent, 'start')
             const component = await route.component.getComponent()
             res.__performanceTimer.mark(PERFORMANCE_MARKS.loadComponent, 'end')
-            endSpan(componentLoadingSpan)
 
             // Step 3 - Init the app state
             const props = {
@@ -202,7 +199,6 @@ export const render = async (req, res, next) => {
                 appState = {}
                 appStateError = new errors.HTTPNotFound('Not found')
             } else {
-                const fetchStrategiesSpan = createChildSpan('ssr.fetch-strategies')
                 res.__performanceTimer.mark(PERFORMANCE_MARKS.fetchStrategies, 'start')
                 const ret = await AppConfig.initAppState({
                     App: WrappedApp,
@@ -220,10 +216,8 @@ export const render = async (req, res, next) => {
                 }
                 appStateError = ret.error
                 res.__performanceTimer.mark(PERFORMANCE_MARKS.fetchStrategies, 'end')
-                endSpan(fetchStrategiesSpan)
             }
 
-            const renderToStringSpan = createChildSpan('ssr.render-to-string')
             res.__performanceTimer.mark(PERFORMANCE_MARKS.renderToString, 'start')
             appJSX = React.cloneElement(appJSX, {error: appStateError, appState})
 
@@ -249,7 +243,6 @@ export const render = async (req, res, next) => {
             }
 
             res.__performanceTimer.mark(PERFORMANCE_MARKS.renderToString, 'end')
-            endSpan(renderToStringSpan)
 
             // Step 5 - Determine what is going to happen, redirect, or send html with
             // the correct status code.
@@ -258,7 +251,7 @@ export const render = async (req, res, next) => {
             const status = (error && error.status) || res.statusCode
 
             res.__performanceTimer.mark(PERFORMANCE_MARKS.total, 'end')
-            endSpan(totalSpan)
+
             res.__performanceTimer.log()
 
             if (includeServerTimingHeader) {
