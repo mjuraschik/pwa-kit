@@ -63,7 +63,7 @@ class MRTTargetManager {
      * Find an available environment of the specified type
      */
     findAvailableEnvironment(poolData) {
-        const availableEnvs = poolData.environments.filter((env) => env.status === 'available')
+        const availableEnvs = poolData.environments.filter((env) => env.ciAvailability === 'available')
 
         if (availableEnvs.length === 0) {
             return null
@@ -75,29 +75,27 @@ class MRTTargetManager {
     /**
      * Mark environment as in-use by current PR
      */
-    updateMRTTargetStatus(poolData, environment, status) {
+    updateMRTTargetStatus(poolData, environment, ciAvailability) {
         const updatedPoolData = {
             ...poolData,
             environments: poolData.environments.map((env) => {
                 if (env.slug === environment.slug) {
                     const updatedEnv = {
                         ...env,
-                        status,
-                        acquiredAt: new Date().toISOString(),
-                        lastUsed: new Date().toISOString()
+                        ciAvailability,
+                        ciAcquiredAt: new Date().toISOString(),
+                        ciLastUsed: new Date().toISOString()
                     }
 
-                    if (status === 'in-use') {
-                        // Add PR, branch, and action info when marking as in-use
-                        if (this.prNumber) updatedEnv.prNumber = this.prNumber
-                        if (this.branch) updatedEnv.branch = this.branch
-                        if (this.runId) updatedEnv.runId = this.runId
-                    } else if (status === 'available') {
-                        // Remove PR, branch, and action info when marking as available
-                        delete updatedEnv.prNumber
-                        delete updatedEnv.branch
-                        delete updatedEnv.runId
-                        delete updatedEnv.acquiredAt
+                    if (ciAvailability === 'in-use') {
+                        if (this.prNumber) updatedEnv.ciPRNumber = this.prNumber
+                        if (this.branch) updatedEnv.ciBranch = this.branch
+                        if (this.runId) updatedEnv.ciRunId = this.runId
+                    } else if (ciAvailability === 'available') {
+                        delete updatedEnv.ciPRNumber
+                        delete updatedEnv.ciBranch
+                        delete updatedEnv.ciRunId
+                        delete updatedEnv.ciAcquiredAt
                     }
 
                     return updatedEnv
@@ -120,10 +118,10 @@ class MRTTargetManager {
             const status = {
                 total: downloadResponse.poolData.environments.length,
                 available: downloadResponse.poolData.environments.filter(
-                    (env) => env.status === 'available'
+                    (env) => env.ciAvailability === 'available'
                 ).length,
                 inUse: downloadResponse.poolData.environments.filter(
-                    (env) => env.status === 'in-use'
+                    (env) => env.ciAvailability === 'in-use'
                 ).length,
                 environments: downloadResponse.poolData.environments
             }
@@ -294,6 +292,16 @@ async function main() {
         .command('status')
         .description('Show pool status')
         .action(async () => {
+            /**
+             * roleArn: [ARN - Amazon Resource Name] unique identifier for the 'Role' resource 
+             * that the currently authenticated AWS user assumes to get permissions defined by policies attached to the role.
+             * 
+             * roleSessionName: Arbitrary identifier used to point out which session did certain actions originate from.
+             * Typically used in logs [AWS Cloudwatch logs] like: 
+             * - [GithubActions-E2E-CI] Created new resource pwa-kit-ci/demo.json in S3.
+             * or
+             * - [LocalDev] Downloaded resource pwa-kit-ci/demo.json from S3.
+             */
             const mrtTargetManager = new MRTTargetManager({
                 bucket: process.env.AWS_S3_BUCKET,
                 poolDataFileKey: process.env.AWS_S3_POOL_DATA_FILE_KEY,
@@ -341,7 +349,7 @@ async function main() {
                 const result = await mrtTargetManager.acquireEnvironment()
 
                 console.log(`Environment: ${result.environment.slug}`)
-                console.log(`URL: ${result.environment.envURL}`)
+                console.log(`URL: ${result.environment.ssrExternalHostname}`)
 
                 /**
                  * We need to write the environment details and status to a file so that the workflow can use it.
@@ -387,9 +395,18 @@ async function main() {
 
             try {
                 await mrtTargetManager.releaseEnvironment(slug)
+                
+                // Delete the target details file on successful release
+                await fs.remove(MRT_TARGET_DETAILS_FILE)
+                console.log(`✅ Deleted target details file: ${MRT_TARGET_DETAILS_FILE}`)
             } catch (error) {
-                console.error('❌ Error:', error.message)
-                process.exit(1)
+                // Check if it's a file deletion error
+                if (error.code === 'ENOENT' || error.message.includes('target details file')) {
+                    console.warn(`⚠️ Warning: Could not delete target details file: ${error.message}`)
+                } else {
+                    console.error('❌ Error:', error.message)
+                    process.exit(1)
+                }
             }
         })
     await program.parseAsync()
