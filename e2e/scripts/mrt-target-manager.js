@@ -79,7 +79,7 @@ class MRTTargetManager {
         const updatedPoolData = {
             ...poolData,
             environments: poolData.environments.map((env) => {
-                if (env.mrtEnvId === environment.mrtEnvId) {
+                if (env.slug === environment.slug) {
                     const updatedEnv = {
                         ...env,
                         status,
@@ -179,7 +179,7 @@ class MRTTargetManager {
                 )
 
                 // Step 5: Success! Return acquired environment
-                console.log(`✅ Successfully acquired environment: ${availableEnv.mrtEnvId}`)
+                console.log(`✅ Successfully acquired environment: ${availableEnv.slug}`)
                 return {
                     environment: availableEnv,
                     poolData: updatedPoolData,
@@ -212,11 +212,11 @@ class MRTTargetManager {
     /**
      * Release an environment back to the pool
      */
-    async releaseEnvironment(mrtEnvId) {
+    async releaseEnvironment(slug) {
         if (!process.env.CI) {
             throw new Error(`❌ Cannot release environment in local development - Read only access`)
         }
-        console.log(`🔓 Releasing environment: ${mrtEnvId}`)
+        console.log(`🔓 Releasing environment: ${slug}`)
 
         let retryCount = 0
 
@@ -226,10 +226,10 @@ class MRTTargetManager {
                 const downloadResponse = await this.downloadPoolFile()
                 const poolData = downloadResponse.poolData
 
-                const envToRelease = poolData.environments.find((env) => env.mrtEnvId === mrtEnvId)
+                const envToRelease = poolData.environments.find((env) => env.slug === slug)
 
                 if (!envToRelease) {
-                    throw new Error(`❌ Environment ${mrtEnvId} not found`)
+                    throw new Error(`❌ Environment ${slug} not found`)
                 }
 
                 // Step 3: Mark environment as in-use
@@ -246,7 +246,7 @@ class MRTTargetManager {
                     poolData.etag
                 )
 
-                console.log(`✅ Successfully released environment: ${mrtEnvId}`)
+                console.log(`✅ Successfully released environment: ${slug}`)
                 return true
             } catch (error) {
                 retryCount++
@@ -340,7 +340,7 @@ async function main() {
             try {
                 const result = await mrtTargetManager.acquireEnvironment()
 
-                console.log(`Environment: ${result.environment.mrtEnvId}`)
+                console.log(`Environment: ${result.environment.slug}`)
                 console.log(`URL: ${result.environment.envURL}`)
 
                 /**
@@ -367,10 +367,10 @@ async function main() {
     program
         .command('release')
         .description('Release an MRT environment')
-        .argument('<mrtEnvId>', 'Environment Id to release')
+        .argument('<slug>', 'Environment Id to release')
         .option('--max-retries <number>', 'Maximum retry attempts', '3')
         .option('--retry-delay <ms>', 'Delay between retries in milliseconds', '10000')
-        .action(async (mrtEnvId) => {
+        .action(async (slug) => {
             const globalOpts = program.opts()
 
             const mrtTargetManager = new MRTTargetManager({
@@ -386,7 +386,7 @@ async function main() {
             await mrtTargetManager.initialize()
 
             try {
-                await mrtTargetManager.releaseEnvironment(mrtEnvId)
+                await mrtTargetManager.releaseEnvironment(slug)
             } catch (error) {
                 console.error('❌ Error:', error.message)
                 process.exit(1)
