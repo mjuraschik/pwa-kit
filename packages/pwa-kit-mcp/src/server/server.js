@@ -40,9 +40,6 @@ class PwaStorefrontMCPServerHighLevel {
         this.CreateNewComponentTool = CreateNewComponentTool
         this.testWithPlaywrightTool = new TestWithPlaywrightTool()
         this.setupTools()
-        // Remove in-memory session management for CreateNewComponentTool
-        // this.sessions = {}
-        // this.sessionCounter = 1
     }
 
     setupTools() {
@@ -68,8 +65,6 @@ class PwaStorefrontMCPServerHighLevel {
             },
             ({testType, siteUrl}) => this.testWithPlaywrightTool.run(testType, siteUrl)
         )
-        // Debug: Print CreateNewComponentTool object
-        console.log('Registering CreateNewComponentTool:', this.CreateNewComponentTool)
         this.server.tool(
             this.CreateNewComponentTool.name,
             this.CreateNewComponentTool.description,
