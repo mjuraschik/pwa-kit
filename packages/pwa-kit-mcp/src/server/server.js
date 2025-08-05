@@ -15,7 +15,7 @@ import {
     DeveloperGuidelinesTool,
     TestWithPlaywrightTool,
     CreateNewPageTool
-} from '../tools/index.js'
+} from '../tools'
 
 // NOTE: This is a workaround to import JSON files as ES modules.
 // eslint-disable-next-line @typescript-eslint/no-var-requires
