@@ -42,6 +42,7 @@ class SecureS3Client {
     async _assumeRole() {
         try {
             const sts = new STSClient({region: this.region})
+
             /**
              * Authentication for GithubActions user is handled via OIDC and does not require an external ID.
              */
@@ -49,7 +50,7 @@ class SecureS3Client {
                 RoleArn: this.roleArn,
                 RoleSessionName: this.roleSessionName,
                 DurationSeconds: 3600,
-                ...(!process.env.CI && {ExternalId: this.externalId})
+                ...(process.env.CI && {ExternalId: this.externalId})
             })
 
             const data = await sts.send(command)

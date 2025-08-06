@@ -96,19 +96,21 @@ class MRTTargetManager {
                     const updatedEnv = {
                         ...env,
                         ciAvailability,
-                        ciAcquiredAt: new Date().toISOString(),
                         ciLastUsed: new Date().toISOString()
                     }
 
                     if (ciAvailability === CI_AVAILABILITY_IN_USE) {
-                        if (this.prNumber) updatedEnv.ciPRNumber = this.prNumber
-                        if (this.branch) updatedEnv.ciBranch = this.branch
-                        if (this.runId) updatedEnv.ciRunId = this.runId
+                        const ciRunInfo = {
+                            ciAcquiredAt: new Date().toISOString()
+                        }
+
+                        if (this.prNumber) ciRunInfo.prNumber = this.prNumber
+                        if (this.branch) ciRunInfo.branch = this.branch
+                        if (this.runId) ciRunInfo.runId = this.runId
+
+                        updatedEnv.ciRunInfo = ciRunInfo
                     } else if (ciAvailability === CI_AVAILABILITY_AVAILABLE) {
-                        delete updatedEnv.ciPRNumber
-                        delete updatedEnv.ciBranch
-                        delete updatedEnv.ciRunId
-                        delete updatedEnv.ciAcquiredAt
+                        delete updatedEnv.ciRunInfo
                     }
 
                     return updatedEnv
@@ -327,6 +329,7 @@ async function main() {
                 process.exit(1)
             }
         })
+
     await program.parseAsync()
 }
 
