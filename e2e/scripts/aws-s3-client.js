@@ -1,11 +1,4 @@
-const {
-    S3Client,
-    PutObjectCommand,
-    GetObjectCommand,
-    ListObjectsV2Command,
-    DeleteObjectCommand,
-    HeadObjectCommand
-} = require('@aws-sdk/client-s3')
+const {S3Client, PutObjectCommand, GetObjectCommand} = require('@aws-sdk/client-s3')
 const {STSClient, AssumeRoleCommand} = require('@aws-sdk/client-sts')
 const {
     PWA_KIT_BOT_USER_SESSION,
