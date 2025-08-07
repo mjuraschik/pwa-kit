@@ -622,10 +622,8 @@ describe('MRTTargetManager', () => {
 
         it('should set up status command', async () => {
             // Mock the main function execution
-            const originalMain = require('./mrt-target-manager').main
-            if (typeof originalMain === 'function') {
-                await originalMain()
-            }
+            const {main} = require('./mrt-target-manager')
+            await main()
 
             expect(mockProgram.command).toHaveBeenCalledWith('status')
             expect(mockCommand.description).toHaveBeenCalledWith('Show pool status')
@@ -633,10 +631,8 @@ describe('MRTTargetManager', () => {
 
         it('should set up acquire command', async () => {
             // Mock the main function execution
-            const originalMain = require('./mrt-target-manager').main
-            if (typeof originalMain === 'function') {
-                await originalMain()
-            }
+            const {main} = require('./mrt-target-manager')
+            await main()
 
             expect(mockProgram.command).toHaveBeenCalledWith('acquire')
             expect(mockCommand.description).toHaveBeenCalledWith('Acquire an MRT environment')
