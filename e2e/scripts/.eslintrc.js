@@ -23,7 +23,8 @@ module.exports = {
         'no-unused-vars': 'warn',
         'no-undef': 'error',
         'no-prototype-builtins': 'error',
-        'no-empty': 'error'
+        'no-empty': 'error',
+        'jest/no-deprecated-functions': 'off'
     },
     overrides: [
         {
