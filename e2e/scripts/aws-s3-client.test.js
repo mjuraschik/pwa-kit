@@ -50,7 +50,7 @@ describe('SecureS3Client', () => {
     })
 
     describe('constructor', () => {
-        it('should create instance with default options', () => {
+        test('should create instance with default options', () => {
             client = new SecureS3Client()
 
             expect(client.roleArn).toBeUndefined()
@@ -61,7 +61,7 @@ describe('SecureS3Client', () => {
             expect(client.credentials).toBeNull()
         })
 
-        it('should create instance with custom options', () => {
+        test('should create instance with custom options', () => {
             const options = {
                 roleArn: 'arn:aws:iam::123456789012:role/test-role',
                 roleSessionName: 'test-session',
@@ -85,7 +85,7 @@ describe('SecureS3Client', () => {
             client = new SecureS3Client()
         })
 
-        it('should initialize without role assumption when roleArn is not provided', async () => {
+        test('should initialize without role assumption when roleArn is not provided', async () => {
             const mockAssumeRole = jest.spyOn(client, '_assumeRole')
 
             await client.initialize()
@@ -98,7 +98,7 @@ describe('SecureS3Client', () => {
             expect(console.log).toHaveBeenCalledWith(`🔐 Using ${AWS_ACCESS_READ_WRITE} access`)
         })
 
-        it('should initialize with role assumption when roleArn is provided', async () => {
+        test('should initialize with role assumption when roleArn is provided', async () => {
             client.roleArn = 'arn:aws:iam::123456789012:role/test-role'
             const mockAssumeRole = jest.spyOn(client, '_assumeRole').mockResolvedValue()
 
@@ -120,7 +120,7 @@ describe('SecureS3Client', () => {
             })
         })
 
-        it('should successfully assume role', async () => {
+        test('should successfully assume role', async () => {
             const mockCredentials = {
                 AccessKeyId: 'test-access-key',
                 SecretAccessKey: 'test-secret-key',
@@ -149,7 +149,7 @@ describe('SecureS3Client', () => {
         })
 
         // TODO: Remove skip before merging when we flip process.env.CI to false locally.
-        it('should not include ExternalId when running in CI', async () => {
+        test('should not include ExternalId when running in CI', async () => {
             const originalCI = process.env.CI
             process.env.CI = 'true'
             client.externalId = 'test-external-id'
@@ -173,7 +173,7 @@ describe('SecureS3Client', () => {
             process.env.CI = originalCI
         })
 
-        it('should throw error when role assumption fails', async () => {
+        test('should throw error when role assumption fails', async () => {
             const error = new Error('Role assumption failed')
             mockSTSClient.send.mockRejectedValue(error)
 
@@ -188,7 +188,7 @@ describe('SecureS3Client', () => {
             await client.initialize()
         })
 
-        it('should successfully upload file with ETag', async () => {
+        test('should successfully upload file with ETag', async () => {
             const mockResult = {ETag: '"test-etag"'}
             mockS3Client.send.mockResolvedValue(mockResult)
 
@@ -206,7 +206,7 @@ describe('SecureS3Client', () => {
             )
         })
 
-        it('should throw error when upload fails', async () => {
+        test('should throw error when upload fails', async () => {
             const error = new Error('Upload failed')
             mockS3Client.send.mockRejectedValue(error)
 
@@ -216,7 +216,7 @@ describe('SecureS3Client', () => {
             expect(console.error).toHaveBeenCalledWith('❌ Upload failed:', error)
         })
 
-        it('should handle PreconditionFailedException specifically', async () => {
+        test('should handle PreconditionFailedException specifically', async () => {
             const error = new Error('Precondition failed')
             error.name = 'PreconditionFailedException'
             mockS3Client.send.mockRejectedValue(error)
@@ -237,7 +237,7 @@ describe('SecureS3Client', () => {
             await client.initialize()
         })
 
-        it('should successfully download file', async () => {
+        test('should successfully download file', async () => {
             const mockResult = {
                 Body: 'test-body',
                 ETag: '"test-etag"',
@@ -267,7 +267,7 @@ describe('SecureS3Client', () => {
             expect(console.log).toHaveBeenCalledWith('✅ Download successful')
         })
 
-        it('should throw error when download fails', async () => {
+        test('should throw error when download fails', async () => {
             const error = new Error('Download failed')
             mockS3Client.send.mockRejectedValue(error)
 
@@ -279,7 +279,7 @@ describe('SecureS3Client', () => {
     })
 
     describe('integration scenarios', () => {
-        it('should handle full workflow with role assumption and upload', async () => {
+        test('should handle full workflow with role assumption and upload', async () => {
             client = new SecureS3Client({
                 roleArn: 'arn:aws:iam::123456789012:role/test-role',
                 readOnly: false
@@ -310,7 +310,7 @@ describe('SecureS3Client', () => {
             expect(result).toBe(mockUploadResult)
         })
 
-        it('should handle read-only client correctly', async () => {
+        test('should handle read-only client correctly', async () => {
             client = new SecureS3Client({readOnly: true})
             await client.initialize()
 

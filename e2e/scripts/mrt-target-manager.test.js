@@ -70,7 +70,7 @@ describe('MRTTargetManager', () => {
     })
 
     describe('constructor', () => {
-        it('should create instance with custom options', () => {
+        test('should create instance with custom options', () => {
             delete process.env.CI
 
             const options = {
@@ -97,7 +97,7 @@ describe('MRTTargetManager', () => {
             expect(manager.runId).toBe(options.runId)
         })
 
-        it('should use roleArn when not in CI', () => {
+        test('should use roleArn when not in CI', () => {
             delete process.env.CI
 
             const options = {
@@ -116,7 +116,7 @@ describe('MRTTargetManager', () => {
             })
         })
 
-        it('should not use roleArn when in CI', () => {
+        test('should not use roleArn when in CI', () => {
             const originalCI = process.env.CI
             process.env.CI = 'true'
 
@@ -144,7 +144,7 @@ describe('MRTTargetManager', () => {
             manager = new MRTTargetManager()
         })
 
-        it('should initialize S3 client', async () => {
+        test('should initialize S3 client', async () => {
             await manager.initialize()
 
             expect(mockS3Client.initialize).toHaveBeenCalled()
@@ -156,7 +156,7 @@ describe('MRTTargetManager', () => {
             manager = new MRTTargetManager()
         })
 
-        it('should convert stream to string', async () => {
+        test('should convert stream to string', async () => {
             const mockStream = {
                 [Symbol.asyncIterator]: async function* () {
                     yield Buffer.from('Hello ')
@@ -178,7 +178,7 @@ describe('MRTTargetManager', () => {
             })
         })
 
-        it('should successfully download and parse pool file', async () => {
+        test('should successfully download and parse pool file', async () => {
             const mockPoolData = {
                 environments: [
                     {slug: 'env1', ciAvailability: CI_AVAILABILITY_AVAILABLE},
@@ -209,7 +209,7 @@ describe('MRTTargetManager', () => {
             })
         })
 
-        it('should throw error when pool file not found', async () => {
+        test('should throw error when pool file not found', async () => {
             const error = new Error('File not found')
             error.name = AWS_S3_ERR_NO_SUCH_KEY
             mockS3Client.download.mockRejectedValue(error)
@@ -218,7 +218,7 @@ describe('MRTTargetManager', () => {
             expect(console.log).toHaveBeenCalledWith('❌ Pool file not found.')
         })
 
-        it('should throw error for other download failures', async () => {
+        test('should throw error for other download failures', async () => {
             const error = new Error('Download failed')
             mockS3Client.download.mockRejectedValue(error)
 
@@ -231,7 +231,7 @@ describe('MRTTargetManager', () => {
             manager = new MRTTargetManager()
         })
 
-        it('should find first available environment', () => {
+        test('should find first available environment', () => {
             const poolData = {
                 environments: [
                     {slug: 'env1', ciAvailability: CI_AVAILABILITY_IN_USE},
@@ -245,7 +245,7 @@ describe('MRTTargetManager', () => {
             expect(result).toEqual({slug: 'env2', ciAvailability: CI_AVAILABILITY_AVAILABLE})
         })
 
-        it('should return null when no available environments', () => {
+        test('should return null when no available environments', () => {
             const poolData = {
                 environments: [
                     {slug: 'env1', ciAvailability: CI_AVAILABILITY_IN_USE},
@@ -258,7 +258,7 @@ describe('MRTTargetManager', () => {
             expect(result).toBeNull()
         })
 
-        it('should return null when no environments', () => {
+        test('should return null when no environments', () => {
             const poolData = {
                 environments: []
             }
@@ -278,7 +278,7 @@ describe('MRTTargetManager', () => {
             })
         })
 
-        it('should mark environment as in-use', () => {
+        test('should mark environment as in-use', () => {
             const poolData = {
                 environments: [{slug: 'env1', ciAvailability: CI_AVAILABILITY_AVAILABLE}]
             }
@@ -304,7 +304,7 @@ describe('MRTTargetManager', () => {
             })
         })
 
-        it('should mark environment as available', () => {
+        test('should mark environment as available', () => {
             const poolData = {
                 environments: [
                     {
@@ -331,7 +331,7 @@ describe('MRTTargetManager', () => {
             expect(result.environments[0].ciRunInfo).toBeUndefined()
         })
 
-        it('should not update other environments', () => {
+        test('should not update other environments', () => {
             const poolData = {
                 environments: [
                     {slug: 'env1', ciAvailability: CI_AVAILABILITY_AVAILABLE},
@@ -362,7 +362,7 @@ describe('MRTTargetManager', () => {
             })
         })
 
-        it('should return pool status with counts', async () => {
+        test('should return pool status with counts', async () => {
             const mockPoolData = {
                 environments: [
                     {slug: 'env1', ciAvailability: CI_AVAILABILITY_AVAILABLE},
@@ -396,7 +396,7 @@ describe('MRTTargetManager', () => {
             })
         })
 
-        it('should throw error when download fails', async () => {
+        test('should throw error when download fails', async () => {
             const error = new Error('Download failed')
             mockS3Client.download.mockRejectedValue(error)
 
@@ -414,7 +414,7 @@ describe('MRTTargetManager', () => {
             })
         })
 
-        it('should throw error when not in CI', async () => {
+        test('should throw error when not in CI', async () => {
             delete process.env.CI
 
             await expect(manager.acquireEnvironment()).rejects.toThrow(
@@ -422,7 +422,7 @@ describe('MRTTargetManager', () => {
             )
         })
 
-        it('should successfully acquire environment on first attempt', async () => {
+        test('should successfully acquire environment on first attempt', async () => {
             const originalCI = process.env.CI
             process.env.CI = 'true'
 
@@ -459,7 +459,7 @@ describe('MRTTargetManager', () => {
             process.env.CI = originalCI
         })
 
-        it('should retry on ETag mismatch', async () => {
+        test('should retry on ETag mismatch', async () => {
             const originalCI = process.env.CI
             process.env.CI = 'true'
             manager.maxRetries = 2
@@ -498,7 +498,7 @@ describe('MRTTargetManager', () => {
             process.env.CI = originalCI
         })
 
-        it('should throw error when no available environments', async () => {
+        test('should throw error when no available environments', async () => {
             const originalCI = process.env.CI
             process.env.CI = 'true'
 
@@ -526,7 +526,7 @@ describe('MRTTargetManager', () => {
             process.env.CI = originalCI
         })
 
-        it('should throw error after max retries', async () => {
+        test('should throw error after max retries', async () => {
             const originalCI = process.env.CI
             process.env.CI = 'true'
             manager.maxRetries = 2
@@ -560,7 +560,7 @@ describe('MRTTargetManager', () => {
             process.env.CI = originalCI
         })
 
-        it('should throw non-retryable errors immediately', async () => {
+        test('should throw non-retryable errors immediately', async () => {
             const originalCI = process.env.CI
             process.env.CI = 'true'
 
@@ -595,7 +595,7 @@ describe('MRTTargetManager', () => {
             manager = new MRTTargetManager()
         })
 
-        it('should delay for specified milliseconds', async () => {
+        test('should delay for specified milliseconds', async () => {
             const start = Date.now()
             await manager.sleep(100)
             const end = Date.now()
@@ -626,7 +626,7 @@ describe('MRTTargetManager', () => {
             Command.mockImplementation(() => mockProgram)
         })
 
-        it('should set up status command', async () => {
+        test('should set up status command', async () => {
             // Mock the main function execution
             const {main} = require('./mrt-target-manager')
             await main()
@@ -635,7 +635,7 @@ describe('MRTTargetManager', () => {
             expect(mockCommand.description).toHaveBeenCalledWith('Show pool status')
         })
 
-        it('should set up acquire command', async () => {
+        test('should set up acquire command', async () => {
             // Mock the main function execution
             const {main} = require('./mrt-target-manager')
             await main()
