@@ -41,7 +41,7 @@ jobs:
       - name: Install Monorepo Dependencies
         run: |-
           # Install node dependencies
-          node ./scripts/gtime.js monorepo_install npm ci
+          npm ci
 
       - name: Check Playwright Versions
         run: |-
