@@ -129,16 +129,6 @@ export const render = async (req, res, next) => {
     const includeServerTimingHeader = '__server_timing' in req.query
     const shouldTrackPerformance = includeServerTimingHeader || process.env.SERVER_TIMING
 
-    // Auto-enable OpenTelemetry and B3 tracing when performance tracking is requested
-    if (shouldTrackPerformance) {
-        if (!process.env.OTEL_SDK_ENABLED) {
-            process.env.OTEL_SDK_ENABLED = 'true'
-        }
-        if (!process.env.OTEL_B3_TRACING_ENABLED) {
-            process.env.OTEL_B3_TRACING_ENABLED = 'true'
-        }
-    }
-
     // Initialize server tracing if needed
     if (shouldTrackPerformance && !isServerTracingInitialized()) {
         initializeServerTracing()
@@ -250,6 +240,7 @@ export const render = async (req, res, next) => {
                 // Here, we use Express's convention to invoke error middleware.
                 // Note, we don't have an error handling middleware yet! This is calling the
                 // default error handling middleware provided by Express
+                shutdownServerTracing()
                 return next(e)
             }
 
@@ -276,6 +267,9 @@ export const render = async (req, res, next) => {
             } else {
                 res.status(status).send(html)
             }
+
+            // Cleanup OpenTelemetry tracing after response is sent
+            shutdownServerTracing()
         },
         res
     )
@@ -445,13 +439,5 @@ const serverRenderer =
     ({clientStats, serverStats}) => {
         return (req, res, next) => render(req, res, next)
     }
-
-/**
- * Cleanup function to shut down OpenTelemetry tracing
- * Call this when the server is shutting down to properly clean up resources
- */
-export const cleanup = async () => {
-    await shutdownServerTracing()
-}
 
 export default serverRenderer
