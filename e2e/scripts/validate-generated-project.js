@@ -45,11 +45,11 @@ const validateExtensibilityConfig = async (project, templateVersion) => {
     const pkg = require(pkgPath)
     return new Promise((resolve, reject) => {
         if (
-            !Object.prototype.hasOwnProperty.call(pkg, 'ccExtensibility') ||
-            !Object.prototype.hasOwnProperty.call(pkg['ccExtensibility'], 'extends') ||
-            !Object.prototype.hasOwnProperty.call(pkg['ccExtensibility'], 'overridesDir') ||
-            !pkg['ccExtensibility'].extends === '@salesforce/retail-react-app' ||
-            !pkg['ccExtensibility'].overridesDir === 'overrides'
+            !pkg.hasOwn('ccExtensibility') ||
+            !pkg['ccExtensibility'].hasOwn('extends') ||
+            !pkg['ccExtensibility'].hasOwn('overridesDir') ||
+            pkg['ccExtensibility'].extends !== '@salesforce/retail-react-app' ||
+            pkg['ccExtensibility'].overridesDir !== 'overrides'
         ) {
             reject(`Generated project ${project} is missing extensibility config in package.json`)
         }
