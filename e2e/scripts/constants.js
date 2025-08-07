@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
 const PWA_KIT_BOT_USER_SESSION = 'pwa-kit-bot-user-session'
 const GITHUB_ACTIONS_E2E_SESSION = 'github-actions-e2e-session'
 const CI_AVAILABILITY_AVAILABLE = 'available'
@@ -9,7 +15,7 @@ const AWS_ACCESS_READ_ONLY = 'READ-ONLY'
 const AWS_ACCESS_READ_WRITE = 'READ-WRITE'
 const AWS_S3_ERR_NO_SUCH_KEY = 'NoSuchKey'
 const AWS_S3_ERR_PRECONDITION_FAILED = 'PreconditionFailedException'
-const AWS_DEFAULT_REGION='us-east-1'
+const AWS_DEFAULT_REGION = 'us-east-1'
 
 module.exports = {
     PWA_KIT_BOT_USER_SESSION,
