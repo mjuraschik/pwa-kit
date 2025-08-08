@@ -86,7 +86,7 @@ jobs:
             # - This step is only engaged if the workflow is not skipped.
             - name: Engage Post hook to release MRT target back to the pool
               if: ${{ env.SKIP_WORKFLOW != 'true' }}
-              uses: ./.github/actions/mrt_post_release
+              uses: ./.github/actions/e2e_release_mrt_target
               with:
                   SLUG: ${{ steps.mrt_target_details.outputs.slug }}
                   MAX_RETRIES: 3
