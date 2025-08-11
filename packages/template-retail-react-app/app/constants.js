@@ -255,7 +255,11 @@ export const PASSWORDLESS_ERROR_MESSAGES = [
 
 export const INVALID_TOKEN_ERROR = /invalid token/i
 
-export const USER_NOT_FOUND_ERROR = /user not found/i
+/**
+ * @deprecated The app should not explicitly treat this error as a special case.
+ * TODO: Update the SLAS private client proxy to handle this error before it reaches the app.
+ */
+export const SLAS_USER_NOT_FOUND_ERROR = /user not found/i
 
 // Constant to enable partial hydration capabilities, i.e. `<Island/>` components
 export const PARTIAL_HYDRATION_ENABLED = false
