@@ -241,6 +241,69 @@ class MRTTargetManager {
     }
 
     /**
+     * Releases an MRT environment back into MRT target pool with optimistic locking.
+     * @param {string} slug - The slug of the environment to release.
+     * @returns {Promise<boolean>} - True if the environment was released successfully, false otherwise.
+     * @throws {Error} - If the environment is not found or there is an error (e.g. authentication issues) releasing it.
+     */
+    async releaseEnvironment(slug) {
+        if (!process.env.CI) {
+            throw new Error(`❌ Cannot release environment in local development - Read only access`)
+        }
+
+        console.log(`🔓 Releasing environment: ${slug}`)
+
+        let retryCount = 0
+        while (retryCount < this.maxRetries) {
+            try {
+                const downloadResponse = await this.downloadPoolFile()
+                const poolData = downloadResponse.poolData
+                const envToRelease = poolData.environments.find((env) => env.slug === slug)
+
+                if (!envToRelease) {
+                    throw new Error(`❌ Environment ${slug} not found`)
+                }
+
+                const updatedPoolData = this.updateMRTTargetStatus(
+                    downloadResponse.poolData,
+                    envToRelease,
+                    CI_AVAILABILITY_AVAILABLE
+                )
+
+                await this.s3Client.upload(
+                    this.bucket,
+                    this.poolDataFileKey,
+                    JSON.stringify(updatedPoolData, null, 2),
+                    downloadResponse.etag
+                )
+
+                console.log(`✅ Successfully released environment: ${slug}`)
+                return true
+            } catch (error) {
+                retryCount++
+
+                if (error.name === AWS_S3_ERR_PRECONDITION_FAILED) {
+                    console.log(`⚠️ ETag mismatch on release attempt ${retryCount}, retrying...`)
+                    if (retryCount < this.maxRetries) {
+                        await this.sleep(this.retryDelay)
+                        continue
+                    } else {
+                        throw new Error(
+                            `❌ Failed to release environment after ${this.maxRetries} attempts`
+                        )
+                    }
+                } else {
+                    throw error
+                }
+            }
+        }
+
+        throw new Error(
+            `❌ Failed to release environment ${slug} after ${this.maxRetries} attempts`
+        )
+    }
+
+    /**
      * Utility function for delays
      */
     sleep(ms) {
@@ -347,6 +410,47 @@ async function main() {
                     error: error.message
                 })
                 process.exit(1)
+            }
+        })
+
+    program
+        .command('release')
+        .description('Release an MRT environment')
+        .argument('<slug>', 'Environment Id to release')
+        .action(async (slug) => {
+            const globalOpts = program.opts()
+
+            const mrtTargetManager = new MRTTargetManager({
+                bucket: process.env.AWS_S3_BUCKET,
+                poolDataFileKey: process.env.AWS_S3_POOL_DATA_FILE_KEY,
+                roleArn: process.env.AWS_ROLE_ARN,
+                region: process.env.AWS_REGION,
+                externalId: process.env.AWS_EXTERNAL_ID,
+                maxRetries: parseInt(globalOpts.maxRetries),
+                retryDelay: parseInt(globalOpts.retryDelay),
+                roleSessionName: process.env.CI
+                    ? GITHUB_ACTIONS_E2E_SESSION
+                    : PWA_KIT_BOT_USER_SESSION
+            })
+
+            await mrtTargetManager.initialize()
+
+            try {
+                await mrtTargetManager.releaseEnvironment(slug)
+                // Delete the target details file on successful release
+
+                await fs.remove(MRT_TARGET_DETAILS_FILE)
+                console.log(`✅ Deleted target details file: ${MRT_TARGET_DETAILS_FILE}`)
+            } catch (error) {
+                // Check if it's a file deletion error
+                if (error.code === 'ENOENT' || error.message.includes('target details file')) {
+                    console.warn(
+                        `⚠️ Warning: Could not delete target details file: ${error.message}`
+                    )
+                } else {
+                    console.error('❌ Error:', error.message)
+                    process.exit(1)
+                }
             }
         })
 
