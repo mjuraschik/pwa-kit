@@ -103,7 +103,7 @@ jobs:
                   SSR_PROXY_CONFIGS: ${{ vars.PWA_KIT_E2E_TARGET_PROXY_CONFIGS }}
 
             # Skip the rest of the workflow for now.
-            - name: Simulating Test
+            - name: Simulating Test Run
               if: ${{ env.SKIP_WORKFLOW != 'true' }}
               run: |
                   sleep 30
