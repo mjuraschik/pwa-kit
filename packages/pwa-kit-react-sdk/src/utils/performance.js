@@ -96,10 +96,7 @@ export default class PerformanceTimer {
         }
 
         if (type !== this.MARKER_TYPES.START && type !== this.MARKER_TYPES.END) {
-            // Don't log warnings in test environments to avoid GitHub check failures
-            if (process.env.NODE_ENV !== 'test') {
-                logger.warn('Invalid mark type', {type, name, namespace: 'PerformanceTimer.mark'})
-            }
+            logger.warn('Invalid mark type', {type, name, namespace: 'PerformanceTimer.mark'})
             return
         }
 
@@ -126,13 +123,10 @@ export default class PerformanceTimer {
                         this.spanTimeouts.set(name, timeoutId)
                     }
                 } else {
-                    // Don't log warnings in test environments to avoid GitHub check failures
-                    if (process.env.NODE_ENV !== 'test') {
-                        logger.warn('Span already exists', {
+                    logger.warn('Span already exists', {
                             name,
                             namespace: 'PerformanceTimer.mark'
                         })
-                    }
                 }
             } else if (type === this.MARKER_TYPES.END) {
                 const startMark = `${name}.${this.MARKER_TYPES.START}`
@@ -167,24 +161,18 @@ export default class PerformanceTimer {
                     performance.clearMarks(endMark)
                     performance.clearMeasures(name)
                 } catch (error) {
-                    // Don't log warnings in test environments to avoid GitHub check failures
-                    if (process.env.NODE_ENV !== 'test') {
-                        logger.warn('Failed to measure performance mark', {
+                    logger.warn('Failed to measure performance mark', {
                             name,
                             error: error.message,
                             startMark,
                             endMark,
                             namespace: 'PerformanceTimer.mark'
                         })
-                    }
                 }
             }
         } catch (error) {
             if (error.name === 'SyntaxError') {
-                // Don't log warnings in test environments to avoid GitHub check failures
-                if (process.env.NODE_ENV !== 'test') {
-                    logger.warn('Invalid performance mark name', {name, error: error.message})
-                }
+                logger.warn('Invalid performance mark name', {name, error: error.message})
             } else {
                 logger.error('Error creating performance mark', {
                     name,
@@ -204,14 +192,11 @@ export default class PerformanceTimer {
     _cleanupOrphanedSpan(name, reason = 'manual') {
         const span = this.spans.get(name)
         if (span) {
-            // Don't log warnings in test environments to avoid GitHub check failures
-            if (process.env.NODE_ENV !== 'test') {
-                logger.warn('Cleaning up orphaned span', {
+            logger.warn('Cleaning up orphaned span', {
                     name,
                     error: 'Deleting orphaned span (reason: ' + reason + ' cleanup)',
                     namespace: 'PerformanceTimer._cleanupOrphanedSpan'
                 })
-            }
             endSpan(span)
             this.spans.delete(name)
         }

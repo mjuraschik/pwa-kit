@@ -22,9 +22,7 @@ const logSpanData = (span, event = 'start', res = null) => {
         startTime.length !== 2 ||
         (duration !== 0 && (!Array.isArray(duration) || duration.length !== 2))
     ) {
-        // Don't log warnings in test environments to avoid GitHub check failures
-        if (process.env.NODE_ENV !== 'test') {
-            logger.warn(
+        logger.warn(
                 'Invalid timing data detected - OpenTelemetry may not be properly initialized',
                 {
                     namespace: 'opentelemetry',
@@ -40,7 +38,6 @@ const logSpanData = (span, event = 'start', res = null) => {
                     }
                 }
             )
-        }
         return
     }
 
@@ -132,9 +129,7 @@ export const createChildSpan = (name, attributes = {}) => {
         // Check if OpenTelemetry is properly configured
         const otelConfig = getOTELConfig()
         if (!otelConfig.enabled) {
-            // Don't log warnings in test environments to avoid GitHub check failures
-            if (process.env.NODE_ENV !== 'test') {
-                logger.warn('OpenTelemetry is disabled - spans will not have proper timing data', {
+            logger.warn('OpenTelemetry is disabled - spans will not have proper timing data', {
                     namespace: 'opentelemetry',
                     additionalProperties: {
                         span_name: name,
@@ -143,7 +138,6 @@ export const createChildSpan = (name, attributes = {}) => {
                         suggestion: 'Set OTEL_SDK_ENABLED=true to enable proper timing'
                     }
                 })
-            }
         }
 
         const tracer = trace.getTracer(getServiceName())
