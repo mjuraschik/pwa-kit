@@ -27,4 +27,10 @@ runs:
           shell: bash
           run: |-
               set -e
-              node e2e/scripts/mrt-target-manager.js acquire --branch ${{inputs.BRANCH}} --run-id ${{inputs.RUN_ID}} --pr-number ${{inputs.PR_NUMBER}} --max-retries ${{inputs.MAX_RETRIES}} --retry-delay ${{inputs.RETRY_DELAY}}
+              cmd="node e2e/scripts/mrt-target-manager.js acquire --run-id ${{inputs.RUN_ID}} --max-retries ${{inputs.MAX_RETRIES}} --retry-delay ${{inputs.RETRY_DELAY}}"
+              if [ -n "${{inputs.PR_NUMBER}}" ]; then
+                cmd="$cmd --pr-number ${{inputs.PR_NUMBER}}"
+              elif [ -n "${{inputs.BRANCH}}" ]; then
+                cmd="$cmd --branch ${{inputs.BRANCH}}"
+              fi
+              eval $cmd
