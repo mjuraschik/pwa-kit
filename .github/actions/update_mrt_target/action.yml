@@ -80,9 +80,9 @@ runs:
                   ARGS+=("--ssr-whitelisted-ips" "${{ inputs.SSR_WHITELISTED_IPS }}")
               fi
               
-              if [ -n '${{ inputs.SSR_PROXY_CONFIGS }}' ]; then
+              if [ -n "${{ inputs.SSR_PROXY_CONFIGS }}" ]; then
                   ARGS+=("--ssr-proxy-configs")
-                  ARGS+=('${{ inputs.SSR_PROXY_CONFIGS }}')
+                  ARGS+=("${{ inputs.SSR_PROXY_CONFIGS }}")
               fi
               
               if [ -n "${{ inputs.ALLOW_COOKIES }}" ]; then
