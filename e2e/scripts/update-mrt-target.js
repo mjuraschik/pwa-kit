@@ -61,7 +61,7 @@ class MRTTargetUpdater {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.mobifyApiKey}`
                 },
-                body: payload
+                body: JSON.stringify(payload)
             })
             
             if (!response.ok) {
