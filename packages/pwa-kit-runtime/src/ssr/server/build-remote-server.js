@@ -720,6 +720,22 @@ export const RemoteServerFactory = {
 
         app.use(
             slasPrivateProxyPath,
+            (req, res, next) => {
+                // Check if the request should be blocked before it reaches the proxy
+                // We run this outside of the proxy middleware because modifying the response
+                // to send a 403 in the proxy causes issues with the response interceptor.
+                if (
+                    !req.path?.match(options.slasApiPath) ||
+                    req.path?.match(/\/oauth2\/trusted-system/)
+                ) {
+                    const message = `Request to ${req.path} is not allowed through the SLAS Private Client Proxy`
+                    logger.error(message)
+                    return res.status(403).json({
+                        message: message
+                    })
+                }
+                next()
+            },
             createProxyMiddleware({
                 target: options.slasTarget,
                 changeOrigin: true,
@@ -733,19 +749,6 @@ export const RemoteServerFactory = {
                         targetHost: options.slasHostName,
                         targetProtocol: 'https'
                     })
-
-                    // We don't want the proxy to handle any non-SLAS requests
-                    // or any trusted system requests
-                    if (
-                        !incomingRequest.path?.match(options.slasApiPath) ||
-                        incomingRequest.path?.match(/\/oauth2\/trusted-system/)
-                    ) {
-                        const message = `Request to ${incomingRequest.path} is not allowed through the SLAS Private Client Proxy`
-                        logger.error(message)
-                        return res.status(403).json({
-                            message: message
-                        })
-                    }
 
                     if (incomingRequest.path?.match(/\/oauth2\/trusted-agent\/token/)) {
                         // /oauth2/trusted-agent/token endpoint auth header comes from Account Manager
@@ -788,7 +791,10 @@ export const RemoteServerFactory = {
                         }
                         return Buffer.from(JSON.stringify(body), 'utf8')
                     } catch (error) {
-                        console.error('There is an error processing the response from SLAS. Returning original response.', error)
+                        console.error(
+                            'There is an error processing the response from SLAS. Returning original response.',
+                            error
+                        )
                         return responseBuffer
                     }
                 })
