@@ -93,4 +93,4 @@ runs:
               fi
 
               # Run the Node.js script
-              node e2e/scripts/update-mrt-target.js "${ARGS[@]}"
+              node e2e/scripts/update-mrt-target.js target "${ARGS[@]}"
