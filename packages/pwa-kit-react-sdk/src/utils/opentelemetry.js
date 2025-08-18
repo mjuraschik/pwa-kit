@@ -74,8 +74,7 @@ const logSpanData = (span, event = 'start', res = null) => {
         }
     }
 
-    // Only log if this is an end event or if it's a start event for a new span
-    if (event === 'end' || !Object.prototype.hasOwnProperty.call(span.attributes, 'event')) {
+    if (event === 'end') {
         console.info(JSON.stringify(spanData))
     }
 }
