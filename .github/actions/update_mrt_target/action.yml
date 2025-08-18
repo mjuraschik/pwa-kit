@@ -1,5 +1,5 @@
 name: update_mrt_target
-description: Update a target. This endpoint automatically re-deploys the current bundle if any of the SSR-related properties are changed.
+description: Update a MRT target environment. This endpoint automatically re-deploys the current bundle if any of the SSR-related properties are changed.
 inputs:
     PROJECT_SLUG:
         description: 'MRT Project slug'
