@@ -49,7 +49,7 @@ jobs:
           # The 'if' statement prevents an error if no lock files were found.
           if [[ -n $(git status -s) ]]; then
             git add .
-            git commit -m "chore: remove package-lock.json files before rebase"
+            git commit -m "chore: remove package-lock.json files before rebase and regenerating after"
           else
             echo "No package-lock.json files found to delete."
           fi
@@ -80,8 +80,8 @@ jobs:
       - name: Push Changes
         run: |
           git add .
-          git commit -m "chore: regenerated package-lock.json files after rebase"
-          git push origin adyenExpressPaymentsDreamForceTestAlertBranch --force-with-lease
+          git commit --amend --no-edit
+          git push origin adyenExpressPayments --force-with-lease
 
       # Step 9: This notification step will run if any of the above steps fail.
       - name: Notify on Failure
