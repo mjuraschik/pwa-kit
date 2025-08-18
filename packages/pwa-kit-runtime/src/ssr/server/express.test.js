@@ -1225,6 +1225,7 @@ describe('SLAS private client proxy', () => {
             .get('/mobify/slas/private/shopper/auth/v1/oauth2/trusted-agent/token')
             .then((response) => {
                 expect(response.body['_sfdc_client_auth']).toBe(encodedCredentials)
+                expect(response.body.authorization).toBeUndefined()
                 expect(response.body.host).toBe('shortCode.api.commercecloud.salesforce.com')
                 expect(response.body['x-mobify']).toBe('true')
             })
@@ -1282,14 +1283,12 @@ describe('SLAS private client proxy', () => {
         // Create a new mock server specifically for this test so we can mock a response from SLAS
         const testProxyApp = express()
         const testProxyPort = 12346
-        const testProxyPath = '/mockSLASTarget'
-        const testSlasTarget = `http://localhost:${testProxyPort}${testProxyPath}`
-
-        testProxyApp.use(testProxyPath, (req, res) => {
-            if (req.url.includes('/passwordless/login')) {
-                res.status(400).json({
-                    message: 'user not found'
-                })
+        const testSlasTarget = `http://localhost:${testProxyPort}/shopper/auth/responseHeaders`
+        
+        // Set up the mock server to return a 404 for passwordless login
+        testProxyApp.use('/shopper/auth/responseHeaders', (req, res) => {
+            if (req.url.includes('/oauth2/passwordless/login')) {
+                res.status(404).send()
             } else {
                 res.send(req.headers)
             }
@@ -1306,19 +1305,14 @@ describe('SLAS private client proxy', () => {
             const app = RemoteServerFactory._createApp(opts(testAppConfig))
 
             return await request(app)
-                .get('/mobify/slas/private/shopper/auth/v1/passwordless/login')
+                .get('/mobify/slas/private/shopper/auth/v1/oauth2/passwordless/login')
                 .expect(200)
                 .then((response) => {
-                    expect(response.body).toBe('')
                     expect(response.text).toBe('')
                 })
         } finally {
             // Clean up the test server
-            await new Promise((resolve) => {
-                testProxyServer.close(() => {
-                    resolve()
-                })
-            })
+            testProxyServer.close()
         }
-    }, 15000)
+    })
 })

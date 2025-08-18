@@ -13,8 +13,7 @@ import {
     CACHE_CONTROL,
     NO_CACHE,
     X_ENCODED_HEADERS,
-    CONTENT_SECURITY_POLICY,
-    SLAS_USER_NOT_FOUND_ERROR
+    CONTENT_SECURITY_POLICY
 } from './constants'
 import {
     catchAndLog,
@@ -754,42 +753,31 @@ export const RemoteServerFactory = {
                         // /oauth2/trusted-agent/token endpoint auth header comes from Account Manager
                         // so the SLAS private client is sent via this special header
                         proxyRequest.setHeader('_sfdc_client_auth', encodedSlasCredentials)
-                    }
-
-                    // We pattern match and add client secrets only to endpoints that
-                    // match the regex specified by options.applySLASPrivateClientToEndpoints.
-                    //
-                    // Other SLAS endpoints, ie. SLAS authenticate (/oauth2/login) and
-                    // SLAS logout (/oauth2/logout), use the Authorization header for a different
-                    // purpose so we don't want to overwrite the header for those calls.
-                    if (incomingRequest.path?.match(options.applySLASPrivateClientToEndpoints)) {
+                    } else if (incomingRequest.path?.match(options.applySLASPrivateClientToEndpoints)) {
+                        // We pattern match and add client secrets only to endpoints that
+                        // match the regex specified by options.applySLASPrivateClientToEndpoints.
+                        //
+                        // Other SLAS endpoints, ie. SLAS authenticate (/oauth2/login) and
+                        // SLAS logout (/oauth2/logout), use the Authorization header for a different
+                        // purpose so we don't want to overwrite the header for those calls.
                         proxyRequest.setHeader('Authorization', `Basic ${encodedSlasCredentials}`)
                     }
                 },
                 onProxyRes: responseInterceptor((responseBuffer, proxyRes, req, res) => {
                     try {
-                        let data = responseBuffer.toString('utf8')
-                        // If the SLAS response has no body, just return the empty buffer
-                        if (!data) {
-                            return responseBuffer
-                        }
-
-                        // If the response from SLAS has a body, it's expected to be in json format
-                        let body = JSON.parse(data)
-                        const message = body.message
-
-                        // If the message contains the string "user not found", return a 200 OK response
-                        // so it is not obvious that the user does not exist.
-                        if (SLAS_USER_NOT_FOUND_ERROR.test(message)) {
+                        // If the passwordless login endpoint returns a 404, which corresponds to a user
+                        // email not being found, we mask it with a 200 OK response so that it is not 
+                        // obvious that the user does not exist.
+                        // We do this to prevent user enumeration.
+                        if (req.path?.match(/\/oauth2\/passwordless\/login/) && proxyRes.statusCode === 404) {
                             res.statusCode = 200
                             res.statusMessage = 'OK'
 
-                            // User not found errors tend to come from the /passwordless/login endpoint.
                             // When a /passwordless/login endpoint response returns 200, it has no body
                             // so we return an empty body here to match an actual 200 response.
                             return Buffer.from('', 'utf8')
                         }
-                        return Buffer.from(JSON.stringify(body), 'utf8')
+                        return responseBuffer
                     } catch (error) {
                         console.error(
                             'There is an error processing the response from SLAS. Returning original response.',
