@@ -184,7 +184,6 @@ export const REMOVE_UNAVAILABLE_CART_ITEM_DIALOG_CONFIG = {
     }),
     onPrimaryAction: noop
 }
-
 export const STORE_LOCATOR_IS_ENABLED = true
 export const STORE_LOCATOR_SUPPORTED_COUNTRIES = [
     {
@@ -257,3 +256,9 @@ export const PASSWORDLESS_ERROR_MESSAGES = [
 export const INVALID_TOKEN_ERROR = /invalid token/i
 
 export const USER_NOT_FOUND_ERROR = /user not found/i
+
+/**
+ * Constant to enable partial hydration capabilities, i.e. `<Island/>` components
+ * @deprecated Use `partialHydrationEnabled` in the config file instead
+ */
+export const PARTIAL_HYDRATION_ENABLED = false

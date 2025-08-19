@@ -48,7 +48,7 @@ test('Registered shopper can checkout items', async ({page}) => {
 
     await answerConsentTrackingForm(page)
     await page.waitForLoadState()
-    
+
     // Verify user is logged in using URL and email verification
     const currentUrl = page.url()
     expect(currentUrl).toMatch(/\/account/)
@@ -89,7 +89,7 @@ test('Registered shopper can checkout items', async ({page}) => {
     await expect(page.getByRole('heading', {name: /Shipping & Gift Options/i})).toBeVisible()
 
     await page.waitForLoadState()
-    
+
     // Handle optional shipping step - some checkout flows skip this step
     const continueToPayment = page.getByRole('button', {
         name: /Continue to Payment/i
@@ -160,7 +160,7 @@ test('Registered shopper can add item to wishlist', async ({page}) => {
     }
     await answerConsentTrackingForm(page)
     await page.waitForLoadState()
-    
+
     // Verify user is logged in using URL and email verification
     const currentUrl = page.url()
     expect(currentUrl).toMatch(/\/account/)

@@ -9,6 +9,7 @@ module.exports = {
   RETAIL_APP_HOME:
     process.env.RETAIL_APP_HOME ||
     "https://scaffold-pwa-e2e-tests-pwa-kit.mobify-storefront.com",
+  RETAIL_APP_HOME_SITE: "RefArch",
   GENERATED_PROJECTS_DIR: "../generated-projects",
   GENERATE_PROJECTS: ["retail-app-demo", "retail-app-ext", "retail-app-no-ext"],
   GENERATOR_CMD:
@@ -103,14 +104,17 @@ module.exports = {
     "retail-app-private-client": [],
     "retail-react-app-bug-bounty": [],
     "retail-react-app-demo-site": [],
+    "retail-react-app-performance-tests": [],
   },
   PRESET: {
     "retail-app-private-client": "retail-react-app-private-slas-client",
     "retail-react-app-bug-bounty": "retail-react-app-bug-bounty",
-    "retail-react-app-demo-site": "retail-react-app-demo-site-internal"
+    "retail-react-app-demo-site": "retail-react-app-demo-site-internal",
+    "retail-react-app-performance-tests": "retail-react-app-performance-tests"
   },
   EXPECTED_GENERATED_ARTIFACTS: {
     "retail-app-demo": [
+      ".cursor",
       ".eslintignore",
       ".eslintrc.js",
       ".prettierrc.yaml",
@@ -124,6 +128,7 @@ module.exports = {
       "worker",
     ],
     "retail-app-ext": [
+      ".cursor",
       ".eslintignore",
       ".eslintrc.js",
       ".prettierrc.yaml",
@@ -162,5 +167,6 @@ module.exports = {
   },
   PWA_E2E_USER_EMAIL: process.env.PWA_E2E_USER_EMAIL,
   PWA_E2E_USER_PASSWORD: process.env.PWA_E2E_USER_PASSWORD,
-  SOCIAL_LOGIN_RETAIL_APP_HOME: "https://wasatch-mrt-feature-public.mrt-storefront-staging.com"
+  EXTRA_FEATURES_E2E_RETAIL_APP_HOME: "https://scaffold-pwa-extra-features-e2e.mobify-storefront.com",
+  EXTRA_FEATURES_E2E_RETAIL_APP_HOME_SITE: "RefArchGlobal"
 };
