@@ -97,7 +97,7 @@ jobs:
               # Like proxy configs, enabling cookies or other MRT env settings.
             - name: Create .env with settings to be updated on the MRT target
               run: |-
-                  echo "PROXY_CONFIGS=${{ vars.PWA_KIT_E2E_TARGET_PROXY_CONFIGS }}" >> ${{ vars.MRT_ENV_SETTINGS_E2E_BASE_FILENAME }}
+                  echo "MRT_TARGET_SSR_PROXY_CONFIGS=${{ vars.PWA_KIT_E2E_TARGET_PROXY_CONFIGS }}" >> ${{ vars.MRT_ENV_SETTINGS_E2E_BASE_FILENAME }}
 
               # Environment variables you'd like to set on the MRT target must be in MRT_ENV_VARS_E2E_BASE_FILENAME file.
               # See: https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/references/mrt-admin?meta=projects_target_env_var_partial_update
@@ -116,7 +116,8 @@ jobs:
               if: ${{ env.SKIP_WORKFLOW != 'true' }}
               uses: ./.github/actions/update_mrt_target
               with:
-                  PROJECT_SLUG: ${{ steps.mrt_target_details.outputs.slug }}
+                  PROJECT_SLUG: ${{ vars.MRT_STG_PWA_KIT_PROJECT_ID }}
+                  TARGET_SLUG: ${{ steps.mrt_target_details.outputs.slug }}
                   MOBIFY_API_KEY: ${{ secrets.MRT_STG_PWA_KIT_CI_API_KEY }}
                   CLOUD_ORIGIN: ${{ vars.MRT_STG_CLOUD_ORIGIN }}
                   MRT_TARGET_SETTINGS_FILE_PATH: ${{ vars.MRT_ENV_VARS_E2E_BASE_FILENAME }}
