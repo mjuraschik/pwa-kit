@@ -92,30 +92,35 @@ jobs:
                   MAX_RETRIES: 3
                   RETRY_DELAY: 10000
 
-            - name: Update MRT Target Proxy Configs
+              # Properties specified in the body for MRT API to update settings must be in MRT_ENV_SETTINGS_E2E_BASE_FILENAME file.
+              # See: https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/references/mrt-admin?meta=projects_target_partial_update
+              # Like proxy configs, enabling cookies or other MRT env settings.
+            - name: Create .env with settings to be updated on the MRT target
+              run: |-
+                  echo "PROXY_CONFIGS=${{ vars.PWA_KIT_E2E_TARGET_PROXY_CONFIGS }}" >> ${{ vars.MRT_ENV_SETTINGS_E2E_BASE_FILENAME }}
+
+              # Environment variables you'd like to set on the MRT target must be in MRT_ENV_VARS_E2E_BASE_FILENAME file.
+              # See: https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/references/mrt-admin?meta=projects_target_env_var_partial_update
+              # These are the env variables required by the storefront to be set in MRT for the e2e tests to run.
+              # Like SLAS client secret.
+            - name: Create .env with environment variables to be set on the MRT target
+              run: |-
+                  echo "PWA_KIT_SLAS_CLIENT_SECRET=${{ secrets.ZZRF_002_SLAS_PRIVATE_CLIENT_SECRET }}" > ${{ vars.MRT_ENV_VARS_E2E_BASE_FILENAME }}
+
+              # Call the e2e/scripts/update-mrt-target.js script to update the MRT target config and environment variables.
+              # This script is a Node.js script that makes a PATCH request to the MRT API to update the MRT target config and environment variables.
+              # The script is located in the e2e/scripts directory.
+              # The script is called from the .github/actions/update_mrt_target action.
+              # The script is called with the following arguments:
+            - name: Update MRT Target Config and Environment Variables
               if: ${{ env.SKIP_WORKFLOW != 'true' }}
               uses: ./.github/actions/update_mrt_target
               with:
-                  PROJECT_SLUG: ${{ vars.MRT_STG_PWA_KIT_PROJECT_ID }}
-                  TARGET_SLUG: ${{ steps.mrt_target_details.outputs.slug }}
+                  PROJECT_SLUG: ${{ steps.mrt_target_details.outputs.slug }}
                   MOBIFY_API_KEY: ${{ secrets.MRT_STG_PWA_KIT_CI_API_KEY }}
                   CLOUD_ORIGIN: ${{ vars.MRT_STG_CLOUD_ORIGIN }}
-                  SSR_PROXY_CONFIGS: ${{ vars.PWA_KIT_E2E_TARGET_PROXY_CONFIGS }}
-
-              # Write all required env vars to a test env specific .env file.
-              # This will be read by e2e/scripts/update-mrt-target.js and will be set to the current acquired MRT target.
-            - name: Create and populate .env file for MRT Target
-              run: |-
-                  echo PWA_KIT_SLAS_CLIENT_SECRET="${{ secrets.ZZRF_002_SLAS_PRIVATE_CLIENT_SECRET }}" > ${{ vars.MRT_ENV_PER_PR_E2E_BASE_FILENAME }}
-
-            - name: Update MRT Target Environment Variables
-              uses: ./.github/actions/update_mrt_target_env_var
-              with:
-                  PROJECT_SLUG: ${{ vars.MRT_STG_PWA_KIT_PROJECT_ID }}
-                  TARGET_SLUG: ${{ steps.mrt_target_details.outputs.slug }}
-                  MOBIFY_API_KEY: ${{ secrets.MRT_STG_PWA_KIT_CI_API_KEY }}
-                  CLOUD_ORIGIN: ${{ vars.MRT_STG_CLOUD_ORIGIN }}
-                  ENV_FILE_PATH: ${{ vars.MRT_ENV_PER_PR_E2E_BASE_FILENAME }}
+                  MRT_TARGET_SETTINGS_FILE_PATH: ${{ vars.MRT_ENV_VARS_E2E_BASE_FILENAME }}
+                  MRT_TARGET_VARS_FILE_PATH: ${{ vars.MRT_ENV_VARS_E2E_BASE_FILENAME }}
 
             # Skip the rest of the workflow for now.
             - name: Simulating Test Run

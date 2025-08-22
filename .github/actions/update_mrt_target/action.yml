@@ -14,36 +14,19 @@ inputs:
         description: 'MRT Cloud origin'
         required: false
         default: 'https://cloud.mobify.com'
-    NAME:
-        description: 'Target name'
+    MRT_TARGET_SETTINGS_FILE_PATH:
+        description: 'Path to .env file containing MRT target environment settings'
         required: false
-    SSR_EXTERNAL_HOSTNAME:
-        description: 'SSR external hostname'
-        required: false
-    SSR_EXTERNAL_DOMAIN:
-        description: 'SSR external domain'
-        required: false
-    SSR_REGION:
-        description: 'SSR region'
-        required: false
-    SSR_WHITELISTED_IPS:
-        description: 'SSR whitelisted IPs'
-        required: false
-    SSR_PROXY_CONFIGS:
-        description: 'Proxy configs (JSON array)'
-        required: false
-    ALLOW_COOKIES:
-        description: 'Allow cookies (true/false)'
-        required: false
-    ENABLE_SOURCE_MAPS:
-        description: 'Enable source maps (true/false)'
+    MRT_TARGET_VARS_FILE_PATH:
+        description: 'Path to .env file containing environment variables to be set on the MRT target environment'
         required: false
 
 runs:
     using: composite
     steps:
-        - name: Update MRT Target
-          id: update_mrt_target
+        - name: Update MRT Target Settings
+          id: update_mrt_target_settings
+          if: ${{ inputs.MRT_TARGET_SETTINGS_FILE_PATH != '' }}
           shell: bash
           run: |-
               set -e
@@ -53,44 +36,28 @@ runs:
                   "--project-slug" "${{ inputs.PROJECT_SLUG }}"
                   "--target-slug" "${{ inputs.TARGET_SLUG }}"
                   "--mobify-api-key" "${{ inputs.MOBIFY_API_KEY }}"
+                  "--cloud-origin" "${{ inputs.CLOUD_ORIGIN }}"
+                  "--env-file" "${{ inputs.MRT_TARGET_SETTINGS_FILE_PATH }}"
               )
-
-              # Add optional arguments only if they have values
-              if [ -n "${{ inputs.CLOUD_ORIGIN }}" ]; then
-                  ARGS+=("--cloud-origin" "${{ inputs.CLOUD_ORIGIN }}")
-              fi
-
-              if [ -n "${{ inputs.NAME }}" ]; then
-                  ARGS+=("--name" "${{ inputs.NAME }}")
-              fi
-
-              if [ -n "${{ inputs.SSR_EXTERNAL_HOSTNAME }}" ]; then
-                  ARGS+=("--ssr-external-hostname" "${{ inputs.SSR_EXTERNAL_HOSTNAME }}")
-              fi
-
-              if [ -n "${{ inputs.SSR_EXTERNAL_DOMAIN }}" ]; then
-                  ARGS+=("--ssr-external-domain" "${{ inputs.SSR_EXTERNAL_DOMAIN }}")
-              fi
-
-              if [ -n "${{ inputs.SSR_REGION }}" ]; then
-                  ARGS+=("--ssr-region" "${{ inputs.SSR_REGION }}")
-              fi
-
-              if [ -n ${{ inputs.SSR_WHITELISTED_IPS }} ]; then
-                  ARGS+=("--ssr-whitelisted-ips" "${{ inputs.SSR_WHITELISTED_IPS }}")
-              fi
-
-              if [ -n "${{ inputs.SSR_PROXY_CONFIGS }}" ]; then
-                  ARGS+=("--ssr-proxy-configs" "${{ inputs.SSR_PROXY_CONFIGS }}")
-              fi
-
-              if [ -n "${{ inputs.ALLOW_COOKIES }}" ]; then
-                  ARGS+=("--allow-cookies" "${{ inputs.ALLOW_COOKIES }}")
-              fi
-
-              if [ -n "${{ inputs.ENABLE_SOURCE_MAPS }}" ]; then
-                  ARGS+=("--enable-source-maps" "${{ inputs.ENABLE_SOURCE_MAPS }}")
-              fi
 
               # Run the Node.js script
               node e2e/scripts/update-mrt-target.js target "${ARGS[@]}"
+
+        - name: Update MRT Target Environment Variables
+          id: update_mrt_target_env_vars
+          if: ${{ inputs.MRT_TARGET_VARS_FILE_PATH != '' }}
+          shell: bash
+          run: |-
+              set -e
+
+              # Build arguments for the Node.js script
+              ARGS=(
+                  "--project-slug" "${{ inputs.PROJECT_SLUG }}"
+                  "--target-slug" "${{ inputs.TARGET_SLUG }}"
+                  "--mobify-api-key" "${{ inputs.MOBIFY_API_KEY }}"
+                  "--env-file" "${{ inputs.MRT_TARGET_VARS_FILE_PATH }}"
+                  "--cloud-origin" "${{ inputs.CLOUD_ORIGIN }}"
+              )
+
+              # Run the Node.js script
+              node e2e/scripts/update-mrt-target.js env-var "${ARGS[@]}"
