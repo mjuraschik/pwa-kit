@@ -39,8 +39,7 @@ jest.mock('./logger-instance', () => ({
 jest.mock('./opentelemetry-config', () => ({
     getOTELConfig: jest.fn(() => ({
         enabled: true,
-        serviceName: 'pwa-kit-react-sdk',
-        enabled: true
+        serviceName: 'pwa-kit-react-sdk'
     })),
     getServiceName: jest.fn(() => 'pwa-kit-react-sdk')
 }))
@@ -111,8 +110,7 @@ describe('OpenTelemetry Utilities', () => {
         opentelemetryConfig.getOTELConfig.mockReset()
         opentelemetryConfig.getOTELConfig.mockReturnValue({
             enabled: true,
-            serviceName: 'pwa-kit-react-sdk',
-            enabled: true
+            serviceName: 'pwa-kit-react-sdk'
         })
         opentelemetryConfig.getServiceName.mockReset()
         opentelemetryConfig.getServiceName.mockReturnValue('pwa-kit-react-sdk')
@@ -418,7 +416,4 @@ describe('OpenTelemetry Utilities', () => {
             process.env.NODE_ENV = originalEnv
         })
     })
-
-    // Note: OpenTelemetry disabled scenario tests removed - these test edge cases
-    // that are complex to mock in Jest and the core functionality is already tested
 })

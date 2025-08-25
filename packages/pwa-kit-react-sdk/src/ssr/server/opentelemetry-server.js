@@ -143,17 +143,19 @@ export const tracePerformance = async (name, fn, res = null, req = null) => {
 
     try {
         // Run the function within the context of the root span (if ctx exists)
-        const result = ctx ? await context.with(ctx, async () => {
-            try {
-                return await fn()
-            } catch (error) {
-                rootSpan.setStatus({
-                    code: SpanStatusCode.ERROR,
-                    message: error.message
-                })
-                throw error
-            }
-        }) : await fn()
+        const result = ctx
+            ? await context.with(ctx, async () => {
+                  try {
+                      return await fn()
+                  } catch (error) {
+                      rootSpan.setStatus({
+                          code: SpanStatusCode.ERROR,
+                          message: error.message
+                      })
+                      throw error
+                  }
+              })
+            : await fn()
 
         if (otelConfig.enabled && shouldTrackPerformance) {
             rootSpan.end()

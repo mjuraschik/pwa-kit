@@ -46,7 +46,6 @@ jest.mock('../../utils/opentelemetry', () => ({
     getServiceName: jest.fn(() => 'pwa-kit-react-sdk'),
     OTEL_CONFIG: {
         serviceName: 'pwa-kit-react-sdk',
-        enabled: true,
         enabled: true
     }
 }))
@@ -54,8 +53,7 @@ jest.mock('../../utils/opentelemetry', () => ({
 jest.mock('../../utils/opentelemetry-config', () => ({
     getOTELConfig: jest.fn(() => ({
         enabled: true,
-        serviceName: 'pwa-kit-react-sdk',
-        enabled: true
+        serviceName: 'pwa-kit-react-sdk'
     })),
     getServiceName: jest.fn(() => 'pwa-kit-react-sdk')
 }))
@@ -569,7 +567,6 @@ describe('OpenTelemetry Server Tracing', () => {
             const opentelemetryConfig = jest.requireMock('../../utils/opentelemetry-config')
             opentelemetryConfig.getOTELConfig.mockReturnValue({
                 serviceName: 'pwa-kit-react-sdk',
-                enabled: true,
                 enabled: true
             })
 
@@ -616,8 +613,7 @@ describe('OpenTelemetry Server Tracing', () => {
             // Restore the original mock
             opentelemetryConfig.getOTELConfig.mockReturnValue({
                 enabled: true,
-                serviceName: 'pwa-kit-react-sdk',
-                enabled: true
+                serviceName: 'pwa-kit-react-sdk'
             })
             process.env.OTEL_TRACING_ENABLED = originalEnv
         })
