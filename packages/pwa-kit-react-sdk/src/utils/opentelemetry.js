@@ -58,7 +58,7 @@ export const logSpanData = (span, event = 'start') => {
         links: [],
         start_time: startTime,
         end_time: endTime,
-        forwardTrace: getOTELConfig().b3TracingEnabled
+        forwardTrace: getOTELConfig().enabled
     }
 
     if (event === 'end') {
@@ -119,7 +119,7 @@ export const createChildSpan = (name, attributes = {}) => {
                     span_name: name,
                     otel_enabled: otelConfig.enabled,
                     otel_service_name: otelConfig.serviceName,
-                    suggestion: 'Set OTEL_SDK_ENABLED=true to enable proper timing'
+                    suggestion: 'Set OTEL_TRACING_ENABLED=true to enable proper timing'
                 }
             })
         }

@@ -178,7 +178,6 @@ export default class PerformanceTimer {
                     name,
                     type,
                     error: error.message,
-                    stack: error.stack,
                     namespace: 'PerformanceTimer.mark'
                 })
             }

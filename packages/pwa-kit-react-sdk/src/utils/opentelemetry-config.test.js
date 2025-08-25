@@ -58,8 +58,8 @@ describe('OpenTelemetry Config', () => {
         })
 
         describe('enabled', () => {
-            test('should return enabled when OTEL_SDK_ENABLED is "true"', () => {
-                process.env.OTEL_SDK_ENABLED = 'true'
+            test('should return enabled as true when OTEL_TRACING_ENABLED is "true"', () => {
+                process.env.OTEL_TRACING_ENABLED = 'true'
 
                 const {getOTELConfig} = mockModule()
                 const config = getOTELConfig()
@@ -67,8 +67,8 @@ describe('OpenTelemetry Config', () => {
                 expect(config.enabled).toBe(true)
             })
 
-            test('should return disabled when OTEL_SDK_ENABLED is not set', () => {
-                delete process.env.OTEL_SDK_ENABLED
+            test('should return enabled as false when OTEL_TRACING_ENABLED is not set', () => {
+                delete process.env.OTEL_TRACING_ENABLED
 
                 const {getOTELConfig} = mockModule()
                 const config = getOTELConfig()
@@ -76,8 +76,8 @@ describe('OpenTelemetry Config', () => {
                 expect(config.enabled).toBe(false)
             })
 
-            test('should return disabled when OTEL_SDK_ENABLED is "false"', () => {
-                process.env.OTEL_SDK_ENABLED = 'false'
+            test('should return enabled as false when OTEL_TRACING_ENABLED is "false"', () => {
+                process.env.OTEL_TRACING_ENABLED = 'false'
 
                 const {getOTELConfig} = mockModule()
                 const config = getOTELConfig()
@@ -85,58 +85,16 @@ describe('OpenTelemetry Config', () => {
                 expect(config.enabled).toBe(false)
             })
 
-            test('should return disabled when OTEL_SDK_ENABLED is any non-"true" value', () => {
+            test('should return enabled as false when OTEL_TRACING_ENABLED is any non-"true" value', () => {
                 const nonTrueValues = ['yes', '1', 'True', 'TRUE', 'on', 'enabled', '']
 
                 nonTrueValues.forEach((value) => {
-                    process.env.OTEL_SDK_ENABLED = value
+                    process.env.OTEL_TRACING_ENABLED = value
 
                     const {getOTELConfig} = mockModule()
                     const config = getOTELConfig()
 
                     expect(config.enabled).toBe(false)
-                })
-            })
-        })
-
-        describe('b3TracingEnabled', () => {
-            test('should return enabled when OTEL_B3_TRACING_ENABLED is "true"', () => {
-                process.env.OTEL_B3_TRACING_ENABLED = 'true'
-
-                const {getOTELConfig} = mockModule()
-                const config = getOTELConfig()
-
-                expect(config.b3TracingEnabled).toBe(true)
-            })
-
-            test('should return disabled when OTEL_B3_TRACING_ENABLED is not set', () => {
-                delete process.env.OTEL_B3_TRACING_ENABLED
-
-                const {getOTELConfig} = mockModule()
-                const config = getOTELConfig()
-
-                expect(config.b3TracingEnabled).toBe(false)
-            })
-
-            test('should return disabled when OTEL_B3_TRACING_ENABLED is "false"', () => {
-                process.env.OTEL_B3_TRACING_ENABLED = 'false'
-
-                const {getOTELConfig} = mockModule()
-                const config = getOTELConfig()
-
-                expect(config.b3TracingEnabled).toBe(false)
-            })
-
-            test('should return disabled when OTEL_B3_TRACING_ENABLED is any non-"true" value', () => {
-                const nonTrueValues = ['yes', '1', 'True', 'TRUE', 'on', 'enabled', '']
-
-                nonTrueValues.forEach((value) => {
-                    process.env.OTEL_B3_TRACING_ENABLED = value
-
-                    const {getOTELConfig} = mockModule()
-                    const config = getOTELConfig()
-
-                    expect(config.b3TracingEnabled).toBe(false)
                 })
             })
         })

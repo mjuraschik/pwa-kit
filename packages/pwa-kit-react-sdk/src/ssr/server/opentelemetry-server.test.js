@@ -47,7 +47,7 @@ jest.mock('../../utils/opentelemetry', () => ({
     OTEL_CONFIG: {
         serviceName: 'pwa-kit-react-sdk',
         enabled: true,
-        b3TracingEnabled: true
+        enabled: true
     }
 }))
 
@@ -55,7 +55,7 @@ jest.mock('../../utils/opentelemetry-config', () => ({
     getOTELConfig: jest.fn(() => ({
         enabled: true,
         serviceName: 'pwa-kit-react-sdk',
-        b3TracingEnabled: true
+        enabled: true
     })),
     getServiceName: jest.fn(() => 'pwa-kit-react-sdk')
 }))
@@ -562,15 +562,15 @@ describe('OpenTelemetry Server Tracing', () => {
         })
 
         test('should inject B3 headers when tracing is enabled', async () => {
-            const originalEnv = process.env.OTEL_B3_TRACING_ENABLED
-            process.env.OTEL_B3_TRACING_ENABLED = 'true'
+            const originalEnv = process.env.OTEL_TRACING_ENABLED
+            process.env.OTEL_TRACING_ENABLED = 'true'
 
             // Ensure the mock returns enabled B3 tracing
             const opentelemetryConfig = jest.requireMock('../../utils/opentelemetry-config')
             opentelemetryConfig.getOTELConfig.mockReturnValue({
                 serviceName: 'pwa-kit-react-sdk',
                 enabled: true,
-                b3TracingEnabled: true
+                enabled: true
             })
 
             const mockFn = jest.fn().mockResolvedValue('test-result')
@@ -587,19 +587,18 @@ describe('OpenTelemetry Server Tracing', () => {
             expect(mockRes.setHeader).toHaveBeenCalledWith('x-b3-spanid', 'test-span-id')
             expect(mockRes.setHeader).toHaveBeenCalledWith('x-b3-sampled', '1')
 
-            process.env.OTEL_B3_TRACING_ENABLED = originalEnv
+            process.env.OTEL_TRACING_ENABLED = originalEnv
         })
 
         test('should not inject B3 headers when tracing is disabled', async () => {
-            const originalEnv = process.env.OTEL_B3_TRACING_ENABLED
-            process.env.OTEL_B3_TRACING_ENABLED = 'false'
+            const originalEnv = process.env.OTEL_TRACING_ENABLED
+            process.env.OTEL_TRACING_ENABLED = 'false'
 
             // Update the mock to return disabled B3 tracing
             const opentelemetryConfig = jest.requireMock('../../utils/opentelemetry-config')
             opentelemetryConfig.getOTELConfig.mockReturnValue({
                 serviceName: 'pwa-kit-react-sdk',
-                enabled: true,
-                b3TracingEnabled: false
+                enabled: false
             })
 
             const mockFn = jest.fn().mockResolvedValue('test-result')
@@ -618,9 +617,9 @@ describe('OpenTelemetry Server Tracing', () => {
             opentelemetryConfig.getOTELConfig.mockReturnValue({
                 enabled: true,
                 serviceName: 'pwa-kit-react-sdk',
-                b3TracingEnabled: true
+                enabled: true
             })
-            process.env.OTEL_B3_TRACING_ENABLED = originalEnv
+            process.env.OTEL_TRACING_ENABLED = originalEnv
         })
     })
 })

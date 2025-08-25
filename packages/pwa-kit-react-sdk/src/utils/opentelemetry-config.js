@@ -13,8 +13,7 @@ const DEFAULT_SERVICE_NAME = 'pwa-kit-react-sdk'
 export const getOTELConfig = () => {
     return {
         serviceName: process.env.OTEL_SERVICE_NAME || DEFAULT_SERVICE_NAME,
-        enabled: process.env.OTEL_SDK_ENABLED === 'true',
-        b3TracingEnabled: process.env.OTEL_B3_TRACING_ENABLED === 'true'
+        enabled: process.env.OTEL_TRACING_ENABLED === 'true'
     }
 }
 

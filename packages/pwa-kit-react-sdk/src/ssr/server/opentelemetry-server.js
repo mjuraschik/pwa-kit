@@ -114,9 +114,9 @@ export const tracePerformance = async (name, fn, res = null, req = null) => {
     const otelConfig = getOTELConfig()
     let rootSpan = null
     let ctx = null
+    const includeServerTimingHeader = '__server_timing' in req.query
+    const shouldTrackPerformance = includeServerTimingHeader || process.env.SERVER_TIMING
     if (otelConfig.enabled) {
-        const includeServerTimingHeader = '__server_timing' in req.query
-        const shouldTrackPerformance = includeServerTimingHeader || process.env.SERVER_TIMING
         // Initialize server tracing if needed for this request
         if (shouldTrackPerformance && !isServerTracingInitialized()) {
             initializeServerTracing()
@@ -134,7 +134,7 @@ export const tracePerformance = async (name, fn, res = null, req = null) => {
         ctx = trace.setSpan(context.active(), rootSpan)
 
         // Inject B3 headers into response if available
-        if (res && getOTELConfig().b3TracingEnabled && shouldTrackPerformance) {
+        if (res && getOTELConfig().enabled && shouldTrackPerformance) {
             res.setHeader('x-b3-traceid', rootSpan.spanContext().traceId)
             res.setHeader('x-b3-spanid', rootSpan.spanContext().spanId)
             res.setHeader('x-b3-sampled', '1')
@@ -142,8 +142,8 @@ export const tracePerformance = async (name, fn, res = null, req = null) => {
     }
 
     try {
-        // Run the function within the context of the root span
-        const result = await context.with(ctx, async () => {
+        // Run the function within the context of the root span (if ctx exists)
+        const result = ctx ? await context.with(ctx, async () => {
             try {
                 return await fn()
             } catch (error) {
@@ -153,16 +153,16 @@ export const tracePerformance = async (name, fn, res = null, req = null) => {
                 })
                 throw error
             }
-        })
+        }) : await fn()
 
-        if (otelConfig.enabled) {
+        if (otelConfig.enabled && shouldTrackPerformance) {
             rootSpan.end()
             logSpanData(rootSpan, 'end', res)
         }
 
         return result
     } catch (error) {
-        if (otelConfig.enabled) {
+        if (otelConfig.enabled && shouldTrackPerformance) {
             rootSpan.end()
             logSpanData(rootSpan, 'end', res)
         }

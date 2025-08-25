@@ -40,7 +40,7 @@ jest.mock('./opentelemetry-config', () => ({
     getOTELConfig: jest.fn(() => ({
         enabled: true,
         serviceName: 'pwa-kit-react-sdk',
-        b3TracingEnabled: true
+        enabled: true
     })),
     getServiceName: jest.fn(() => 'pwa-kit-react-sdk')
 }))
@@ -112,7 +112,7 @@ describe('OpenTelemetry Utilities', () => {
         opentelemetryConfig.getOTELConfig.mockReturnValue({
             enabled: true,
             serviceName: 'pwa-kit-react-sdk',
-            b3TracingEnabled: true
+            enabled: true
         })
         opentelemetryConfig.getServiceName.mockReset()
         opentelemetryConfig.getServiceName.mockReturnValue('pwa-kit-react-sdk')

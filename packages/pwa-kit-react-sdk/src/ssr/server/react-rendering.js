@@ -77,6 +77,11 @@ const logAndFormatError = (err) => {
     }
 }
 
+const shouldTrackPerformance = (req) => {
+    const includeServerTimingHeader = '__server_timing' in req.query
+    return includeServerTimingHeader || process.env.SERVER_TIMING
+}
+
 // Because multi-value params are not supported in `aws-serverless-express` create a proper
 // search string using the `query` property. We pay special attention to the order the params
 // as best as we can.
@@ -121,10 +126,6 @@ export const getLocationSearch = (req, opts = {}) => {
  * @return {Promise}
  */
 const performRender = async (req, res, next) => {
-    const includeServerTimingHeader = '__server_timing' in req.query
-    const shouldTrackPerformance = includeServerTimingHeader || process.env.SERVER_TIMING
-
-    res.__performanceTimer = new PerformanceTimer({enabled: shouldTrackPerformance})
     res.__performanceTimer.mark(PERFORMANCE_MARKS.total, 'start')
     const AppConfig = getAppConfig()
     // Get the application config which should have been stored at this point.
@@ -238,7 +239,7 @@ const performRender = async (req, res, next) => {
     res.__performanceTimer.mark(PERFORMANCE_MARKS.total, 'end')
     res.__performanceTimer.log()
 
-    if (shouldTrackPerformance) {
+    if (shouldTrackPerformance(req)) {
         res.setHeader('Server-Timing', res.__performanceTimer.buildServerTimingHeader())
         // Override cache-control header to no caching when __server_timing is used
         // This happens after React rendering is complete, ensuring it overrides any
@@ -257,8 +258,14 @@ const performRender = async (req, res, next) => {
     }
 }
 
-export const render = (req, res, next) =>
-    tracePerformance('ssr.render', () => performRender(req, res, next), res, req)
+export const render = (req, res, next) => {
+    res.__performanceTimer = new PerformanceTimer({enabled: shouldTrackPerformance(req)})
+    if (shouldTrackPerformance) {
+        return tracePerformance('ssr.render', () => performRender(req, res, next), res, req)
+    } else {
+        return performRender(req, res, next)
+    }
+}
 
 const OuterApp = ({req, res, error, App, appState, routes, routerContext, location}) => {
     const AppConfig = getAppConfig()
