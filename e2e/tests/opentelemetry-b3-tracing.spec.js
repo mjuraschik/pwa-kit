@@ -36,8 +36,7 @@ test('should inject B3 headers when __server_timing param is passed', async ({pa
     expect(responseHeaders.length).toBeGreaterThan(0)
 
     const mainResponse = responseHeaders.find(
-        (r) =>
-            r.url.includes(config.RETAIL_APP_HOME) && !r.url.includes('static')
+        (r) => r.url.includes(config.RETAIL_APP_HOME) && !r.url.includes('static')
     )
 
     if (mainResponse) {
@@ -79,8 +78,7 @@ test('should not show Server Timing header if __server_timing param is not passe
     expect(responseHeaders.length).toBeGreaterThan(0)
 
     const mainResponse = responseHeaders.find(
-        (r) =>
-            r.url.includes(config.RETAIL_APP_HOME) && !r.url.includes('static')
+        (r) => r.url.includes(config.RETAIL_APP_HOME) && !r.url.includes('static')
     )
 
     expect(mainResponse).toBeDefined()
@@ -109,8 +107,7 @@ test('should validate performance marks in Server-Timing header have numeric dur
     expect(responseHeaders.length).toBeGreaterThan(0)
 
     const mainResponse = responseHeaders.find(
-        (r) =>
-            r.url.includes(config.RETAIL_APP_HOME) && !r.url.includes('static')
+        (r) => r.url.includes(config.RETAIL_APP_HOME) && !r.url.includes('static')
     )
 
     if (mainResponse && mainResponse.headers['server-timing']) {
