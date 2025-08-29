@@ -57,11 +57,10 @@ test('Guest shopper can checkout items as guest', async ({page}) => {
     await expect(page.getByRole('heading', {name: /Shipping & Gift Options/i})).toBeVisible()
     await page.waitForLoadState()
 
-    const continueToPayment = page.getByRole('button', {
-        name: /Continue to Payment/i
-    })
+    const continueToPayment = page.getByRole('button', { name: /Continue to Payment/i })
 
-    if (continueToPayment.isEnabled()) {
+    // If the Continue to Payment button is not visible, the payment details form is already being shown, so we can skip this step.
+    if (await continueToPayment.count() > 0 && await continueToPayment.isEnabled()) {
         await continueToPayment.click()
     }
 
