@@ -22,7 +22,7 @@ module.exports = defineConfig({
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
     /* Retry on CI only */
-    retries: 3,
+    retries: 2,
     /* Opt out of parallel tests on CI. */
     workers: 1,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -54,25 +54,25 @@ module.exports = defineConfig({
             name: 'a11y-mobile-slas-public-client',
             use: {...devices['Pixel 5']},
             testDir: './e2e/tests/a11y/mobile',
-            snapshotDir: './e2e/tests/a11y/mobile/slas-public-client/__snapshots__'
+            snapshotPathTemplate: './e2e/tests/a11y/mobile/slas-public-client/__snapshots__/{arg}{ext}'
         },
         {
             name: 'a11y-desktop-slas-public-client',
             use: {...devices['Desktop Chrome']},
             testDir: './e2e/tests/a11y/desktop',
-            snapshotDir: './e2e/tests/a11y/desktop/slas-public-client/__snapshots__'
+            snapshotPathTemplate: './e2e/tests/a11y/desktop/slas-public-client/__snapshots__/{arg}{ext}'
         },
         {
             name: 'a11y-mobile-slas-private-client',
             use: {...devices['Pixel 5']},
             testDir: './e2e/tests/a11y/mobile',
-            snapshotDir: './e2e/tests/a11y/mobile/slas-private-client/__snapshots__'
+            snapshotPathTemplate: './e2e/tests/a11y/mobile/slas-private-client/__snapshots__/{arg}{ext}'
         },
         {
             name: 'a11y-desktop-slas-private-client',
             use: {...devices['Desktop Chrome']},
             testDir: './e2e/tests/a11y/desktop',
-            snapshotDir: './e2e/tests/a11y/desktop/slas-private-client/__snapshots__'
+            snapshotPathTemplate: './e2e/tests/a11y/desktop/slas-private-client/__snapshots__/{arg}{ext}'
         },
         {
             name: 'extra-features-desktop',
