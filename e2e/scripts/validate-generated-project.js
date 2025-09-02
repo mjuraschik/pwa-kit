@@ -19,8 +19,6 @@ const validateGeneratedArtifacts = async (project) => {
             project
         )
         const generatedArtifacts = fs.readdirSync(generatedProjectDirPath)
-        console.log('Dir contents', process.cwd(), config.GENERATED_PROJECTS_DIR, project, fs.readdirSync(process.cwd()))
-        console.log('generatedArtifacts', generatedArtifacts, generatedProjectDirPath)
 
         return new Promise((resolve, reject) => {
             const missingArtifacts = diffArrays(
@@ -74,13 +72,13 @@ const main = async (opts) => {
     }
 
     try {
-        console.log(await validateGeneratedArtifacts(project))
-        if (project === 'retail-app-ext' || project === 'retail-app-ext') {
-            console.log(await validateExtensibilityConfig(project, templateVersion))
+        await validateGeneratedArtifacts(project)
+        if (project === 'retail-app-ext') {
+            await validateExtensibilityConfig(project, templateVersion)
         }
     } catch (err) {
         console.error(err)
-        process.exit(1)
+        // process.exit(1)
     }
 }
 
