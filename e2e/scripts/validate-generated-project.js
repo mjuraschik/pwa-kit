@@ -19,7 +19,7 @@ const validateGeneratedArtifacts = async (project) => {
             project
         )
         const generatedArtifacts = fs.readdirSync(generatedProjectDirPath)
-        console.log('generatedArtifacts', generatedArtifacts)
+        console.log('generatedArtifacts', generatedArtifacts, generatedProjectDirPath)
 
         return new Promise((resolve, reject) => {
             const missingArtifacts = diffArrays(
