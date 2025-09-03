@@ -6,6 +6,7 @@
  */
 
 const fs = require('fs')
+const path = require('path')
 
 // Mock the dependencies
 jest.mock('fs')
@@ -42,7 +43,8 @@ describe('validateGeneratedArtifacts', () => {
         const result = await validateGeneratedArtifacts(project)
 
         expect(fs.readdirSync).toHaveBeenCalledWith(
-            expect.stringContaining(`generated-projects/${project}`)
+            // path.sep is used to handle the platform-specific path separator. (Windows uses \ and other platforms use /)
+            expect.stringContaining(`generated-projects${path.sep}${project}`)
         )
         expect(diffArrays).toHaveBeenCalledWith(expectedArtifacts, actualArtifacts)
         expect(result).toBe(`Successfully validated generated artifacts for: ${project} `)
