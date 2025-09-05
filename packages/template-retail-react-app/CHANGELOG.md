@@ -1,3 +1,5 @@
+## v8.1.0-dev (Sep 04, 2025)
+
 ## v8.0.0 (Sep 04, 2025)
 - Add support for environment level base paths on /mobify routes [#2892](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/2892)
 - Remove deprecated properties from useDNT in commerce-sdk-react [#3177](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/3177)
