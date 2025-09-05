@@ -38,6 +38,7 @@ const OrderTypeDisplay = ({
                             textSize="sm"
                             nameStyle={{fontSize: 'sm', fontWeight: 'semibold'}}
                             onChangeStore={onChangeStore}
+                            useAltLayoutforPickupStoreInfo={true}
                         />
                     </Box>
                 </Box>

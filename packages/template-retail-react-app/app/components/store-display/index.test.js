@@ -10,6 +10,15 @@ import userEvent from '@testing-library/user-event'
 import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
 import StoreDisplay from '@salesforce/retail-react-app/app/components/store-display/index'
 
+// Mock useBreakpointValue to always return true for desktop layout
+jest.mock('@salesforce/retail-react-app/app/components/shared/ui', () => {
+    const actual = jest.requireActual('@salesforce/retail-react-app/app/components/shared/ui');
+    return {
+        ...actual,
+        useBreakpointValue: jest.fn(() => true)
+    };
+});
+
 const mockStore = {
     id: 'store-123',
     name: 'Downtown Store',
@@ -336,5 +345,114 @@ describe('StoreDisplay component', () => {
             // Both should be in the same parent container (Flex)
             expect(storeName.parentElement).toBe(changeStoreButton.parentElement)
         })
+    })
+})
+
+describe('Desktop Pickup In Store Layout', () => {
+    test('renders store name, address on the same line, and store hours button spanning full width', () => {
+        const store = {
+            id: 'store-999',
+            name: 'Boston Back Bay Retail Store',
+            address1: '500 Boylston St',
+            city: 'Boston',
+            stateCode: 'MA',
+            postalCode: '02116',
+            storeHours: 'Monday 8AM–5PM Tuesday 8AM–5PM Wednesday 8AM–5PM Thursday 8AM–5PM Friday 8AM–5PM Saturday Closed Sunday Closed'
+        }
+        renderWithProviders(
+            <StoreDisplay
+                store={store}
+                useAltLayoutforPickupStoreInfo={true}
+            />
+        )
+        // Store name and address should be in the same row
+        const storeName = screen.getByText('Boston Back Bay Retail Store')
+        expect(storeName).toBeInTheDocument()
+        expect(screen.getByText(/500 Boylston St/, { exact: false })).toBeInTheDocument()
+        // Store Hours button should be present and not in the same parent as the address
+        const storeHoursButton = screen.getByRole('button', {name: /store hours/i})
+        expect(storeHoursButton).toBeInTheDocument()
+        expect(storeHoursButton).toBeVisible()
+        // The button should not be in the same parent as the address
+        const address = screen.getByText(/500 Boylston St/, { exact: false })
+        expect(storeHoursButton.parentElement).not.toBe(address.parentElement)
+    })
+})
+describe('Default Mobile Layout', () => {
+    test('renders store name, address, phone, and store hours button in default mobile layout', () => {
+        // Mock useBreakpointValue to always return false for mobile
+        jest.mock('@salesforce/retail-react-app/app/components/shared/ui', () => {
+            const actual = jest.requireActual('@salesforce/retail-react-app/app/components/shared/ui');
+            return {
+                ...actual,
+                useBreakpointValue: jest.fn(() => false)
+            };
+        });
+        const store = {
+            id: 'store-888',
+            name: 'Cambridge Retail Store',
+            address1: '100 Main St',
+            city: 'Cambridge',
+            stateCode: 'MA',
+            postalCode: '02142',
+            phone: '111-111-1111',
+            storeHours: 'Monday 8AM–5PM Tuesday 8AM–5PM Wednesday 8AM–5PM Thursday 8AM–5PM Friday 8AM–5PM Saturday Closed Sunday Closed'
+        }
+        const {container} = renderWithProviders(
+            <StoreDisplay
+                store={store}
+                showPhone={true}
+                useAltLayoutforPickupStoreInfo={false}
+            />
+        )
+        // Store name and address should be present
+        expect(screen.getByText('Cambridge Retail Store')).toBeInTheDocument()
+        expect(screen.getByText(/100 Main St/, { exact: false })).toBeInTheDocument()
+        // Phone number and label should be present in the full text content
+        expect(container.textContent.replace(/\s/g, '')).toContain('111-111-1111')
+        expect(container.textContent).toContain('Phone:')
+        // Store Hours button should be present and visible
+        const storeHoursButton = screen.getByRole('button', {name: /store hours/i})
+        expect(storeHoursButton).toBeInTheDocument()
+        expect(storeHoursButton).toBeVisible()
+    })
+})
+describe('Default Desktop Layout with Distance', () => {
+    test('renders store name, address, distance, and store hours button in default desktop layout', () => {
+        // Mock useBreakpointValue to always return true for desktop
+        jest.mock('@salesforce/retail-react-app/app/components/shared/ui', () => {
+            const actual = jest.requireActual('@salesforce/retail-react-app/app/components/shared/ui');
+            return {
+                ...actual,
+                useBreakpointValue: jest.fn(() => true)
+            };
+        });
+        const store = {
+            id: 'store-999',
+            name: 'Cambridge Retail Store',
+            address1: '100 Main St',
+            city: 'Cambridge',
+            stateCode: 'MA',
+            postalCode: '02142',
+            distance: 1,
+            distanceUnit: 'km',
+            storeHours: 'Monday 8AM–5PM Tuesday 8AM–5PM Wednesday 8AM–5PM Thursday 8AM–5PM Friday 8AM–5PM Saturday Closed Sunday Closed'
+        }
+        renderWithProviders(
+            <StoreDisplay
+                store={store}
+                showDistance={true}
+                useAltLayoutforPickupStoreInfo={false}
+            />
+        )
+        // Store name and address should be present
+        expect(screen.getByText('Cambridge Retail Store')).toBeInTheDocument()
+        expect(screen.getByText(/100 Main St/, { exact: false })).toBeInTheDocument()
+        // Distance string should be present
+        expect(screen.getByText(/1 km away/)).toBeInTheDocument()
+        // Store Hours button should be present and visible
+        const storeHoursButton = screen.getByRole('button', {name: /store hours/i})
+        expect(storeHoursButton).toBeInTheDocument()
+        expect(storeHoursButton).toBeVisible()
     })
 })
