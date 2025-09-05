@@ -12,17 +12,17 @@ const DEFAULT_SITE_URL = 'https://pwa-kit.mobify-storefront.com'
 export class TestWithPlaywrightTool {
     /**
      * Runs a Playwright test file by name (e.g., 'performance' or 'accessibility')
-     * @param {string} testType - 'performance' or 'accessibility'
-     * @param {string} [siteUrl] - Optional site URL to test
+     * @param {string} test_type - 'performance' or 'accessibility'
+     * @param {string} [site_url] - Optional site URL to test
      * @returns {object} - Result of the test run
      */
-    async run(testType, siteUrl = DEFAULT_SITE_URL) {
-        switch (testType) {
+    async run(test_type, site_url = DEFAULT_SITE_URL) {
+        switch (test_type) {
             case 'performance': {
-                return runPerformanceTest(siteUrl)
+                return runPerformanceTest(site_url)
             }
             case 'accessibility': {
-                return runAccessibilityTest(siteUrl)
+                return runAccessibilityTest(site_url)
             }
             default: {
                 const result = {error: 'unsupported test type'}

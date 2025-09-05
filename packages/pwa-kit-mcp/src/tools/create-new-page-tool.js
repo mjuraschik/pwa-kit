@@ -32,7 +32,7 @@ const systemPromptForCreatePage = `You are a smart assistant that can use tools 
         - Is ccExtensibility.overridesDir set in your package.json? (true/false) \
         Collect answers to these questions, then call the tool with the collected information as input parameters.`
 
-const systemPromptForProductHook = `User have added the ProductView component to the new page. Please ask user: \
+const systemPromptForProductHook = `User has added the ProductView component to the new page. Please ask user: \
         "To make it work, would you like to add the hook useProduct to your page?" \
         If user answers yes, please make sure do do following: \
         1. add the useProduct with ALL parameters following product-detail's useProduct as example, \
@@ -71,24 +71,26 @@ const systemPromptForUnfoundComponents = (unfoundComponents) =>
 
 class CreateNewPageTool {
     constructor() {
-        this.name = 'create_sample_page'
+        this.name = 'create_page'
         this.description =
             'Create a sample PWA storefront page. Gather information from user for the MCP tool parameters **one at a time**, in a natural and conversational way. Do **not** ask all the questions at once.'
         this.inputSchema = {
-            pageName: z.string().describe('The name of the new page to create?'),
-            componentList: z
+            page_name: z.string().describe('The name of the new page to create'),
+            component_list: z
                 .array(z.string())
                 .describe(
                     'The existing components to include on the page, separated by commas. Component names should be in PascalCase (e.g., AddressDisplay, ProductView, Footer)'
                 ),
             route: z
                 .string()
-                .describe('The URL route for this page? (e.g., /new-home, /my-product-view)'),
-            nodeModulesPath: z.string().describe('The absolute path to the node_modules directory'),
-            componentsPath: z.string().describe('The absolute path to the components directory'),
-            pagesPath: z.string().describe('The absolute path to the pages directory'),
-            routesPath: z.string().describe('The absolute path to the routes.jsx file'),
-            hasOverridesDir: z
+                .describe('The URL route for this page (e.g., /new-home, /my-product-view)'),
+            node_modules_path: z
+                .string()
+                .describe('The absolute path to the node_modules directory'),
+            components_path: z.string().describe('The absolute path to the components directory'),
+            pages_path: z.string().describe('The absolute path to the pages directory'),
+            routes_path: z.string().describe('The absolute path to the routes.jsx file'),
+            has_overrides_dir: z
                 .boolean()
                 .describe('Whether ccExtensibility.overridesDir is set in package.json')
         }
@@ -98,26 +100,26 @@ class CreateNewPageTool {
             logMCPMessage(`------- Calling CreateNewPageTool handler`)
             if (
                 !args ||
-                !args.pageName ||
-                !args.componentList ||
+                !args.page_name ||
+                !args.component_list ||
                 !args.route ||
-                !args.nodeModulesPath ||
-                !args.componentsPath ||
-                !args.pagesPath ||
-                !args.routesPath ||
-                args.hasOverridesDir === undefined
+                !args.node_modules_path ||
+                !args.components_path ||
+                !args.pages_path ||
+                !args.routes_path ||
+                args.has_overrides_dir === undefined
             ) {
                 return {
                     role: 'system',
                     content: [{type: 'text', text: systemPromptForCreatePage}]
                 }
             }
-            return this.createPage(args.pageName, args.componentList, args.route, {
-                nodeModulesPath: args.nodeModulesPath,
-                componentsPath: args.componentsPath,
-                pagesPath: args.pagesPath,
-                routesPath: args.routesPath,
-                hasOverridesDir: args.hasOverridesDir
+            return this.createPage(args.page_name, args.component_list, args.route, {
+                nodeModulesPath: args.node_modules_path,
+                componentsPath: args.components_path,
+                pagesPath: args.pages_path,
+                routesPath: args.routes_path,
+                hasOverridesDir: args.has_overrides_dir
             })
         }
     }

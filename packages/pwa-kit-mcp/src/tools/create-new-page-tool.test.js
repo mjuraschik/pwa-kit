@@ -11,11 +11,11 @@ import * as utils from '../utils/utils.js'
 describe('CreateNewPageTool', () => {
     const originalEnv = process.env
     const mockAbsolutePaths = {
-        nodeModulesPath: '/mock/node_modules',
-        componentsPath: '/mock/app/components',
-        pagesPath: '/mock/app/pages',
-        routesPath: '/mock/app/routes.jsx',
-        hasOverridesDir: false
+        node_modules_path: '/mock/node_modules',
+        components_path: '/mock/app/components',
+        pages_path: '/mock/app/pages',
+        routes_path: '/mock/app/routes.jsx',
+        has_overrides_dir: false
     }
 
     beforeEach(() => {
@@ -43,8 +43,8 @@ describe('CreateNewPageTool', () => {
         jest.spyOn(createNewPageTool, 'updateRoutes').mockResolvedValue()
         jest.spyOn(utils, 'logMCPMessage').mockImplementation(() => {})
         const result = await createNewPageTool.handler({
-            pageName: 'Test',
-            componentList: ['Foo'],
+            page_name: 'Test',
+            component_list: ['Foo'],
             route: '/test',
             ...mockAbsolutePaths
         })
@@ -56,8 +56,8 @@ describe('CreateNewPageTool', () => {
         jest.spyOn(fs, 'access').mockResolvedValue()
         jest.spyOn(utils, 'logMCPMessage').mockImplementation(() => {})
         const result = await createNewPageTool.handler({
-            pageName: 'Test',
-            componentList: ['Foo'],
+            page_name: 'Test',
+            component_list: ['Foo'],
             route: '/test',
             ...mockAbsolutePaths
         })
@@ -84,8 +84,8 @@ describe('CreateNewPageTool', () => {
             return Promise.resolve('dummy')
         })
         const result = await createNewPageTool.handler({
-            pageName: 'Test',
-            componentList: ['MissingComponent'],
+            page_name: 'Test',
+            component_list: ['MissingComponent'],
             route: '/test',
             ...mockAbsolutePaths
         })
@@ -101,8 +101,8 @@ describe('CreateNewPageTool', () => {
         jest.spyOn(createNewPageTool, 'updateRoutes').mockResolvedValue()
         jest.spyOn(utils, 'logMCPMessage').mockImplementation(() => {})
         const result = await createNewPageTool.handler({
-            pageName: 'Test',
-            componentList: ['ProductView'],
+            page_name: 'Test',
+            component_list: ['ProductView'],
             route: '/test',
             ...mockAbsolutePaths
         })
@@ -117,10 +117,17 @@ describe('CreateNewPageTool', () => {
         jest.spyOn(createNewPageTool, 'generatePageContent').mockResolvedValue(
             `const productId = '25592300M';\nexport default function Page() { return <div>{productId}</div>; }`
         )
+        const internalPaths = {
+            nodeModulesPath: '/mock/node_modules',
+            componentsPath: '/mock/app/components',
+            pagesPath: '/mock/app/pages',
+            routesPath: '/mock/app/routes.jsx',
+            hasOverridesDir: false
+        }
         const pageContent = await createNewPageTool.generatePageContent(
             'Test',
             ['ProductView'],
-            mockAbsolutePaths
+            internalPaths
         )
         expect(pageContent).toContain('25592300M')
         expect(pageContent).not.toMatch(/error|exception|fail/i)
@@ -131,10 +138,17 @@ describe('CreateNewPageTool', () => {
         jest.spyOn(createNewPageTool, 'generatePageContent').mockResolvedValue(
             `import Image from 'somewhere';\n${imageComponentString}`
         )
+        const internalPaths = {
+            nodeModulesPath: '/mock/node_modules',
+            componentsPath: '/mock/app/components',
+            pagesPath: '/mock/app/pages',
+            routesPath: '/mock/app/routes.jsx',
+            hasOverridesDir: false
+        }
         const pageContent = await createNewPageTool.generatePageContent(
             'Test',
             ['Image'],
-            mockAbsolutePaths
+            internalPaths
         )
         expect(pageContent).toContain('Image')
         expect(pageContent).toContain('static/img/hero.png')
@@ -146,10 +160,17 @@ describe('CreateNewPageTool', () => {
             `import Image from 'somewhere';\n${defaultImageString}`
         )
         // Simulate user says no to custom image (in real flow, this would be a follow-up, here we just check the generated content)
+        const internalPaths = {
+            nodeModulesPath: '/mock/node_modules',
+            componentsPath: '/mock/app/components',
+            pagesPath: '/mock/app/pages',
+            routesPath: '/mock/app/routes.jsx',
+            hasOverridesDir: false
+        }
         const pageContent = await createNewPageTool.generatePageContent(
             'Test',
             ['Image'],
-            mockAbsolutePaths
+            internalPaths
         )
         expect(pageContent).toContain('static/img/hero.png')
         expect(pageContent).not.toMatch(/https?:\/\//)
@@ -159,10 +180,17 @@ describe('CreateNewPageTool', () => {
         if (createNewPageTool.generatePageContent.mockRestore) {
             createNewPageTool.generatePageContent.mockRestore()
         }
+        const internalPaths = {
+            nodeModulesPath: '/mock/node_modules',
+            componentsPath: '/mock/app/components',
+            pagesPath: '/mock/app/pages',
+            routesPath: '/mock/app/routes.jsx',
+            hasOverridesDir: false
+        }
         const pageContent = await createNewPageTool.generatePageContent(
             'Test',
             ['Test'],
-            mockAbsolutePaths
+            internalPaths
         )
         expect(pageContent).toContain('import TestComponent from')
         expect(pageContent).toContain('<TestComponent />')
@@ -186,8 +214,8 @@ describe('CreateNewPageTool', () => {
             return Promise.resolve('dummy')
         })
         const result = await createNewPageTool.handler({
-            pageName: 'Test',
-            componentList: ['ImageSpliter'],
+            page_name: 'Test',
+            component_list: ['ImageSpliter'],
             route: '/test',
             ...mockAbsolutePaths
         })
@@ -213,10 +241,17 @@ describe('CreateNewPageTool', () => {
         imgSrc: ["'self'", "https://edge.disstg.commercecloud.salesforce.com"]
       }
     }`
+        const internalPaths = {
+            nodeModulesPath: '/mock/node_modules',
+            componentsPath: '/mock/app/components',
+            pagesPath: '/mock/app/pages',
+            routesPath: '/mock/app/routes.jsx',
+            hasOverridesDir: false
+        }
         const pageContent = await createNewPageTool.generatePageContent(
             'Test',
             ['Image'],
-            mockAbsolutePaths
+            internalPaths
         )
         expect(pageContent).toContain(customSrc)
         expect(ssrContent).toContain('.commercecloud.salesforce.com')
@@ -239,10 +274,17 @@ describe('CreateNewPageTool', () => {
         imgSrc: ["'self'", "https://some-other-domain.com"]
       }
     }`
+        const internalPaths = {
+            nodeModulesPath: '/mock/node_modules',
+            componentsPath: '/mock/app/components',
+            pagesPath: '/mock/app/pages',
+            routesPath: '/mock/app/routes.jsx',
+            hasOverridesDir: false
+        }
         const pageContent = await createNewPageTool.generatePageContent(
             'Test',
             ['Image'],
-            mockAbsolutePaths
+            internalPaths
         )
         const isAllowed = ssrContent.includes('.commercecloud.salesforce.com')
         expect(isAllowed).toBe(false)
@@ -269,11 +311,11 @@ describe('updateRoutes route insertion', () => {
     const importStatement = `const ${pageName} = loadable(() => import('./pages/test-page'), {fallback})`
     const routeObject = `    {\n        path: '${route}',\n        component: ${pageName},\n        exact: true\n    },`
     const mockAbsolutePaths = {
-        nodeModulesPath: '/mock/node_modules',
-        componentsPath: '/mock/app/components',
-        pagesPath: '/mock/app/pages',
-        routesPath: '/mock/app/routes.jsx',
-        hasOverridesDir: false
+        node_modules_path: '/mock/node_modules',
+        components_path: '/mock/app/components',
+        pages_path: '/mock/app/pages',
+        routes_path: '/mock/app/routes.jsx',
+        has_overrides_dir: false
     }
 
     let mockWriteFile, mockReadFile, createNewPageTool
