@@ -52,7 +52,7 @@ class PwaStorefrontMCPServerHighLevel {
                     })
                     return result
                 } catch (error) {
-                    this.telemetry?.sendEvent('TOOL_CALLED', {
+                    this.telemetry?.sendEvent('TOOL_CALLED_' + name, {
                         toolName: name,
                         runTimeMs: Date.now() - start,
                         isError: true
