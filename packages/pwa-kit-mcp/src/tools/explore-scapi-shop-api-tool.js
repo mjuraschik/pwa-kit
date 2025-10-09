@@ -9,7 +9,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import {autoDetectNodeModulesPath, autoDetectCommerceSDKTypesPath} from '../utils/index.js'
 
-function getDescribePath(nodeModulesPath) {
+function getCommerceSDKTypesFromNodeModulesPath(nodeModulesPath) {
     return path.join(nodeModulesPath, 'commerce-sdk-isomorphic/lib/index.cjs.d.ts')
 }
 
@@ -393,7 +393,7 @@ class ExploreCommerceAPITool {
         if (!describePath) {
             const nodeModulesPath = autoDetectNodeModulesPath()
             if (nodeModulesPath) {
-                describePath = getDescribePath(nodeModulesPath)
+                describePath = getCommerceSDKTypesFromNodeModulesPath(nodeModulesPath)
             }
         }
         if (!describePath) {
