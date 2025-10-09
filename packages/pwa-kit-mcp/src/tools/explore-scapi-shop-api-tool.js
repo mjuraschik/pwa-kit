@@ -224,7 +224,7 @@ function parseInterfaceProperties(interfaceBody) {
 
 class ExploreCommerceAPITool {
     constructor() {
-        this.name = 'pwakit_explore_commerce_api'
+        this.name = 'pwakit_explore_scapi_shop_api'
         this.description =
             'Explore and document any commerce-sdk-isomorphic class API endpoints, parameters, and usage examples. Reads from the commerce-sdk-isomorphic type definitions.'
         this.inputSchema = {

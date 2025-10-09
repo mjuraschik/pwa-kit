@@ -306,7 +306,6 @@ export function autoDetectNodeModulesPath(startPath = process.cwd()) {
             return appPath
         }
     }
-    // 4. Not found
     return null
 }
 
@@ -328,34 +327,6 @@ export function autoDetectCommerceSDKTypesPath(nodeModulesPath = null) {
         const result = checkCommerceSDKInNodeModules(nmPath)
         if (result) return result
     }
-
-    // Try common PWA Kit project locations
-    // Use only current working directory for better detection (removed ESM-specific logic)
-    const currentDir = process.cwd()
-    const commonPaths = [
-        // From MCP package, look for demo app (relative to current working directory)
-        path.resolve(currentDir, '../../../demo-pwa-app/retail-react-app/node_modules'),
-        path.resolve(currentDir, '../../demo-pwa-app/retail-react-app/node_modules'),
-        path.resolve(currentDir, '../demo-pwa-app/retail-react-app/node_modules'),
-        // Look for other common locations
-        path.resolve(currentDir, '../../../retail-react-app-demo/node_modules'),
-        path.resolve(currentDir, '../../retail-react-app-demo/node_modules'),
-        path.resolve(currentDir, '../retail-react-app-demo/node_modules'),
-        // Commerce SDK React package
-        path.resolve(currentDir, '../commerce-sdk-react/node_modules'),
-        // Current directory variations
-        path.resolve(currentDir, './node_modules'),
-        path.resolve(currentDir, '../node_modules'),
-        path.resolve(currentDir, '../../node_modules')
-    ]
-
-    for (const commonPath of commonPaths) {
-        if (fs.existsSync(commonPath)) {
-            const result = checkCommerceSDKInNodeModules(commonPath)
-            if (result) return result
-        }
-    }
-
     return null
 }
 

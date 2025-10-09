@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import {extractAllClassNames, extractClassDocs} from './explore-doc-tool.js'
-import ExploreCommerceAPITool from './explore-doc-tool.js'
+import {extractAllClassNames, extractClassDocs} from './explore-scapi-shop-api-tool.js'
+import ExploreCommerceAPITool from './explore-scapi-shop-api-tool.js'
 
 // Mocks
 jest.mock('fs/promises', () => ({readFile: jest.fn()}))
@@ -60,7 +60,7 @@ describe('extractClassDocs', () => {
 
 describe('parseJSDoc', () => {
     // Re-import for direct testing
-    const {parseJSDoc} = jest.requireActual('./explore-doc-tool.js')
+    const {parseJSDoc} = jest.requireActual('./explore-scapi-shop-api-tool.js')
 
     it('extracts all JSDoc parts', () => {
         const jsdoc = `\n * Gets a user\n * @param id number\n * @returns User\n * @example\n * getUser(1) // returns {...}`
@@ -83,7 +83,7 @@ describe('parseJSDoc', () => {
 
 describe('parseTypeScriptParameters & parseOptionsParameter', () => {
     const {parseTypeScriptParameters, parseOptionsParameter} =
-        jest.requireActual('./explore-doc-tool.js')
+        jest.requireActual('./explore-scapi-shop-api-tool.js')
     it('recognizes empty parameter string', () => {
         expect(parseTypeScriptParameters('')).toEqual({parameters: {}, headers: {}})
     })
@@ -108,7 +108,7 @@ describe('parseTypeScriptParameters & parseOptionsParameter', () => {
 
 describe('parseReturnType & extractReturnTypeStructure', () => {
     const {parseReturnType, extractReturnTypeStructure} =
-        jest.requireActual('./explore-doc-tool.js')
+        jest.requireActual('./explore-scapi-shop-api-tool.js')
 
     const FILE_CONTENT_WITH_INTERFACE = `interface User { id: string; email: string }
   type MyType = { foo: number, bar: string }
@@ -138,7 +138,7 @@ describe('parseReturnType & extractReturnTypeStructure', () => {
 })
 
 describe('parseInterfaceProperties', () => {
-    const {parseInterfaceProperties} = jest.requireActual('./explore-doc-tool.js')
+    const {parseInterfaceProperties} = jest.requireActual('./explore-scapi-shop-api-tool.js')
     it('parses simple interface', () => {
         const result = parseInterfaceProperties('id: string;\nfoo?: number')
         expect(result.properties).toEqual([
