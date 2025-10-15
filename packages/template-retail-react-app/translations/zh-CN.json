@@ -234,6 +234,9 @@
   "checkout.message.generic_error": {
     "defaultMessage": "结账时发生意外错误。"
   },
+  "checkout.title.checkout": {
+    "defaultMessage": "结账"
+  },
   "checkout_confirmation.button.create_account": {
     "defaultMessage": "创建账户"
   },

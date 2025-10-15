@@ -613,6 +613,12 @@
       "value": "Une erreur inattendue s'est produite durant le checkout."
     }
   ],
+  "checkout.title.checkout": [
+    {
+      "type": 0,
+      "value": "Commande"
+    }
+  ],
   "checkout_confirmation.button.create_account": [
     {
       "type": 0,

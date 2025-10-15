@@ -234,6 +234,9 @@
   "checkout.message.generic_error": {
     "defaultMessage": "Se produjo un error inesperado durante el pago."
   },
+  "checkout.title.checkout": {
+    "defaultMessage": "Pagar"
+  },
   "checkout_confirmation.button.create_account": {
     "defaultMessage": "Crear cuenta"
   },

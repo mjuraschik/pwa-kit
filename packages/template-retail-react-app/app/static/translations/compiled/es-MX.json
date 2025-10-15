@@ -613,6 +613,12 @@
       "value": "Se produjo un error inesperado durante el pago."
     }
   ],
+  "checkout.title.checkout": [
+    {
+      "type": 0,
+      "value": "Pagar"
+    }
+  ],
   "checkout_confirmation.button.create_account": [
     {
       "type": 0,

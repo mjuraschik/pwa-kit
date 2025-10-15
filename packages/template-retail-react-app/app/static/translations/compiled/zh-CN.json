@@ -621,6 +621,12 @@
       "value": "结账时发生意外错误。"
     }
   ],
+  "checkout.title.checkout": [
+    {
+      "type": 0,
+      "value": "结账"
+    }
+  ],
   "checkout_confirmation.button.create_account": [
     {
       "type": 0,

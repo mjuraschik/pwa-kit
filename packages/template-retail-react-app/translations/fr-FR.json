@@ -234,6 +234,9 @@
   "checkout.message.generic_error": {
     "defaultMessage": "Une erreur inattendue s'est produite durant le checkout."
   },
+  "checkout.title.checkout": {
+    "defaultMessage": "Commande"
+  },
   "checkout_confirmation.button.create_account": {
     "defaultMessage": "Créer un compte"
   },
