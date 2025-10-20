@@ -948,16 +948,12 @@ export const RemoteServerFactory = {
                         try {
                             options.onSLASPrivateProxyReq(proxyRequest, incomingRequest, res)
                         } catch (error) {
-                            logger.error(
-                                'Error in custom onSLASPrivateProxyReq callback',
-                                /* istanbul ignore next */
-                                {
-                                    namespace: '_setupSlasPrivateClientProxy',
-                                    additionalProperties: {
-                                        error: error
-                                    }
+                            logger.error('Error in custom onSLASPrivateProxyReq callback', {
+                                namespace: '_setupSlasPrivateClientProxy',
+                                additionalProperties: {
+                                    error: error
                                 }
-                            )
+                            })
                         }
                     }
                 },
