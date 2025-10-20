@@ -159,17 +159,17 @@ export const RemoteServerFactory = {
             applySLASPrivateClientToEndpoints:
                 /\/oauth2\/(token|passwordless\/(login|token)|password\/(reset|action))/,
 
-            // Custom callback to modify the SLAS proxy request. This callback is invoked
+            // Custom callback to modify the SLAS private client proxy request. This callback is invoked
             // after the built-in proxy request handling. Users can provide additional
             // request modifications (e.g., custom headers).
             // Signature: (proxyRequest, incomingRequest, res) => void
-            onSlasProxyReq: undefined,
+            onSLASPrivateProxyReq: undefined,
 
-            // Custom callback to modify the SLAS proxy response. This callback is invoked
+            // Custom callback to modify the SLAS private client proxy response. This callback is invoked
             // after the built-in proxy response handling. Users can modify or replace
             // the response buffer.
             // Signature: (responseBuffer, proxyRes, req, res) => Buffer
-            onSlasProxyRes: undefined
+            onSLASPrivateProxyRes: undefined
         }
 
         options = Object.assign({}, defaults, options)
@@ -944,12 +944,12 @@ export const RemoteServerFactory = {
                     }
 
                     // Allow users to apply additional custom modifications to the proxy request
-                    if (typeof options.onSlasProxyReq === 'function') {
+                    if (typeof options.onSLASPrivateProxyReq === 'function') {
                         try {
-                            options.onSlasProxyReq(proxyRequest, incomingRequest, res)
+                            options.onSLASPrivateProxyReq(proxyRequest, incomingRequest, res)
                         } catch (error) {
                             logger.error(
-                                'Error in custom onSlasProxyReq callback',
+                                'Error in custom onSLASPrivateProxyReq callback',
                                 /* istanbul ignore next */
                                 {
                                     namespace: '_setupSlasPrivateClientProxy',
@@ -981,9 +981,9 @@ export const RemoteServerFactory = {
                         }
 
                         // Allow users to apply additional custom modifications to the proxy response
-                        if (typeof options.onSlasProxyRes === 'function') {
+                        if (typeof options.onSLASPrivateProxyRes === 'function') {
                             try {
-                                const customBuffer = options.onSlasProxyRes(
+                                const customBuffer = options.onSLASPrivateProxyRes(
                                     workingBuffer,
                                     proxyRes,
                                     req,
@@ -995,7 +995,7 @@ export const RemoteServerFactory = {
                                 }
                             } catch (error) {
                                 logger.error(
-                                    'Error in custom onSlasProxyRes callback',
+                                    'Error in custom onSLASPrivateProxyRes callback',
                                     /* istanbul ignore next */
                                     {
                                         namespace: '_setupSlasPrivateClientProxy',
@@ -1382,11 +1382,11 @@ export const RemoteServerFactory = {
      * proxy handler. Requires PWA_KIT_SLAS_CLIENT_SECRET environment variable.
      * @param {RegExp} [options.applySLASPrivateClientToEndpoints] - A regex pattern to match
      * SLAS endpoints where the Authorization header should be injected.
-     * @param {function} [options.onSlasProxyReq] - Custom callback to modify SLAS proxy requests.
-     * Called after built-in request handling. Signature: (proxyRequest, incomingRequest, res) => void.
+     * @param {function} [options.onSLASPrivateProxyReq] - Custom callback to modify SLAS private client
+     * proxy requests. Called after built-in request handling. Signature: (proxyRequest, incomingRequest, res) => void.
      * Use this to add custom headers or modify the proxy request.
-     * @param {function} [options.onSlasProxyRes] - Custom callback to modify SLAS proxy responses.
-     * Called after built-in response handling. Signature: (responseBuffer, proxyRes, req, res) => Buffer.
+     * @param {function} [options.onSLASPrivateProxyRes] - Custom callback to modify SLAS private client
+     * proxy responses. Called after built-in response handling. Signature: (responseBuffer, proxyRes, req, res) => Buffer.
      * Should return the modified buffer or undefined to use the existing buffer.
      */
     createHandler(options, customizeApp) {
