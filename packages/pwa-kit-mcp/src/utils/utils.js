@@ -485,3 +485,152 @@ function checkCommerceSDKInNodeModules(nodeModulesPath) {
 
     return null
 }
+
+/**
+ * Recursively searches for a file in a directory and its subdirectories
+ * @param {string} dir - Directory to search in
+ * @param {string} filename - Filename to search for
+ * @param {number} maxDepth - Maximum depth to search (default: 10)
+ * @param {number} currentDepth - Current recursion depth (internal use)
+ * @returns {string|null} Full path to the file if found, null otherwise
+ */
+function findFileRecursively(dir, filename, maxDepth = 10, currentDepth = 0) {
+    if (currentDepth > maxDepth) {
+        return null
+    }
+
+    try {
+        const entries = fs.readdirSync(dir, {withFileTypes: true})
+
+        // Check if file exists in current directory
+        for (const entry of entries) {
+            if (entry.isFile() && entry.name === filename) {
+                return path.join(dir, entry.name)
+            }
+        }
+
+        // Recursively search subdirectories
+        for (const entry of entries) {
+            if (entry.isDirectory()) {
+                const found = findFileRecursively(
+                    path.join(dir, entry.name),
+                    filename,
+                    maxDepth,
+                    currentDepth + 1
+                )
+                if (found) {
+                    return found
+                }
+            }
+        }
+    } catch (error) {
+        logMCPMessage(`Error searching directory ${dir}: ${error.message}`)
+    }
+
+    return null
+}
+
+/**
+ * Searches for api.json and schema.yaml in a given directory path
+ * @param {string} searchPath - Directory path to search in
+ * @param {string} source - Source identifier for logging (e.g., 'SFCC_CUSTOM_API_CARTRIDGE_PATH')
+ * @returns {Object|null} Object containing apiJson and schemaYaml content, or null if not found
+ */
+function searchForCustomApiFiles(searchPath, source) {
+    if (!searchPath || !fs.existsSync(searchPath)) {
+        logMCPMessage(`Search path does not exist: ${searchPath}`)
+        return null
+    }
+
+    try {
+        // Search for api.json recursively
+        const apiJsonPath = findFileRecursively(searchPath, 'api.json')
+
+        if (!apiJsonPath) {
+            logMCPMessage(`api.json not found in: ${searchPath}`)
+            return null
+        }
+
+        logMCPMessage(`Found api.json at: ${apiJsonPath} (source: ${source})`)
+        const apiJson = JSON.parse(fs.readFileSync(apiJsonPath, 'utf-8'))
+
+        // Search for schema.yaml in the same directory as api.json first, then recursively
+        const apiJsonDir = path.dirname(apiJsonPath)
+        let schemaYamlPath = path.join(apiJsonDir, 'schema.yaml')
+
+        if (!fs.existsSync(schemaYamlPath)) {
+            // If not found in same directory, search recursively from api.json directory
+            schemaYamlPath = findFileRecursively(apiJsonDir, 'schema.yaml')
+        }
+
+        let schemaYaml = null
+        if (schemaYamlPath && fs.existsSync(schemaYamlPath)) {
+            logMCPMessage(`Found schema.yaml at: ${schemaYamlPath}`)
+            schemaYaml = fs.readFileSync(schemaYamlPath, 'utf-8')
+        } else {
+            logMCPMessage(`schema.yaml not found, continuing without schema`)
+        }
+
+        return {apiJson, schemaYaml, apiJsonPath, schemaYamlPath, source}
+    } catch (error) {
+        logMCPMessage(`Error reading custom API from ${searchPath}: ${error.message}`)
+        return null
+    }
+}
+
+/**
+ * Loads custom API configuration from local filesystem fallback paths
+ * Search priority:
+ * 1. SFCC_CUSTOM_API_CARTRIDGE_PATH env var
+ * 2. PWA_STOREFRONT_APP_PATH (search up parent directories and down subdirectories)
+ * @returns {Object|null} Object containing apiJson and schemaYaml content, or null if not found
+ */
+export function loadCustomApiFromFallbackPath() {
+    // Priority 1: Check SFCC_CUSTOM_API_CARTRIDGE_PATH
+    const customApiPath = process.env.SFCC_CUSTOM_API_CARTRIDGE_PATH
+    if (customApiPath) {
+        const result = searchForCustomApiFiles(customApiPath, 'SFCC_CUSTOM_API_CARTRIDGE_PATH')
+        if (result) {
+            return result
+        }
+    }
+
+    // Priority 2: Check PWA_STOREFRONT_APP_PATH and traverse up/down
+    const storefrontAppPath = process.env.PWA_STOREFRONT_APP_PATH
+    if (storefrontAppPath && fs.existsSync(storefrontAppPath)) {
+        logMCPMessage(
+            `Searching for custom API files from PWA_STOREFRONT_APP_PATH: ${storefrontAppPath}`
+        )
+
+        // First search in the app path itself and its subdirectories
+        let result = searchForCustomApiFiles(storefrontAppPath, 'PWA_STOREFRONT_APP_PATH')
+        if (result) {
+            return result
+        }
+
+        // Traverse up parent directories (up to 5 levels)
+        let currentPath = path.resolve(storefrontAppPath)
+        for (let i = 0; i < 5; i++) {
+            const parentPath = path.dirname(currentPath)
+
+            // Stop if we've reached the root
+            if (parentPath === currentPath) {
+                break
+            }
+
+            logMCPMessage(`Searching parent directory: ${parentPath}`)
+            result = searchForCustomApiFiles(
+                parentPath,
+                `PWA_STOREFRONT_APP_PATH (parent ${i + 1})`
+            )
+            if (result) {
+                return result
+            }
+
+            currentPath = parentPath
+        }
+    }
+
+    logMCPMessage('No custom API files found in any fallback location')
+    return null
+}

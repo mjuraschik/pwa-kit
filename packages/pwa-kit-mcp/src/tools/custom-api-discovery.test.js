@@ -21,7 +21,8 @@ jest.mock('../utils/utils.js', () => ({
     throwCustomApiError: jest.fn(),
     getOAuthToken: jest.fn(),
     callCustomApiDxEndpoint: jest.fn(),
-    logMCPMessage: jest.fn()
+    logMCPMessage: jest.fn(),
+    loadCustomApiFromFallbackPath: jest.fn()
 }))
 
 // Mock fetch globally
@@ -382,5 +383,123 @@ describe('CustomApiTool', () => {
         await expect(CustomApiTool.fn()).rejects.toThrow(
             'Required configuration fields are null: clientSecret, organizationId'
         )
+    })
+
+    describe('Fallback path scenarios', () => {
+        beforeEach(() => {
+            jest.clearAllMocks()
+        })
+
+        test('should use fallback path when all SFCC config fields are null', async () => {
+            const {loadConfig, loadCustomApiFromFallbackPath} = require('../utils/utils.js')
+
+            // Mock all config fields as null (triggers fallback)
+            loadConfig.mockReturnValue({
+                clientId: null,
+                clientSecret: null,
+                organizationId: null,
+                instanceId: null,
+                shortCode: null,
+                hostname: null
+            })
+
+            // Mock fallback data
+            loadCustomApiFromFallbackPath.mockReturnValue({
+                apiJson: {
+                    apiName: 'reviews',
+                    apiVersion: 'v1',
+                    cartridgeName: 'plugin_custom_api_intro',
+                    endpointPath: 'reviews',
+                    httpMethod: 'GET',
+                    securityScheme: 'bearer',
+                    baseUrl: 'https://test.api.commercecloud.salesforce.com/custom/reviews/v1'
+                },
+                schemaYaml: 'openapi: 3.0.0...',
+                source: 'SFCC_CUSTOM_API_CARTRIDGE_PATH'
+            })
+
+            const result = await CustomApiTool.fn()
+
+            expect(result.content[0].type).toBe('text')
+            const parsedResult = JSON.parse(result.content[0].text)
+            expect(parsedResult.metadata.fallback).toBe(true)
+            expect(parsedResult.metadata.source).toBe('SFCC_CUSTOM_API_CARTRIDGE_PATH')
+            expect(parsedResult.customApis.length).toBe(1)
+            expect(parsedResult.customApis[0].apiName).toBe('reviews')
+        })
+
+        test('should return empty response when fallback path returns no data', async () => {
+            const {loadConfig, loadCustomApiFromFallbackPath} = require('../utils/utils.js')
+
+            // Mock all config fields as null (triggers fallback)
+            loadConfig.mockReturnValue({
+                clientId: null,
+                clientSecret: null,
+                organizationId: null,
+                instanceId: null,
+                shortCode: null,
+                hostname: null
+            })
+
+            // Mock fallback returning null
+            loadCustomApiFromFallbackPath.mockReturnValue(null)
+
+            const result = await CustomApiTool.fn()
+
+            expect(result.content[0].type).toBe('text')
+            const parsedResult = JSON.parse(result.content[0].text)
+            expect(parsedResult.metadata.fallback).toBe(true)
+            expect(parsedResult.metadata.totalApis).toBe(0)
+            expect(parsedResult.customApis).toEqual([])
+            expect(parsedResult.metadata.message).toContain('No SFCC configuration found')
+        })
+
+        test('should use fallback when 4+ config fields are missing', async () => {
+            const {loadConfig, loadCustomApiFromFallbackPath} = require('../utils/utils.js')
+
+            // Mock 4 fields as null (triggers fallback)
+            loadConfig.mockReturnValue({
+                clientId: null,
+                clientSecret: null,
+                organizationId: null,
+                instanceId: null,
+                shortCode: 'test',
+                hostname: 'test.com'
+            })
+
+            loadCustomApiFromFallbackPath.mockReturnValue({
+                apiJson: {
+                    apiName: 'test-api',
+                    apiVersion: 'v1'
+                },
+                schemaYaml: null,
+                source: 'PWA_STOREFRONT_APP_PATH'
+            })
+
+            const result = await CustomApiTool.fn()
+
+            expect(result.content[0].type).toBe('text')
+            const parsedResult = JSON.parse(result.content[0].text)
+            expect(parsedResult.metadata.fallback).toBe(true)
+            expect(parsedResult.metadata.source).toBe('PWA_STOREFRONT_APP_PATH')
+        })
+
+        test('should not use fallback when only 1-2 config fields are missing', async () => {
+            const {loadConfig} = require('../utils/utils.js')
+
+            // Mock only 2 fields as null (should throw error, not use fallback)
+            loadConfig.mockReturnValue({
+                clientId: 'test-id',
+                clientSecret: null,
+                organizationId: null,
+                instanceId: 'test-instance',
+                shortCode: 'test',
+                hostname: 'test.com'
+            })
+
+            await expect(CustomApiTool.fn()).rejects.toThrow(
+                'Required configuration fields are null'
+            )
+        })
     })
 })

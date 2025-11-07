@@ -54,8 +54,12 @@ The PWA Kit MCP Server offers the following intelligent tools tailored to Salesf
   *Example: `How do I get a product?`*
   
 * **`scapi_custom_api_discovery`**:
-  Discovers custom SCAPI APIs registered on BM, and fetches the schema of those APIs. Requires credential configuration described in the  🔧 Configuration Options section.  
+  Discovers custom SCAPI APIs registered on BM, and fetches the schema of those APIs. Requires credential configuration described in the 🔧 Configuration Options section.  
   *Note: Ensure your API Client has access to your instance and has 'sfcc.custom-apis' as allowed scope*
+  
+  **Fallback Mode**: If SFCC credentials are not available, the tool will search for `api.json` and `schema.yaml` files locally in the following order:
+  1. `SFCC_CUSTOM_API_CARTRIDGE_PATH` environment variable (if set)
+  2. `PWA_STOREFRONT_APP_PATH` and its parent directories (up to 5 levels)
   
   *Custom API DX Endpoint Documentation*: [https://developer.salesforce.com/docs/commerce/commerce-api/references/custom-apis?meta=getEndpoints](https://developer.salesforce.com/docs/commerce/commerce-api/references/custom-apis?meta=getEndpoints)
 
@@ -142,7 +146,55 @@ SFCC_CLIENT_ID=your-client-id
 SFCC_CLIENT_SECRET=your-client-secret
 ```
 
-**Note:** Environment variables take precedence over`dw.json` values if both are provided.
+**Note:** Environment variables take precedence over `dw.json` values if both are provided.
+
+#### Option 3: Local Custom API Files (Fallback for Custom API Discovery)
+
+For the `scapi_custom_api_discovery` tool, if SFCC credentials are not available, you can provide local custom API files:
+
+**Method 1: Direct Path** - Set the `SFCC_CUSTOM_API_CARTRIDGE_PATH` environment variable to point to your custom API cartridge directory:
+
+```json
+{
+  "mcpServers": {
+    "pwa-kit": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/pwa-kit-mcp"],
+      "env": {
+        "PWA_STOREFRONT_APP_PATH": "{{path-to-app-directory}}",
+        "SFCC_CUSTOM_API_CARTRIDGE_PATH": "/path/to/your/cartridge/rest-apis/your-api"
+      }
+    }
+  }
+}
+```
+
+**Method 2: Auto-discovery** - If `SFCC_CUSTOM_API_CARTRIDGE_PATH` is not set, the tool will automatically search for `api.json` and `schema.yaml` files starting from `PWA_STOREFRONT_APP_PATH` and traversing up to 5 parent directories.
+
+**File Structure Expected:**
+```
+your-custom-api-directory/
+├── api.json          # Custom API metadata
+└── schema.yaml       # OpenAPI schema (optional)
+```
+
+**Example `api.json`:**
+```json
+{
+  "apiName": "reviews",
+  "apiVersion": "v1",
+  "cartridgeName": "plugin_custom_api_intro",
+  "endpointPath": "reviews",
+  "httpMethod": "GET",
+  "securityScheme": "bearer",
+  "baseUrl": "https://your-shortcode.api.commercecloud.salesforce.com/custom/reviews/v1"
+}
+```
+
+**Search Priority:**
+1. SFCC credentials (dw.json or environment variables)
+2. `SFCC_CUSTOM_API_CARTRIDGE_PATH` environment variable
+3. `PWA_STOREFRONT_APP_PATH` and parent directories (auto-discovery)
 
 ## 📊 Telemetry
 
