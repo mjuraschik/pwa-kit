@@ -278,7 +278,7 @@ export default {
                                             timestamp: new Date().toISOString(),
                                             totalApis: 0,
                                             message:
-                                                'No SFCC configuration found (dw.json or env vars) and no local fallback path available. Please configure SFCC_CUSTOM_API_CARTRIDGE_PATH environment variable or PWA_STOREFRONT_APP_PATH, or provide SFCC credentials.'
+                                                'No SFCC configuration found (dw.json or env vars) and no local fallback path available. Please configure SFCC_CARTRIDGE_PATH environment variable or PWA_STOREFRONT_APP_PATH, or provide SFCC credentials.'
                                         },
                                         customApis: []
                                     },

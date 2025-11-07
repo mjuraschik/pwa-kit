@@ -581,15 +581,15 @@ function searchForCustomApiFiles(searchPath, source) {
 /**
  * Loads custom API configuration from local filesystem fallback paths
  * Search priority:
- * 1. SFCC_CUSTOM_API_CARTRIDGE_PATH env var
+ * 1. SFCC_CARTRIDGE_PATH env var
  * 2. PWA_STOREFRONT_APP_PATH (search up parent directories and down subdirectories)
  * @returns {Object|null} Object containing apiJson and schemaYaml content, or null if not found
  */
 export function loadCustomApiFromFallbackPath() {
-    // Priority 1: Check SFCC_CUSTOM_API_CARTRIDGE_PATH
-    const customApiPath = process.env.SFCC_CUSTOM_API_CARTRIDGE_PATH
+    // Priority 1: Check SFCC_CARTRIDGE_PATH
+    const customApiPath = process.env.SFCC_CARTRIDGE_PATH
     if (customApiPath) {
-        const result = searchForCustomApiFiles(customApiPath, 'SFCC_CUSTOM_API_CARTRIDGE_PATH')
+        const result = searchForCustomApiFiles(customApiPath, 'SFCC_CARTRIDGE_PATH')
         if (result) {
             return result
         }

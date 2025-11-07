@@ -58,7 +58,7 @@ The PWA Kit MCP Server offers the following intelligent tools tailored to Salesf
   *Note: Ensure your API Client has access to your instance and has 'sfcc.custom-apis' as allowed scope*
   
   **Fallback Mode**: If SFCC credentials are not available, the tool will search for `api.json` and `schema.yaml` files locally in the following order:
-  1. `SFCC_CUSTOM_API_CARTRIDGE_PATH` environment variable (if set)
+  1. `SFCC_CARTRIDGE_PATH` environment variable (if set)
   2. `PWA_STOREFRONT_APP_PATH` and its parent directories (up to 5 levels)
   
   *Custom API DX Endpoint Documentation*: [https://developer.salesforce.com/docs/commerce/commerce-api/references/custom-apis?meta=getEndpoints](https://developer.salesforce.com/docs/commerce/commerce-api/references/custom-apis?meta=getEndpoints)
@@ -152,7 +152,7 @@ SFCC_CLIENT_SECRET=your-client-secret
 
 For the `scapi_custom_api_discovery` tool, if SFCC credentials are not available, you can provide local custom API files:
 
-**Method 1: Direct Path** - Set the `SFCC_CUSTOM_API_CARTRIDGE_PATH` environment variable to point to your custom API cartridge directory:
+**Method 1: Direct Path** - Set the `SFCC_CARTRIDGE_PATH` environment variable to point to your custom API cartridge directory:
 
 ```json
 {
@@ -162,14 +162,14 @@ For the `scapi_custom_api_discovery` tool, if SFCC credentials are not available
       "args": ["-y", "@salesforce/pwa-kit-mcp"],
       "env": {
         "PWA_STOREFRONT_APP_PATH": "{{path-to-app-directory}}",
-        "SFCC_CUSTOM_API_CARTRIDGE_PATH": "/path/to/your/cartridge/rest-apis/your-api"
+        "SFCC_CARTRIDGE_PATH": "/path/to/your/cartridge"
       }
     }
   }
 }
 ```
 
-**Method 2: Auto-discovery** - If `SFCC_CUSTOM_API_CARTRIDGE_PATH` is not set, the tool will automatically search for `api.json` and `schema.yaml` files starting from `PWA_STOREFRONT_APP_PATH` and traversing up to 5 parent directories.
+**Method 2: Auto-discovery** - If `SFCC_CARTRIDGE_PATH` is not set, the tool will automatically search for `api.json` and `schema.yaml` files starting from `PWA_STOREFRONT_APP_PATH` and traversing up to 5 parent directories.
 
 **File Structure Expected:**
 ```
@@ -193,7 +193,7 @@ your-custom-api-directory/
 
 **Search Priority:**
 1. SFCC credentials (dw.json or environment variables)
-2. `SFCC_CUSTOM_API_CARTRIDGE_PATH` environment variable
+2. `SFCC_CARTRIDGE_PATH` environment variable
 3. `PWA_STOREFRONT_APP_PATH` and parent directories (auto-discovery)
 
 ## 📊 Telemetry

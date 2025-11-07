@@ -415,7 +415,7 @@ describe('CustomApiTool', () => {
                     baseUrl: 'https://test.api.commercecloud.salesforce.com/custom/reviews/v1'
                 },
                 schemaYaml: 'openapi: 3.0.0...',
-                source: 'SFCC_CUSTOM_API_CARTRIDGE_PATH'
+                source: 'SFCC_CARTRIDGE_PATH'
             })
 
             const result = await CustomApiTool.fn()
@@ -423,7 +423,7 @@ describe('CustomApiTool', () => {
             expect(result.content[0].type).toBe('text')
             const parsedResult = JSON.parse(result.content[0].text)
             expect(parsedResult.metadata.fallback).toBe(true)
-            expect(parsedResult.metadata.source).toBe('SFCC_CUSTOM_API_CARTRIDGE_PATH')
+            expect(parsedResult.metadata.source).toBe('SFCC_CARTRIDGE_PATH')
             expect(parsedResult.customApis.length).toBe(1)
             expect(parsedResult.customApis[0].apiName).toBe('reviews')
         })
