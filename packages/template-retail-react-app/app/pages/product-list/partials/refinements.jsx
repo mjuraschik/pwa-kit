@@ -77,6 +77,8 @@ const Refinements = ({
         window.localStorage.setItem(FILTER_ACCORDION_SATE, JSON.stringify(filterState))
     }
 
+    filtersIndexes = [0, 1, 2]
+    console.log('filtersIndexes', filtersIndexes)
     return (
         <Stack spacing={8}>
             {/* Wait to have filters before rendering the Accordion to allow the default indexes to be accurate */}
@@ -118,32 +120,36 @@ const Refinements = ({
                                                 : '1px solid gray.200'
                                         }
                                     >
-                                        {({isExpanded}) => (
-                                            <>
-                                                <AccordionButton
-                                                    paddingTop={0}
-                                                    paddingBottom={isExpanded ? 2 : 0}
-                                                >
-                                                    <Heading
-                                                        as="h2"
-                                                        flex="1"
-                                                        textAlign="left"
-                                                        fontSize="md"
-                                                        fontWeight={600}
+                                        {({isExpanded}) => {
+                                            console.log('isExpanded', isExpanded)
+                                            isExpanded = true
+                                            return (
+                                                <>
+                                                    <AccordionButton
+                                                        paddingTop={0}
+                                                        paddingBottom={isExpanded ? 2 : 0}
                                                     >
-                                                        {filter.label}
-                                                    </Heading>
-                                                    <AccordionIcon />
-                                                </AccordionButton>
-                                                <AccordionPanel paddingLeft={0}>
-                                                    <Values
-                                                        selectedFilters={selectedFiltersArray}
-                                                        filter={filter}
-                                                        toggleFilter={toggleFilter}
-                                                    />
-                                                </AccordionPanel>
-                                            </>
-                                        )}
+                                                        <Heading
+                                                            as="h2"
+                                                            flex="1"
+                                                            textAlign="left"
+                                                            fontSize="md"
+                                                            fontWeight={600}
+                                                        >
+                                                            {filter.label}
+                                                        </Heading>
+                                                        <AccordionIcon />
+                                                    </AccordionButton>
+                                                    <AccordionPanel paddingLeft={0}>
+                                                        <Values
+                                                            selectedFilters={selectedFiltersArray}
+                                                            filter={filter}
+                                                            toggleFilter={toggleFilter}
+                                                        />
+                                                    </AccordionPanel>
+                                                </>   
+                                            )
+                                        }}
                                     </AccordionItem>
                                 </Stack>
                             )
