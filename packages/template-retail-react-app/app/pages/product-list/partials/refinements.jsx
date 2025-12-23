@@ -77,8 +77,6 @@ const Refinements = ({
         window.localStorage.setItem(FILTER_ACCORDION_SATE, JSON.stringify(filterState))
     }
 
-    filtersIndexes = [0, 1, 2]
-    console.log('filtersIndexes', filtersIndexes)
     return (
         <Stack spacing={8}>
             {/* Wait to have filters before rendering the Accordion to allow the default indexes to be accurate */}
