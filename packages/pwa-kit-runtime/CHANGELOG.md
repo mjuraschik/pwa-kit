@@ -1,4 +1,4 @@
-## v3.16.0-dev (Dec 17, 2025)
+## v3.16.0-preview.0 (Feb 06, 2026)
 - Migrate AWS SDK from v2 to v3 [#3566](https://github.com/SalesforceCommerceCloud/pwa-kit/pull/3566)
 
 ## v3.15.0 (Dec 17, 2025)
