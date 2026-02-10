@@ -26,11 +26,7 @@ const componentMapProxy = new Proxy(
                 <div style={{marginBottom: '10px'}}>
                     <b>{props.typeId}</b>
                     {props?.regions?.map((region: any) => (
-                        <Region
-                            style={{margin: '0px 0px 5px 20px'}}
-                            key={region.id}
-                            region={region}
-                        />
+                        <Region key={region.id} component={props.component} regionId={region.id} />
                     ))}
                 </div>
             )

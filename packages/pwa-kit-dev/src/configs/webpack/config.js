@@ -202,6 +202,13 @@ const baseConfig = (target) => {
                               ]
                           }
                         : {}),
+                    conditionNames: [
+                        'import',
+                        'require',
+                        'module',
+                        ...(target === 'web' ? ['browser'] : ['node']),
+                        'default'
+                    ],
                     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
                     alias: {
                         ...Object.assign(
@@ -272,6 +279,14 @@ const baseConfig = (target) => {
                             use: {
                                 loader: findDepInStack('source-map-loader')
                             }
+                        },
+                        target === 'web' && {
+                            test: /\.css$/,
+                            use: [findDepInStack('style-loader'), findDepInStack('css-loader')]
+                        },
+                        target === 'node' && {
+                            test: /\.css$/,
+                            loader: findDepInStack('ignore-loader')
                         }
                     ].filter(Boolean)
                 }

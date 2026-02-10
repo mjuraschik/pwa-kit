@@ -44,10 +44,7 @@ const options = {
     // The protocol on which the development Express app listens.
     // Note that http://localhost is treated as a secure context for development,
     // except by Safari.
-    protocol: process.env.DEV_SERVER_PROTOCOL || 'http',
-
-    // SSL file path for HTTPS development
-    sslFilePath: process.env.DEV_SERVER_SSL_FILE_PATH,
+    protocol: 'http',
 
     // Option for whether to set up a special endpoint for handling
     // private SLAS clients
@@ -61,7 +58,7 @@ const options = {
     // private client secret handler will inject an Authorization header.
     // The default regex is defined in this file: https://github.com/SalesforceCommerceCloud/pwa-kit/blob/develop/packages/pwa-kit-runtime/src/ssr/server/build-remote-server.js
     // applySLASPrivateClientToEndpoints:
-    //    /\/oauth2\/(token|passwordless\/(login|token)|password\/(reset|action))/,
+    //     /\/oauth2\/(token|passwordless\/(login|token)|password\/(reset|action))/,
 
     // If this is enabled, any HTTP header that has a non ASCII value will be URI encoded
     // If there any HTTP headers that have been encoded, an additional header will be
@@ -359,19 +356,11 @@ const {handler} = runtime.createHandler(options, (app) => {
                     'img-src': [
                         // Default source for product images - replace with your CDN
                         '*.commercecloud.salesforce.com',
-                        '*.demandware.net',
-                        '*.adyen.com'
+                        '*.demandware.net'
                     ],
                     'script-src': [
                         // Used by the service worker in /worker/main.js
                         'storage.googleapis.com',
-                        // Payment gateways
-                        '*.stripe.com',
-                        '*.paypal.com',
-                        '*.adyen.com',
-                        'pay.google.com',
-                        'www.gstatic.com',
-                        '*.demandware.net', // Used to load a valid payment scripts in test environment
                         'maps.googleapis.com',
                         'places.googleapis.com'
                     ],
@@ -384,24 +373,16 @@ const {handler} = runtime.createHandler(options, (app) => {
                         'places.googleapis.com',
                         // Connect to SCRT2 URLs
                         '*.salesforce-scrt.com',
-                        // Payment gateways
-                        '*.demandware.net', // Used to load a valid payment scripts in test environment
-                        '*.adyen.com',
-                        '*.paypal.com',
-                        'pay.google.com',
-                        'payments.google.com',
-                        'google.com',
-                        'www.google.com'
+                        // Connect to SFCC/ODS instances
+                        '*.demandware.net'
                     ],
                     'frame-src': [
                         // Allow frames from Salesforce site.com (Needed for MIAW)
-                        '*.site.com',
-                        // Payment gateways
-                        '*.stripe.com',
-                        '*.paypal.com',
-                        '*.adyen.com',
-                        'payments.google.com',
-                        'pay.google.com'
+                        '*.site.com'
+                    ],
+                    'frame-ancestors': [
+                        // Allow Page Designer to embed the storefront in an iframe
+                        '*.demandware.net'
                     ]
                 }
             }
@@ -458,47 +439,6 @@ const {handler} = runtime.createHandler(options, (app) => {
     app.get('/favicon.ico', runtime.serveStaticFile('static/ico/favicon.ico'))
 
     app.get('/worker.js(.map)?', runtime.serveServiceWorker)
-
-    // Helper function to transform relative icon paths to absolute URLs
-    function transformIconPaths(data, ecomServerHost) {
-        const baseUrl = `https://${ecomServerHost}/on/demandware.static/Sites-Site/-/-/internal`
-        const methodTypes = data?.paymentMethodTypes
-        if (methodTypes) {
-            for (const method of Object.values(methodTypes)) {
-                for (const image of method.images ?? []) {
-                    if (image.src?.startsWith('/icons/')) {
-                        image.src = `${baseUrl}${image.src}`
-                    }
-                }
-            }
-        }
-        return data
-    }
-
-    // Helper function to fetch payment metadata from the Commerce Cloud instance
-    app.get('/api/payment-metadata', async (req, res) => {
-        try {
-            const response = await fetch(config.app.sfPayments.metadataUrl, {
-                headers: {Accept: 'application/json'}
-            })
-            if (!response.ok) {
-                throw new Error(`Metadata request failed with status: ${response.status}`)
-            }
-            const data = await response.json()
-            const transformedData = transformIconPaths(
-                data,
-                new URL(config.app.sfPayments.metadataUrl).hostname
-            )
-            res.setHeader('Content-Type', 'application/json')
-            res.json(transformedData)
-        } catch (error) {
-            res.status(500).json({
-                error: 'Failed to fetch metadata',
-                details: error.message
-            })
-        }
-    })
-
     app.get('*', runtime.render)
 })
 // SSR requires that we export a single handler function called 'get', that

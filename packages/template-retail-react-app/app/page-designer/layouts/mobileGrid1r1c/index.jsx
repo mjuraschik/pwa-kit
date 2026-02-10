@@ -18,13 +18,18 @@ import {Region, regionPropType} from '@salesforce/commerce-sdk-react/components'
  * @param {string} props.typeId - A mapping of typeId's to react components representing the type.
  * @returns {React.ReactElement} - Grid component.
  */
-export const MobileGrid1r1c = ({regions}) => (
-    <SimpleGrid className="mobile-1r-1c" columns={1}>
-        {regions.map((region) => (
-            <Region key={region.id} region={region} />
-        ))}
-    </SimpleGrid>
-)
+export const MobileGrid1r1c = ({regions}) => {
+    return (
+        <SimpleGrid className="mobile-1r-1c" columns={1} spacing={2}>
+            {regions.map((region) => {
+                const component = {
+                    regions
+                }
+                return <Region key={region.id} regionId={region.id} component={component} />
+            })}
+        </SimpleGrid>
+    )
+}
 
 MobileGrid1r1c.displayName = 'MobileGrid1r1c'
 

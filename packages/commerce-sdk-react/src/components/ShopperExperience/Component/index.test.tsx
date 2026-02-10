@@ -5,64 +5,127 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {render} from '@testing-library/react'
-import Component from './index'
-import {PageContext} from '../Page'
+import {render, screen} from '@testing-library/react'
+import {Component, ComponentProps} from './index'
+import {registry} from '../registry'
 
-const SAMPLE_COMPONENT = {
-    id: 'rfdvj4ojtltljw3',
-    typeId: 'commerce_assets.carousel',
-    data: {
-        title: 'Topseller',
-        category: 'topseller'
-    },
-    regions: [
-        {
-            id: 'regionB1',
-            components: [
-                {
-                    id: 'rfdvj4ojtltljw3',
-                    typeId: 'commerce_assets.carousel',
-                    data: {
-                        title: 'Topseller',
-                        category: 'topseller'
-                    }
-                }
-            ]
-        }
-    ]
+// Mock the registry
+jest.mock('../registry', () => ({
+    registry: {
+        getComponent: jest.fn(),
+        getFallback: jest.fn(),
+        preload: jest.fn()
+    }
+}))
+
+// Type the mock registry with flexible return types for testing
+const mockRegistry = registry as unknown as {
+    getComponent: jest.Mock
+    getFallback: jest.Mock
+    preload: jest.Mock
 }
 
-const TEST_COMPONENTS = {
-    ['commerce_assets.carousel']: () => <div className="carousel">Carousel</div>
-}
+describe('Component', () => {
+    // Create mock component data - cast to ComponentProps['component'] for test flexibility
+    const mockComponent = {
+        id: 'test-component-id',
+        typeId: 'commerce_assets.banner',
+        data: {
+            title: 'Test Banner',
+            imageUrl: '/test-image.jpg'
+        },
+        visible: true,
+        localized: false,
+        designMetadata: {
+            name: 'Test Component'
+        },
+        regions: []
+    } as unknown as ComponentProps['component']
 
-test('Page throws if used outside of a Page component', () => {
-    // Mock console.error to suppress React error boundary warnings
-    const originalError = console.error
-    console.error = jest.fn()
-
-    expect(() => {
-        render(<Component component={SAMPLE_COMPONENT} />)
-    }).toThrow()
-    console.error = originalError
-})
-
-test('Page renders correct component', () => {
-    const component = <Component component={SAMPLE_COMPONENT} />
-
-    const {container} = render(component, {
-        wrapper: () => (
-            <PageContext.Provider value={{components: TEST_COMPONENTS}}>
-                {component}
-            </PageContext.Provider>
-        )
+    beforeEach(() => {
+        jest.clearAllMocks()
+        // Suppress console.log during tests
+        jest.spyOn(console, 'log').mockImplementation(() => {})
     })
 
-    // Component are in document.
-    expect(container.querySelectorAll('.component')?.length).toBe(1)
+    afterEach(() => {
+        jest.restoreAllMocks()
+    })
 
-    // Provided components are in document. (Note: Sub-regions/components aren't rendered because that is
-    // the responsibility of the component definition.)
-    expect(container.querySelectorAll('.carousel')?.length).toBe(1)
+    test('renders component when DynamicComponent is available', () => {
+        const MockDynamicComponent = ({title}: {title: string}) => (
+            <div data-testid="dynamic-component">{title}</div>
+        )
+        mockRegistry.getComponent.mockReturnValue(MockDynamicComponent)
+        mockRegistry.getFallback.mockReturnValue(null)
+
+        render(<Component component={mockComponent} regionId="test-region" />)
+
+        expect(screen.getByTestId('dynamic-component')).toBeInTheDocument()
+        expect(screen.getByText('Test Banner')).toBeInTheDocument()
+    })
+
+    test('calls preload when DynamicComponent is not available', () => {
+        const preloadPromise = Promise.resolve()
+        mockRegistry.getComponent.mockReturnValue(undefined)
+        mockRegistry.getFallback.mockReturnValue(null)
+        mockRegistry.preload.mockReturnValue(preloadPromise)
+
+        // Component throws the preload promise for Suspense to catch
+        // We can't test the throw directly because React catches it internally
+        // Instead we verify preload is called with the correct typeId
+        try {
+            render(<Component component={mockComponent} regionId="test-region" />)
+        } catch (e) {
+            // Expected - Suspense boundary catches this
+        }
+
+        expect(mockRegistry.preload).toHaveBeenCalledWith('commerce_assets.banner')
+    })
+
+    test('passes correct props to DynamicComponent', () => {
+        const receivedProps: Record<string, unknown> = {}
+        const MockDynamicComponent = (props: Record<string, unknown>) => {
+            Object.assign(receivedProps, props)
+            return <div data-testid="dynamic-component">Test</div>
+        }
+        mockRegistry.getComponent.mockReturnValue(MockDynamicComponent)
+        mockRegistry.getFallback.mockReturnValue(null)
+
+        render(
+            <Component component={mockComponent} regionId="test-region" className="custom-class" />
+        )
+
+        expect(receivedProps.title).toBe('Test Banner')
+        expect(receivedProps.imageUrl).toBe('/test-image.jpg')
+        expect(receivedProps.className).toBe('custom-class')
+        expect(receivedProps.regionId).toBe('test-region')
+        expect(receivedProps.component).toBe(mockComponent)
+        expect(receivedProps.regions).toEqual([])
+        expect(receivedProps.designMetadata).toEqual({
+            name: 'Test Component',
+            isFragment: false,
+            isVisible: true,
+            isLocalized: false,
+            id: 'test-component-id'
+        })
+    })
+
+    test('handles component without designMetadata', () => {
+        const componentWithoutDesignMetadata = {
+            ...mockComponent,
+            designMetadata: undefined
+        } as unknown as ComponentProps['component']
+        const receivedProps: Record<string, unknown> = {}
+        const MockDynamicComponent = (props: Record<string, unknown>) => {
+            Object.assign(receivedProps, props)
+            return <div data-testid="dynamic-component">Test</div>
+        }
+        mockRegistry.getComponent.mockReturnValue(MockDynamicComponent)
+        mockRegistry.getFallback.mockReturnValue(null)
+
+        render(<Component component={componentWithoutDesignMetadata} regionId="test-region" />)
+
+        expect((receivedProps.designMetadata as {name: string | undefined}).name).toBeUndefined()
+    })
 })

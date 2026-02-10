@@ -12,6 +12,7 @@ import {mergeOptions, omitNullableParameters, pickValidParams} from '../utils'
 import * as queryKeyHelpers from './queryKeyHelpers'
 import {CLIENT_KEYS} from '../../constant'
 import useCommerceApi from '../useCommerceApi'
+import {usePageDesignerParams} from './usePageDesignerParams'
 
 const CLIENT_KEY = CLIENT_KEYS.SHOPPER_EXPERIENCE
 type Client = NonNullable<ApiClients[typeof CLIENT_KEY]>
@@ -39,10 +40,23 @@ export const usePages = (
     const client = useCommerceApi(CLIENT_KEY)
     const methodName = 'getPages'
     const requiredParameters = ShopperExperience.paramKeys[`${methodName}Required`]
+    const {mode, pdToken, pageId} = usePageDesignerParams()
+
+    // Merge Page Designer params (mode, pdToken) from URL if present
+    // Note: pageId is intentionally excluded as it's not an API parameter
+    const apiOptionsWithPDParams = {
+        ...apiOptions,
+        parameters: {
+            ...apiOptions.parameters,
+            ...(mode && {mode}),
+            ...(pdToken && {pdToken}),
+            ...(pageId && {pageId})
+        }
+    }
 
     // Parameters can be set in `apiOptions` or `client.clientConfig`;
     // we must merge them in order to generate the correct query key.
-    const netOptions = omitNullableParameters(mergeOptions(client, apiOptions))
+    const netOptions = omitNullableParameters(mergeOptions(client, apiOptionsWithPDParams))
     const parameters = pickValidParams(
         netOptions.parameters,
         ShopperExperience.paramKeys[methodName]
@@ -87,10 +101,23 @@ export const usePage = (
     const client = useCommerceApi(CLIENT_KEY)
     const methodName = 'getPage'
     const requiredParameters = ShopperExperience.paramKeys[`${methodName}Required`]
+    const {mode, pdToken, pageId} = usePageDesignerParams()
+
+    // Merge Page Designer params (mode, pdToken) from URL if present
+    // Note: pageId is intentionally excluded as it's not an API parameter
+    const apiOptionsWithPDParams = {
+        ...apiOptions,
+        parameters: {
+            ...apiOptions.parameters,
+            ...(mode && {mode}),
+            ...(pdToken && {pdToken}),
+            ...(pageId && {pageId})
+        }
+    }
 
     // Parameters can be set in `apiOptions` or `client.clientConfig`;
     // we must merge them in order to generate the correct query key.
-    const netOptions = omitNullableParameters(mergeOptions(client, apiOptions))
+    const netOptions = omitNullableParameters(mergeOptions(client, apiOptionsWithPDParams))
     const parameters = pickValidParams(
         netOptions.parameters,
         ShopperExperience.paramKeys[methodName]

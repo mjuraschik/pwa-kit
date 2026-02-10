@@ -7,5 +7,6 @@
 import CommerceApiProvider from './provider'
 export * from './hooks/types'
 export * from './hooks'
+export {registry} from './components'
 
 export {CommerceApiProvider}

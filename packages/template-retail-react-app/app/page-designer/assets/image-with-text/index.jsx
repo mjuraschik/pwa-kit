@@ -27,6 +27,9 @@ import {isAbsoluteURL} from '@salesforce/retail-react-app/app/page-designer/util
  * @returns {React.ReactElement} - ImageWithText component.
  */
 export const ImageWithText = ({ITCLink, ITCText, image, heading, alt}) => {
+    if (!image?.path) {
+        return null
+    }
     const hasCaption = ITCText || heading
     const isAbsolute = isAbsoluteURL(ITCLink)
     const LinkWrapper = isAbsolute ? ChakraLink : Link
@@ -36,16 +39,23 @@ export const ImageWithText = ({ITCLink, ITCText, image, heading, alt}) => {
         <Image
             className={'image-with-text-image'}
             data-testid={'image-with-text-image'}
-            src={image?.src?.mobile ? image?.src?.mobile : image?.url}
+            src={image.path}
             ignoreFallback={true}
             alt={alt}
             title={alt}
+            width="100%"
+            objectFit="cover"
+            objectPosition={
+                image?.focal_point
+                    ? `${image.focal_point.x * 100}% ${image.focal_point.y * 100}%`
+                    : undefined
+            }
             filter={heading ? 'brightness(40%)' : undefined}
         />
     )
 
     return (
-        <Box className={'image-with-text'}>
+        <Box className={'image-with-text'} width="100%">
             <Box
                 as="figure"
                 className={'image-with-text-figure'}
@@ -53,17 +63,13 @@ export const ImageWithText = ({ITCLink, ITCText, image, heading, alt}) => {
                 margin={0}
                 width={'100%'}
             >
-                <picture>
-                    <source srcSet={image?.src?.tablet} media="(min-width: 48em)" />
-                    <source srcSet={image?.src?.desktop} media="(min-width: 64em)" />
-                    {ITCLink ? (
-                        <LinkWrapper {...linkProps}>
-                            <ImageComponent />
-                        </LinkWrapper>
-                    ) : (
+                {ITCLink ? (
+                    <LinkWrapper {...linkProps}>
                         <ImageComponent />
-                    )}
-                </picture>
+                    </LinkWrapper>
+                ) : (
+                    <ImageComponent />
+                )}
                 {hasCaption && (
                     <Text as="figcaption">
                         {heading && (
@@ -133,20 +139,16 @@ ImageWithText.propTypes = {
     ITCLink: PropTypes.string,
     ITCText: PropTypes.string,
     image: PropTypes.shape({
-        _type: PropTypes.string,
-        focalPoint: PropTypes.shape({
-            _type: PropTypes.string,
+        path: PropTypes.string,
+        focal_point: PropTypes.shape({
             x: PropTypes.number,
             y: PropTypes.number
         }),
-        metaData: PropTypes.shape({
-            _type: PropTypes.string,
+        meta_data: PropTypes.shape({
             height: PropTypes.number,
             width: PropTypes.number
-        }),
-        url: PropTypes.string,
-        src: PropTypes.string || PropTypes.object
-    }).isRequired,
+        })
+    }),
     heading: PropTypes.string,
     alt: PropTypes.string
 }

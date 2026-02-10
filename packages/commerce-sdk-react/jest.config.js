@@ -11,6 +11,19 @@ module.exports = {
     ...base,
     setupFilesAfterEnv: ['./setup-jest.js'],
     transformIgnorePatterns: [],
+    moduleNameMapper: {
+        ...base.moduleNameMapper,
+        '^@salesforce/storefront-next-runtime/design/react/core$':
+            '@salesforce/storefront-next-runtime/dist/design-react-core.js',
+        '^@salesforce/storefront-next-runtime/design/react$':
+            '@salesforce/storefront-next-runtime/dist/design-react.js',
+        '^@salesforce/storefront-next-runtime/design$':
+            '@salesforce/storefront-next-runtime/dist/design.js',
+        '^@salesforce/storefront-next-runtime/design/mode$':
+            '@salesforce/storefront-next-runtime/dist/design-mode.js',
+        '^@salesforce/storefront-next-runtime/scapi$':
+            '@salesforce/storefront-next-runtime/dist/scapi.js'
+    },
     coverageThreshold: {
         global: {
             branches: 0,
