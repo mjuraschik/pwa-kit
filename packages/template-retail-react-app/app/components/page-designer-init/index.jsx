@@ -7,8 +7,11 @@
 
 import React, {useEffect} from 'react'
 import {Prompt} from 'react-router-dom'
-import {usePageDesignerMode} from '@salesforce/commerce-sdk-react/components'
-import {useGlobalAnchorBlock} from '@salesforce/commerce-sdk-react'
+import {
+    usePageDesignerMode,
+    useGlobalAnchorBlock
+} from '@salesforce/commerce-sdk-react/page-designer'
+import {getAssetUrl} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
 
 /**
  * PageDesignerInit - Component that handles Page Designer initialization
@@ -57,14 +60,25 @@ export function PageDesignerInit() {
     // Pass isDesignMode to control when navigation blocking is active
     useGlobalAnchorBlock(isDesignMode)
 
-    // Dynamically import the Page Designer global styles only when in design mode.
+    // Dynamically load the Page Designer global styles only when in design mode.
     // This ensures the styles are not loaded in production runtime, improving performance.
     useEffect(() => {
-        if (isDesignMode) {
-            // Dynamic import with void to ignore the promise
-            // Import only the CSS file, not the entire components module to avoid circular dependencies
-            void import('@salesforce/storefront-next-runtime/design/styles.css')
+        if (!isDesignMode) {
+            return
         }
+
+        const id = 'pd-design-styles'
+        if (document.getElementById(id)) {
+            return
+        }
+
+        const link = document.createElement('link')
+        link.id = id
+        link.rel = 'stylesheet'
+        link.href = getAssetUrl('static/pd-design-styles.css')
+        document.head.appendChild(link)
+
+        return () => link.remove()
     }, [isDesignMode])
 
     // When the message function returns false, navigation is completely blocked (no dialog shown)

@@ -9,23 +9,3 @@ export * from './Component'
 export * from './Region'
 export * from './Page'
 export * from './prop-types'
-export * from './registry'
-
-// Re-export Page Designer utilities from runtime package for convenience
-export {
-    PageDesignerProvider,
-    usePageDesignerMode
-} from '@salesforce/storefront-next-runtime/design/react/core'
-
-// Re-export mode detection utilities
-export {
-    isDesignModeActive,
-    isPreviewModeActive
-} from '@salesforce/storefront-next-runtime/design/mode'
-export type {
-    ComponentDesignMetadata,
-    RegionDesignMetadata
-} from '@salesforce/storefront-next-runtime/design/react'
-
-// Export types
-export type {ComponentType, PageWithDesignMetadata} from './types'

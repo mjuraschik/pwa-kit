@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {usePage, useUsid, useShopperContext} from '@salesforce/commerce-sdk-react'
+import {useUsid, useShopperContext} from '@salesforce/commerce-sdk-react'
+import {usePage, Page} from '@salesforce/commerce-sdk-react/page-designer'
 
 // Components
 import {Box} from '@salesforce/retail-react-app/app/components/shared/ui'
-import {Page} from '@salesforce/commerce-sdk-react/components'
 
 // Page Designer Components
 import {ImageWithText} from '@salesforce/retail-react-app/app/page-designer/assets'

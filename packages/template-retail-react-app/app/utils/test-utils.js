@@ -16,7 +16,7 @@ import {BonusProductSelectionModalProvider} from '@salesforce/retail-react-app/a
 import {ServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/contexts'
 import {IntlProvider} from 'react-intl'
 import {CommerceApiProvider} from '@salesforce/commerce-sdk-react'
-import {PageContext, Region, registry} from '@salesforce/commerce-sdk-react/components'
+import {PageContext, Region, registry} from '@salesforce/commerce-sdk-react/page-designer'
 import {withReactQuery} from '@salesforce/pwa-kit-react-sdk/ssr/universal/components/with-react-query'
 import fallbackMessages from '@salesforce/retail-react-app/app/static/translations/compiled/en-GB.json'
 import mockConfig from '@salesforce/retail-react-app/config/mocks/default'

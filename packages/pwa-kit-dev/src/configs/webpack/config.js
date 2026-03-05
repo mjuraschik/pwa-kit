@@ -280,11 +280,7 @@ const baseConfig = (target) => {
                                 loader: findDepInStack('source-map-loader')
                             }
                         },
-                        target === 'web' && {
-                            test: /\.css$/,
-                            use: [findDepInStack('style-loader'), findDepInStack('css-loader')]
-                        },
-                        target === 'node' && {
+                        {
                             test: /\.css$/,
                             loader: findDepInStack('ignore-loader')
                         }
@@ -357,6 +353,15 @@ const staticFolderCopyPlugin = new CopyPlugin({
                 .resolve(`${EXT_OVERRIDES_DIR ? EXT_OVERRIDES_DIR_NO_SLASH + '/' : ''}app/static`)
                 .replace(/\\/g, '/'),
             to: `static/`,
+            noErrorOnMissing: true
+        },
+        {
+            // Copy Page Designer CSS from storefront-next-runtime for dynamic loading
+            from: path.resolve(
+                projectDir,
+                'node_modules/@salesforce/storefront-next-runtime/dist/design-styles.css'
+            ),
+            to: 'static/pd-design-styles.css',
             noErrorOnMissing: true
         }
     ]

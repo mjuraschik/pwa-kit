@@ -69,7 +69,7 @@ import {useUpdateShopperContext} from '@salesforce/retail-react-app/app/hooks/us
 // HOCs
 import {withCommerceSdkReact} from '@salesforce/retail-react-app/app/components/with-commerce-sdk-react/with-commerce-sdk-react'
 
-import {PageDesignerProvider} from '@salesforce/commerce-sdk-react/components'
+import {PageDesignerProvider} from '@salesforce/commerce-sdk-react/page-designer'
 import PageDesignerInit from '@salesforce/retail-react-app/app/components/page-designer-init'
 
 // Localization

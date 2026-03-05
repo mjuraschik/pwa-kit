@@ -10,31 +10,25 @@ import {Box, Image} from '@salesforce/retail-react-app/app/components/shared/ui'
 
 /**
  * Simple ImageTile component that can be used inside any Layout component.
- * @param image Object containing the image path, focal_point and meta_data.
+ * @param image Object containing the image url, _type and focalPoint.
  * @returns {JSX.Element}
  */
 export const ImageTile = ({image}) => {
-    if (!image?.path) {
-        return null
-    }
-
     return (
         <Box className={'image-tile'}>
             <figure className={'image-tile-figure'}>
-                <Image
-                    className={'image-tile-image'}
-                    data-testid={'image-tile-image'}
-                    src={image.path}
-                    ignoreFallback={true}
-                    alt={image?.alt || ''}
-                    title={image?.alt}
-                    width="100%"
-                    objectPosition={
-                        image?.focal_point
-                            ? `${image.focal_point.x * 100}% ${image.focal_point.y * 100}%`
-                            : undefined
-                    }
-                />
+                <picture>
+                    <source srcSet={image?.src?.tablet} media="(min-width: 48em)" />
+                    <source srcSet={image?.src?.desktop} media="(min-width: 64em)" />
+                    <Image
+                        className={'image-tile-image'}
+                        data-testid={'image-tile-image'}
+                        src={image?.src?.mobile ? image?.src?.mobile : image?.url}
+                        ignoreFallback={true}
+                        alt={image?.alt}
+                        title={image?.alt}
+                    />
+                </picture>
             </figure>
         </Box>
     )
@@ -42,16 +36,15 @@ export const ImageTile = ({image}) => {
 
 ImageTile.propTypes = {
     image: PropTypes.shape({
-        path: PropTypes.string,
-        alt: PropTypes.string,
-        focal_point: PropTypes.shape({
+        _type: PropTypes.string,
+        focalPoint: PropTypes.shape({
+            _type: PropTypes.string,
             x: PropTypes.number,
             y: PropTypes.number
         }),
-        meta_data: PropTypes.shape({
-            height: PropTypes.number,
-            width: PropTypes.number
-        })
+        url: PropTypes.string,
+        alt: PropTypes.string,
+        src: PropTypes.string || PropTypes.object
     })
 }
 

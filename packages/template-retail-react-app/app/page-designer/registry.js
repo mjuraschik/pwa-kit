@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {registry} from '@salesforce/commerce-sdk-react'
+import {registry} from '@salesforce/commerce-sdk-react/page-designer'
 
 /**
  * Initialize the component registry with all Page Designer components.
@@ -27,30 +27,14 @@ import {registry} from '@salesforce/commerce-sdk-react'
  */
 export function initializeRegistry() {
     // Commerce Assets - Visual components
-    registry.registerImporter('commerce_assets.imageTile', () => import('./assets/image-tile'))
     registry.registerImporter('commerce_assets.imageAndText', () =>
         import('./assets/image-with-text')
     )
     registry.registerImporter('commerce_assets.productTile', () =>
         import('./assets/image-with-text')
     )
-    registry.registerImporter('commerce_assets.photoTile', () => import('./assets/photo-tile'))
-    registry.registerImporter('commerce_assets.editorialRichText', () =>
-        import('./assets/editorial-rich-text')
-    )
-    registry.registerImporter('commerce_assets.campaignBanner', () =>
-        import('./assets/campaign-banner')
-    )
-    registry.registerImporter('commerce_assets.mainBanner', () => import('./assets/main-banner'))
-    registry.registerImporter('commerce_assets.category', () => import('./assets/category'))
-    registry.registerImporter('commerce_assets.popularCategory', () =>
-        import('./assets/popular-category')
-    )
-    registry.registerImporter('commerce_assets.shopTheLook', () => import('./assets/shop-the-look'))
-    registry.registerImporter('commerce_assets.productTile', () => import('./assets/product-tile'))
 
     // Commerce Layouts - Layout components
-    registry.registerImporter('commerce_layouts.carousel', () => import('./layouts/carousel'))
     registry.registerImporter('commerce_layouts.mobileGrid1r1c', () =>
         import('./layouts/mobileGrid1r1c')
     )
@@ -68,11 +52,5 @@ export function initializeRegistry() {
     )
     registry.registerImporter('commerce_layouts.mobileGrid3r2c', () =>
         import('./layouts/mobileGrid3r2c')
-    )
-    registry.registerImporter('commerce_layouts.popularCategories', () =>
-        import('./layouts/popular-categories')
-    )
-    registry.registerImporter('commerce_layouts.mobileGridLookBook', () =>
-        import('./layouts/mobileGridLookBook')
     )
 }

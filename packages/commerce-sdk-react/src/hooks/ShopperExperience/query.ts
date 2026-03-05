@@ -42,28 +42,42 @@ export const usePages = (
     const requiredParameters = ShopperExperience.paramKeys[`${methodName}Required`]
     const {mode, pdToken, pageId} = usePageDesignerParams()
 
+    // Determine if we're in Page Designer mode (edit mode or preview with token)
+    // When true, we use rawResponse to preserve all fields like designMetadata
+    const isPageDesignerMode = !!(mode || pdToken)
+
     // Merge Page Designer params (mode, pdToken) from URL if present
     // Note: pageId is intentionally excluded as it's not an API parameter
     const apiOptionsWithPDParams = {
         ...apiOptions,
         parameters: {
-            ...apiOptions.parameters,
-            ...(mode && {mode}),
-            ...(pdToken && {pdToken}),
-            ...(pageId && {pageId})
+            ...apiOptions.parameters
         }
     }
 
     // Parameters can be set in `apiOptions` or `client.clientConfig`;
     // we must merge them in order to generate the correct query key.
     const netOptions = omitNullableParameters(mergeOptions(client, apiOptionsWithPDParams))
-    const parameters = pickValidParams(
-        netOptions.parameters,
-        ShopperExperience.paramKeys[methodName]
-    )
+    const parameters = {
+        ...pickValidParams(
+            netOptions.parameters,
+            ShopperExperience.paramKeys[methodName]
+        ),
+        // Add Page Designer params after filtering - these are not officially part of the oas spec, since they are meant to be internal
+        ...(mode && {mode}),
+        ...(pdToken && {pdToken}),
+        ...(pageId && {pageId})
+    }
     const queryKey = queryKeyHelpers[methodName].queryKey(netOptions.parameters)
     // We don't use `netOptions` here because we manipulate the options in `useQuery`.
-    const method = async (options: Options) => await client[methodName](options)
+    // When in Page Designer mode, use rawResponse: true to preserve all response fields
+    const method = async (options: Options) => {
+        if (isPageDesignerMode) {
+            const response = await client[methodName](options, true)
+            return await response.json()
+        }
+        return await client[methodName](options)
+    }
 
     queryOptions.meta = {
         displayName: 'usePages',
@@ -103,28 +117,43 @@ export const usePage = (
     const requiredParameters = ShopperExperience.paramKeys[`${methodName}Required`]
     const {mode, pdToken, pageId} = usePageDesignerParams()
 
+    // Determine if we're in Page Designer mode (edit mode or preview with token)
+    // When true, we use rawResponse to preserve all fields like designMetadata
+    const isPageDesignerMode = Boolean(mode || pdToken)
+
     // Merge Page Designer params (mode, pdToken) from URL if present
     // Note: pageId is intentionally excluded as it's not an API parameter
     const apiOptionsWithPDParams = {
         ...apiOptions,
         parameters: {
             ...apiOptions.parameters,
-            ...(mode && {mode}),
-            ...(pdToken && {pdToken}),
-            ...(pageId && {pageId})
         }
     }
 
     // Parameters can be set in `apiOptions` or `client.clientConfig`;
     // we must merge them in order to generate the correct query key.
     const netOptions = omitNullableParameters(mergeOptions(client, apiOptionsWithPDParams))
-    const parameters = pickValidParams(
-        netOptions.parameters,
-        ShopperExperience.paramKeys[methodName]
-    )
+    const parameters = {
+        ...pickValidParams(
+            netOptions.parameters,
+            ShopperExperience.paramKeys[methodName]
+        ),
+        // Add Page Designer params after filtering - these are not officially part of the oas spec, since they are meant to be internal
+        ...(mode && {mode}),
+        ...(pdToken && {pdToken}),
+        ...(pageId && {pageId})
+    }
     const queryKey = queryKeyHelpers[methodName].queryKey(netOptions.parameters)
     // We don't use `netOptions` here because we manipulate the options in `useQuery`.
-    const method = async (options: Options) => await client[methodName](options)
+    // When in Page Designer mode, use rawResponse: true to preserve all response fields that are not exposed at runtime
+    // to improve performance and the size of the response
+    const method = async (options: Options) => {
+        if (isPageDesignerMode) {
+            const response = await client[methodName](options, true)
+            return await response.json()
+        }
+        return await client[methodName](options)
+    }
 
     queryOptions.meta = {
         displayName: 'usePage',
