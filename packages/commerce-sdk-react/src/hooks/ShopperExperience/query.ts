@@ -59,10 +59,7 @@ export const usePages = (
     // we must merge them in order to generate the correct query key.
     const netOptions = omitNullableParameters(mergeOptions(client, apiOptionsWithPDParams))
     const parameters = {
-        ...pickValidParams(
-            netOptions.parameters,
-            ShopperExperience.paramKeys[methodName]
-        ),
+        ...pickValidParams(netOptions.parameters, ShopperExperience.paramKeys[methodName]),
         // Add Page Designer params after filtering - these are not officially part of the oas spec, since they are meant to be internal
         ...(mode && {mode}),
         ...(pdToken && {pdToken}),
@@ -126,7 +123,7 @@ export const usePage = (
     const apiOptionsWithPDParams = {
         ...apiOptions,
         parameters: {
-            ...apiOptions.parameters,
+            ...apiOptions.parameters
         }
     }
 
@@ -134,10 +131,7 @@ export const usePage = (
     // we must merge them in order to generate the correct query key.
     const netOptions = omitNullableParameters(mergeOptions(client, apiOptionsWithPDParams))
     const parameters = {
-        ...pickValidParams(
-            netOptions.parameters,
-            ShopperExperience.paramKeys[methodName]
-        ),
+        ...pickValidParams(netOptions.parameters, ShopperExperience.paramKeys[methodName]),
         // Add Page Designer params after filtering - these are not officially part of the oas spec, since they are meant to be internal
         ...(mode && {mode}),
         ...(pdToken && {pdToken}),
